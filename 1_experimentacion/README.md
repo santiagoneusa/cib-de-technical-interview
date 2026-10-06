@@ -1,6 +1,6 @@
 # 1. Experimentación
 
-Exploración y calidad del archivo original (actividad 1). Los hallazgos y gráficas están dentro de cada notebook.
+Exploración y calidad del archivo original (actividad 1). Cada notebook responde un numeral; los hallazgos y gráficas están dentro de él, con el código contraído para leer solo resultados.
 
 ## Ejecutar
 
@@ -17,14 +17,13 @@ Abrir `1_experimentacion/notebooks/` y ejecutar cada notebook de arriba a abajo,
 
 ```text
 0_datos/KPIS_historico.xlsx       # entrada: hojas query, catalogo_indicadores, catalogo_entornos
-1_experimentacion/
-├── notebooks/
-└── resultados/                   # salidas de los notebooks
+1_experimentacion/notebooks/      # no escriben archivos: solo leen el Excel
 ```
 
 ## Orden de ejecución
 
-| # | Notebook | Qué hace | Escribe |
-|---|---|---|---|
-| 1 | `1_eda.ipynb` | Responde 1.1 y 1.2: qué es cada fila, cómo separar en tablas y cómo se relacionan la base y los catálogos | — |
-| 2 | `2_calidad_datos.ipynb` | Responde 1.3: revisa faltantes, duplicados, formato, catálogo y valores, y arma el registro de calidad | `resultados/registro_calidad.csv` |
+| # | Notebook | Responde |
+|---|---|---|
+| 1.1 | `1_1_exploracion_datos.ipynb` | Qué representa cada fila, cómo separar en tablas y si la base y los catálogos coinciden (vista general) |
+| 1.2 | `1_2_validacion_catalogos.ipynb` | Contraste detallado con el catálogo de indicadores y el de entornos; diferencias documentadas |
+| 1.3 | `1_3_evaluacion_calidad.ipynb` | Registro de problemas de calidad: problema, evidencia, impacto y tratamiento |

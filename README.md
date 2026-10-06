@@ -6,7 +6,7 @@ Prueba técnica – Ingeniero de Datos N2, Estrategia Corporativa. El equipo de 
 
 ```text
 0_datos/              # archivo original (nunca se modifica)
-1_experimentacion/    # notebooks 1 → 2: exploración y calidad (actividad 1)
+1_experimentacion/    # notebooks 1.1 → 1.3: exploración y calidad (actividad 1)
 2_transformacion/     # limpieza y dataset analítico (actividades 2 y 3)
 3_aplicacion/         # proceso recurrente, decisiones tecnológicas y uso de IA (actividad 4)
 ```
@@ -45,8 +45,8 @@ erDiagram
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Los indicadores medidos están en el catálogo? | **Solo 10 de 25 (40%)**. 1 está escrito distinto y 14 no aparecen: son el **54% de las filas** |
-| ¿Todos los indicadores del catálogo se miden? | **No: 2 de 13 nunca se miden** y tienen la misma definición (un índice consolidado de agilidad) |
+| ¿Los indicadores medidos están en el catálogo? | **Solo 10 de 25 indicadores están registrados en el catálogo (40%)**. Los otros 15 indicadores no registrados representan el **54% de las filas** |
+| ¿Los indicadores registrados en el catálogo se miden? | **No: 2 de 13 nunca se miden** y tienen la misma definición (un índice consolidado de agilidad) |
 | ¿Los frentes tienen un solo nombre? | **No**: el frente de agilidad tiene 3 nombres en el tiempo, y el error "Modeos…" viene del propio catálogo |
 | ¿Los códigos de equipo son confiables? | **146 formas de escribir 89 equipos** (minúsculas, dígitos de menos) |
 | ¿Los equipos medidos existen en el catálogo? | **63 de 89 (71%)**. 26 son equipos fantasma: 18 históricos y **8 activos en 2026** que faltan en el catálogo |
@@ -72,4 +72,4 @@ erDiagram
 | ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimientos imposibles (155 y −1873) | 22 filas | marcar y excluir del análisis |
 | ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento copiado (1.014683) | 530 filas (3,5%) | marcar y excluir del análisis |
 
-Impacto y detalle: [`1_experimentacion/resultados/registro_calidad.csv`](1_experimentacion/resultados/registro_calidad.csv).
+Impacto y detalle: [`1_experimentacion/notebooks/1_3_evaluacion_calidad.ipynb`](1_experimentacion/notebooks/1_3_evaluacion_calidad.ipynb).

@@ -5,9 +5,9 @@ description: Data quality and traceability rules for the KPIs project (quality l
 
 # Data standards
 
-## Quality log (`1_experimentacion/resultados/registro_calidad.csv`)
-Columns: `id, problema, evidencia, impacto, tratamiento` (exactly what activity 1.3 asks).
-- `id` = `P01`, `P02`, … in the order the notebook checks them.
+## Quality log (shown inside `1_experimentacion/notebooks/1_3_evaluacion_calidad.ipynb`; no CSV)
+Columns: `categoria, problema, evidencia, impacto, tratamiento` (what activity 1.3 asks + a category).
+- `categoria` ∈ Faltantes (morado), Duplicados (azul), Formato (amarillo), Catálogo (naranja), Valores (rosado); shown as a colored label.
 - `evidencia` is always quantified (rows, % of the base, teams or indicators affected).
 - `tratamiento` starts with one of `corregir`, `excluir`, `marcar`, `aceptar`, optionally followed by a short "how".
 
