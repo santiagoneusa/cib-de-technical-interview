@@ -53,3 +53,8 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
 - **Propuesta de la IA:** "con los códigos tal como vienen solo cruzan 46 equipos con el catálogo".
 - **Decisión humana:** corregida tras ejecutar: cruzan 63 tal cual y 63 corregidos; el problema real es que 89 equipos aparecen escritos de 146 formas (minúsculas y dígitos de menos), lo que hace que un equipo parezca varios.
 - **Validación contra datos:** `1_eda.ipynb`, sección 4.
+
+### 2026-10-06 · Actividad 1 · Visualización y rol de README vs notebooks
+- **Pedido humano:** respuestas tipo pregunta → respuesta, etiquetas de color por tipo de problema (buscando una agrupación óptima, no la sugerida), más gráficas que digan mucho, y READMEs enfocados en cómo ejecutar.
+- **Propuesta de la IA:** 5 categorías de calidad que responden una pregunta cada una (Faltantes, Duplicados, Formato, Catálogo, Valores). Se reemplazó la propuesta inicial (faltantes / duplicados / …) moviendo "meses con pocos equipos" a Faltantes y separando Formato (escritura) de Catálogo (referencias entre hojas). Las respuestas de la actividad 1 quedan en el README raíz porque la prueba exige que el README las contenga; los READMEs de carpeta solo explican cómo ejecutar.
+- **Validación contra datos:** la lectura de la gráfica de indicadores decía "Vulnerabilidades e Incidentes llevan más de dos años"; los datos muestran 15 meses. Se corrigió a "Percepción y Adopción: 25 meses y más de 70 equipos".

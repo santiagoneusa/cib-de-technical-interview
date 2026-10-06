@@ -1,16 +1,16 @@
-﻿id,problema,evidencia,impacto,tratamiento
-P01,Filas sin código de equipo,36 filas (0.2%),La medición no se puede asignar a ningún equipo ni entorno.,excluir
-P02,Nombre de equipo (EQU) vacío,"6,185 filas (40.7%)",Reportes sin nombre legible; el código sí está.,corregir (tomar el nombre del catálogo o de otras filas del mismo código)
-P03,Cumplimiento vacío,265 filas (1.7%); 59 se pueden recalcular con Resultado y Meta,Mediciones que no cuentan en el desempeño del equipo.,corregir las recuperables; excluir el resto
-P04,Filas repetidas exactamente iguales,"2,182 filas (14.4%); 56% están en 202502",Cuentan doble a algunos equipos y meses e inflan promedios.,excluir (se deja una)
-P05,"Mismo equipo, indicador y mes con valores distintos","1,265 filas; 962 son respuestas individuales de encuesta (Percepción/Adopción 202502)",No hay un único valor oficial del mes y los equipos con más respuestas pesan más.,"corregir (promedio por equipo, indicador y mes)"
-P06,Código de equipo mal escrito (minúsculas o dígitos de menos),325 filas (2.1%); 146 escrituras para 89 equipos,Un mismo equipo parece varios equipos distintos.,corregir (mayúsculas y 5 dígitos)
-P07,"Equipos fantasma (en la base, no en el catálogo de entornos)","1,473 filas de 26 equipos; 8 siguen activos en 2026",No se pueden agrupar por entorno.,marcar como 'Sin entorno' y reportar los activos al dueño del catálogo
-P08,Equipos cuyo padre es una vicepresidencia o 'sin entorno',"2,218 filas (14.6%) de 13 equipos",Mezclarlos con entornos compara niveles distintos de la organización.,marcar como 'Sin entorno' conservando la vicepresidencia
-P09,Indicadores sin definición en el catálogo,"14 de 25 indicadores; 8,267 filas (54.4%)","No se sabe qué miden, en qué unidad ni si más alto es mejor.",marcar y documentar con el dueño del indicador
-P10,Indicadores del catálogo que ningún equipo mide,"2: Adopción de la metodologia, Productividad (misma definición)",Catálogo desactualizado o índice consolidado que no llega a la base.,aceptar y reportar
-P11,"Un mismo frente con tres nombres (Talento + Agilidad, Modelos…, Modeos…)","3,089 filas (20.3%)",El histórico del frente se ve cortado en tres frentes distintos.,"corregir (homologar a 'Modelos de trabajo y Agilidad', también en el catálogo)"
-P12,"Cumplimiento en escalas distintas: encuestas reportan el puntaje, no el % de la meta","5,498 filas (36.2%); mediana 4.4 vs 1.0 del resto; la meta de encuesta cambia de 10 a 4 y a 5",Promediar cumplimientos favorece 4 veces a los equipos medidos por encuesta.,corregir (cumplimiento = Resultado / Meta)
-P13,Cumplimientos imposibles (Incidentes 202408 = 155.4 en 19 equipos; Gestión del Gasto hasta -1873),22 filas,Una sola fila extrema domina cualquier promedio.,marcar y excluir del análisis
-P14,Mismo cumplimiento (1.014683) repetido con resultados distintos,"530 filas (3.5%) en Disponibilidad e Incidentes, con 376 resultados distintos","Parece un valor por defecto copiado, no una medición.",marcar y excluir del análisis
-P15,Meses con menos de la mitad de los equipos reportando,202510: 20 equipos (normal: 64),El promedio del mes representa a pocos equipos.,marcar (mostrar siempre cuántos equipos hay detrás de cada cifra)
+﻿categoria,problema,filas_afectadas,evidencia,impacto,tratamiento
+Faltantes,Filas sin código de equipo,36,36 filas (0.2%),La medición no se puede asignar a ningún equipo ni entorno.,excluir
+Faltantes,Nombre de equipo (EQU) vacío,6185,"6,185 filas (40.7%)",Reportes sin nombre legible; el código sí está.,corregir (tomar el nombre del catálogo o de otras filas del mismo código)
+Faltantes,Cumplimiento vacío,265,265 filas (1.7%); 59 se pueden recalcular con Resultado y Meta,Mediciones que no cuentan en el desempeño del equipo.,corregir las recuperables; excluir el resto
+Faltantes,Meses con pocos equipos reportando,22,202510: 20 equipos (normal: 64),El promedio del mes representa a pocos equipos.,marcar (mostrar cuántos equipos hay detrás de cada cifra)
+Duplicados,Filas repetidas exactamente iguales,2182,"2,182 filas (14.4%); 56% están en 202502",Cuentan doble a algunos equipos y meses e inflan promedios.,excluir (se deja una)
+Duplicados,"Mismo equipo, indicador y mes con valores distintos",1265,"1,265 filas; 962 son respuestas individuales de encuesta (Percepción/Adopción 202502)",No hay un único valor oficial del mes y los equipos con más respuestas pesan más.,"corregir (promedio por equipo, indicador y mes)"
+Formato,Código de equipo mal escrito,325,325 filas (2.1%); minúsculas o dígitos de menos; 146 escrituras para 89 equipos,Un mismo equipo parece varios equipos distintos.,corregir (mayúsculas y 5 dígitos)
+Formato,Un frente con tres nombres,3089,"3,089 filas (20.3%); Talento + Agilidad (2023-24), Modelos… (2025), Modeos… (2026)",El histórico del frente se ve cortado en tres frentes distintos.,"corregir (homologar a 'Modelos de trabajo y Agilidad', también en el catálogo)"
+Catálogo,Equipos fantasma (no están en el catálogo),1473,"1,473 filas (9.7%) de 26 equipos; 8 siguen activos en 2026",No se pueden agrupar por entorno.,marcar como 'Sin entorno' y reportar los activos al dueño del catálogo
+Catálogo,Equipos con vicepresidencia o sin entorno,2218,"2,218 filas (14.6%) de 13 equipos",Mezclarlos con entornos compara niveles distintos de la organización.,marcar como 'Sin entorno' conservando la vicepresidencia
+Catálogo,Indicadores sin definición en el catálogo,8267,"14 de 25 indicadores; 8,267 filas (54.4%)","No se sabe qué miden, en qué unidad ni si más alto es mejor.",marcar y documentar con el dueño del indicador
+Catálogo,Indicadores del catálogo que nadie mide,0,"2 de 13: Adopción de la metodologia, Productividad (misma definición)",Catálogo desactualizado o índice consolidado que no llega a la base.,aceptar y reportar
+Valores,Cumplimiento en escalas distintas,5498,"5,498 filas (36.2%); las encuestas reportan el puntaje, no el % de la meta: mediana 4.4 vs 1.0 del resto; la meta de encuesta cambia de 10 a 4 y a 5",Promediar cumplimientos favorece 4 veces a los equipos medidos por encuesta.,corregir (cumplimiento = Resultado / Meta)
+Valores,Cumplimientos imposibles,22,"22 filas (0.1%); Incidentes 202408 = 155.4 en 19 equipos, Gestión del Gasto hasta -1873",Una sola fila extrema domina cualquier promedio.,marcar y excluir del análisis
+Valores,Cumplimiento copiado (1.014683),530,"530 filas (3.5%) en Disponibilidad e Incidentes, con 376 resultados distintos","Parece un valor por defecto copiado, no una medición.",marcar y excluir del análisis
