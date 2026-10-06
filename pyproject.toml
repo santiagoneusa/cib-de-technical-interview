@@ -1,0 +1,18 @@
+[project]
+name = "kpis-estrategia"
+version = "0.1.0"
+description = "Prueba técnica Ingeniero de Datos N2 – base confiable y puntaje de desempeño de KPIs por equipo, frente y entorno"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=2.0",
+    "openpyxl>=3.1",
+    "pyarrow>=17.0",
+    "matplotlib>=3.9",
+    "jupyter>=1.1",
+    "nbconvert>=7.16",
+    "ipykernel>=6.29",
+]
+
+[tool.uv]
+package = false
