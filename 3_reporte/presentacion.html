@@ -56,16 +56,21 @@ p, ul { margin: 0; }
 
 /* Diapositiva 1 */
 .presentacion { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 4cqw; align-items: center; }
-.persona { display: grid; gap: 1.6cqw; }
-.persona h1 { font-size: 6.4cqw; font-weight: 800; font-stretch: 78%; line-height: 0.95; }
-.persona .rol { font-size: 1.6cqw; font-weight: 600; }
-.persona p { font-size: 1.8cqw; line-height: 1.4; color: var(--suave); max-width: 32ch; }
-.cifras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4cqw; }
-.cifra { background: var(--panel); border-radius: 12px; padding: 1.8cqw; display: grid; gap: 0.6cqw; align-content: start; }
-.cifra b { font: 800 4.2cqw/1 var(--display); font-stretch: 78%; font-variant-numeric: tabular-nums; }
-.cifra span { font-size: 1.35cqw; line-height: 1.3; color: var(--suave); }
-.cifra.destacada { background: var(--amarillo); }
-.cifra.destacada span { color: var(--texto); }
+.persona { display: grid; gap: 1.4cqw; }
+.persona h1 { font-size: 6cqw; font-weight: 800; font-stretch: 78%; line-height: 0.95; }
+.persona .rol { font-size: 1.6cqw; font-weight: 700; }
+.persona p { font-size: 1.6cqw; line-height: 1.45; color: var(--suave); max-width: 38ch; }
+.habilidades { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.7cqw; }
+.habilidades li { font-size: max(11px, 1.15cqw); font-weight: 600; background: var(--panel); border-radius: 999px; padding: 0.5cqw 1.1cqw; }
+.fases { display: grid; gap: 1.2cqw; }
+.fases ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.8cqw; }
+.fases li { display: grid; grid-template-columns: 13.5cqw minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 1.4cqw; align-items: baseline; padding: 1cqw 1.4cqw; border-radius: 10px; background: var(--panel); }
+.fases li:nth-child(3) { background: var(--amarillo); }
+.fases code { grid-row: 1 / 3; font: 600 max(10px, 1.1cqw)/1.3 ui-monospace, "Consolas", monospace; color: var(--suave); align-self: center; }
+.fases li:nth-child(3) code { color: var(--texto); }
+.fases b { font-family: var(--display); font-size: 1.65cqw; font-stretch: 88%; }
+.fases span { font-size: 1.3cqw; line-height: 1.3; color: var(--suave); }
+.fases li:nth-child(3) span { color: var(--texto); }
 
 /* Diapositiva 2 */
 .hallazgos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr) auto; gap: 1.6cqw 3cqw; min-height: 0; }
@@ -105,11 +110,15 @@ p, ul { margin: 0; }
   .diapositiva { width: 100%; aspect-ratio: auto; padding: 22px 18px; gap: 18px; container-type: normal; }
   .titulo { font-size: 1.7rem; }
   .persona h1 { font-size: 2.6rem; }
-  .persona .rol, .persona p, .cifra span, .tercero p, .flujo li span, .flujo .nota, .ia li { font-size: 1rem; }
-  .cifra b, .tercero b { font-size: 2rem; }
+  .persona .rol, .persona p, .fases span, .tercero p, .flujo li span, .flujo .nota, .ia li { font-size: 1rem; }
+  .tercero b { font-size: 2rem; }
+  .fases b { font-size: 1.1rem; }
+  .fases li { grid-template-columns: minmax(0, 1fr); padding: 12px 14px; }
+  .fases code { grid-row: auto; font-size: 0.8rem; }
+  .habilidades li { font-size: 0.85rem; padding: 4px 10px; }
   .hallazgo h2, .tercero strong, .ia h3, .flujo li b { font-size: 1.2rem; }
   .presentacion, .hallazgos, .cierre, .flujo ol { grid-template-columns: minmax(0, 1fr); }
-  .cifra, .flujo li, .tercero { padding: 14px; }
+  .flujo li, .tercero { padding: 14px; }
   .tercero { flex-direction: column; align-items: flex-start; }
   .lienzo { height: 300px; }
   .flujo li::after { display: none; }
@@ -127,13 +136,20 @@ p, ul { margin: 0; }
         <div class="persona">
           <h1>Santiago Neusa</h1>
           <span class="rol">Candidato a Ingeniero de Datos N2</span>
-          <p>Convertí un Excel de KPIs en una base confiable que se actualiza cada mes, para decidir dónde acompañar a los equipos.</p>
+          <p>Machine Learning Engineer en Bancolombia: modelos de detección de fraude que procesan más de 10 millones de cuentas al día. Ingeniero de Sistemas de EAFIT y estudiante de la Maestría en Ciencia de Datos con énfasis en MLOps.</p>
+          <ul class="habilidades" aria-label="Habilidades">
+            <li>Python</li><li>SQL</li><li>MLOps</li><li>IA generativa</li>
+          </ul>
         </div>
-        <div class="cifras" aria-label="La base en cifras">
-          <div class="cifra"><b>15.188</b><span>filas en el archivo original</span></div>
-          <div class="cifra destacada"><b>11.466</b><span>mediciones confiables, una por mes, equipo e indicador</span></div>
-          <div class="cifra"><b>3.722</b><span>filas excluidas o agrupadas, trazadas una a una</span></div>
-          <div class="cifra"><b>52%</b><span>de las mediciones usan indicadores que no están en el catálogo</span></div>
+        <div class="fases">
+          <span class="etiqueta">Cómo se construyó: una carpeta por fase</span>
+          <ol>
+            <li><code>0_datos</code><b>Datos por capas</b><span>Crudos, procesados y score; el original nunca se modifica</span></li>
+            <li><code>1_experimentacion</code><b>Exploración y calidad</b><span>52% de las mediciones usan indicadores fuera del catálogo</span></li>
+            <li><code>2_transformacion</code><b>Limpieza, modelo y score</b><span>15.188 filas → 11.466 mediciones; 3.722 trazadas una a una</span></li>
+            <li><code>3_reporte</code><b>Hallazgos y presentación</b><span>3 hallazgos para decidir dónde acompañar</span></li>
+            <li><code>.github</code><b>Reglas para la IA</b><span>Instrucciones, skills y prompts para trabajar con el mismo estándar</span></li>
+          </ol>
         </div>
       </div>
       <div class="pie"><span>87 equipos · 23 entornos · 2023-01 a 2026-08</span><span>1 / 3</span></div>
