@@ -1,6 +1,6 @@
 # 2. Transformación
 
-Proceso que convierte el archivo original en un dataset analítico para comparar equipos, frentes y entornos en el tiempo (actividad 2). Son scripts de Python con un solo punto de entrada, pensados para que el equipo de estrategia los ejecute cada mes sin abrir un notebook.
+Proceso que convierte el archivo original en datos limpios y en un score comparable entre equipos, frentes y entornos (actividad 2). Son scripts de Python con un solo punto de entrada, para que el equipo de estrategia los ejecute cada mes sin abrir un notebook.
 
 ## Ejecución
 
@@ -10,63 +10,68 @@ Desde la raíz del repositorio:
 uv run python 2_transformacion/src/main.py
 ```
 
-Procesa cada `.xlsx` de `0_datos/entrada/` y publica `0_datos/salida/<archivo>_analitico.xlsx`. Cada ejecución deja una línea en `0_datos/salida/ejecucion.log`. Si el archivo no trae las hojas o columnas esperadas, o alguna validación falla, **no publica nada** y termina con código 1, que cualquier orquestador (cron, Power Automate, Cloudera) detecta como error.
+Por cada `.xlsx` de `0_datos/1_originales/` publica dos archivos y deja una línea en `0_datos/ejecucion.log`:
+
+| Archivo | Hojas |
+|---|---|
+| `0_datos/2_procesados/<archivo>_procesado.xlsx` | `datos` (la sábana limpia), `indicadores` (catálogo actualizado), `registro_calidad`, `trazabilidad`, `validaciones` |
+| `0_datos/3_score/<archivo>_score.xlsx` | `mediciones` (meta cumplida por fila), `indicadores`, `equipos_mes`, `frentes_mes`, `entornos_mes`, `evolucion_mes` |
+
+Si al archivo le falta una hoja o columna, o una validación falla, **no publica nada** y termina con código 1, que cualquier orquestador (cron, Power Automate, Cloudera) detecta como error.
 
 ```text
 src/
-  main.py            # entrada → etl → score → Excel de salida
-  etl/               # DataOps: limpieza y calidad
-    reglas.py        # reglas de negocio editables (homologaciones, umbrales, valor copiado)
-    limpieza.py      # aplica los tratamientos del registro de calidad y deja la traza
-    calidad.py       # valida el esquema de entrada y el dataset final
-  score/             # métrica de desempeño
-    reglas.py        # sentido de cada indicador (mayor o menor es mejor)
-    features.py      # meta cumplida y features por indicador y por equipo-mes
+  main.py            # originales → etl → procesados → score
+  etl/
+    reglas.py        # reglas de negocio editables: formatos, frentes mal escritos, sentido de cada indicador
+    limpieza.py      # una función por regla; cada una devuelve los datos tratados y su traza
+    catalogos.py     # entorno de cada equipo y catálogo de indicadores actualizado
+    calidad.py       # validaciones y registro de calidad
+  score/
+    features.py      # meta cumplida, resumen por indicador y score por equipo-mes
     agregacion.py    # score por frente, entorno y mes
 ```
 
-El "modelo" no se entrena ni se guarda como `.pkl`: son reglas deterministas. Su artefacto es `score/reglas.py`, versionado en git y legible por un analista.
+El score no se entrena ni se guarda como `.pkl`: son reglas deterministas, versionadas en git y legibles por un analista.
 
-## Decisiones
+## Datos procesados (2.1)
 
-**2.1 Limpieza y granularidad.** Se aplican los tratamientos del [registro de calidad](../1_experimentacion/README.md#13-registro-de-problemas-de-calidad). La granularidad final es **una fila por mes × equipo × indicador**. De 15.188 filas quedan 11.977:
-- 2.183 se excluyen (2.182 copias exactas);
-- 1.028 se promedian con otra fila del mismo mes, equipo e indicador;
-- 897 se conservan, pero quedan fuera del score: sin Resultado o Meta, cumplimiento copiado o imposible.
+**Granularidad:** una fila por **mes × equipo × indicador**, con las columnas `corte`, `cod_equipo`, `equipo`, `cod_entorno`, `entorno`, `frente`, `indicador`, `resultado`, `meta`, `cumplimiento` y `fila_origen`, que es la fila del Excel original.
 
-Las 36 filas sin código no se pierden: su nombre corresponde a un solo código, así que se recuperan.
+De 15.188 filas quedan 11.521. Las reglas se aplican en este orden:
 
-**2.2 Métrica: meta cumplida.** Por cada medición vale 1 si el Resultado alcanza la Meta, según el sentido del indicador (≥ si más es mejor, ≤ si menos es mejor), y 0 si no. El score de un equipo en un mes es el % de sus indicadores que cumplieron, todos con el mismo peso.
-- **Por qué no la columna Cumplimiento:** es Resultado/Meta solo en parte de los indicadores. En las encuestas copia el puntaje, y en los indicadores de "menos es mejor" usa otras fórmulas.
+| Regla | Qué hace |
+|---|---|
+| Código de equipo | Lo pasa a mayúsculas y 5 dígitos. Si está vacío, lo toma del nombre del equipo, porque cada nombre corresponde a un solo código |
+| Frente | Corrige "Modeos…" a "Modelos de trabajo y Agilidad". **"Talento + Agilidad" se conserva:** no está en el catálogo y sus indicadores no coinciden con los de ningún frente, así que se reporta para actualizar el catálogo |
+| Resultado o Meta vacíos | Se excluye la fila: no hay medición o no hay contra qué compararla |
+| Filas repetidas | Se excluyen; se deja una |
+| Valores en conflicto | Varias filas del mismo mes, equipo e indicador con valores distintos (sobre todo respuestas de encuesta) se promedian en una |
+| Nombre de equipo vacío | Se toma de otras filas del mismo código o del catálogo |
+| Cumplimiento | Donde más es mejor y la meta es positiva, se recalcula como Resultado / Meta. Eso corrige las encuestas (traían el puntaje), los valores copiados y los vacíos. En los demás se conserva el de origen, y si es imposible (más de 3) se deja vacío |
+| Entorno | Se toma de `catalogo_entornos`; las vicepresidencias cuentan como entorno. Los equipos que no están en el catálogo o están marcados sin entorno quedan en "Sin entorno" |
+
+**Catálogo de indicadores actualizado:** los 25 indicadores medidos y los 2 del catálogo que nadie mide, con su `sentido` (mayor o menor es mejor). Los que no estaban en el catálogo aparecen con su definición y unidad como pendientes de documentar.
+
+**Trazabilidad (2.5):** cada fila tocada queda en la hoja `trazabilidad`, con su número de fila en Excel, la regla, la acción (`excluida`, `corregida`, `completada` o `agrupada`) y qué cambió. Por ejemplo, `Cumplimiento: 9.434 → 0.943` o `Codigo_EQU: Equ00074 → EQU00074`. La hoja `registro_calidad` resume cuántas filas tocó cada regla.
+
+**Reejecución (2.6):** cada ejecución parte del archivo original, que nunca se modifica, y da el mismo resultado. Las validaciones comprueban que filas originales = procesadas + excluidas + agrupadas.
+
+## Score
+
+**2.2 Métrica: meta cumplida.** Por cada medición vale 1 si el resultado alcanza la meta según el sentido del indicador (≥ si más es mejor, ≤ si menos es mejor), y 0 si no. El score de un equipo en un mes es la proporción de sus indicadores que cumplieron, todos con el mismo peso.
 - **Por qué es comparable:** no depende de la unidad ni de la escala, y ningún valor extremo domina.
 - **Sentido no verificado:** en tres indicadores (Brecha Ingresos Gastos, Impactos a clientes, Índice AQR's) ningún sentido explica el dato de origen. Para ellos se usa `Cumplimiento ≥ 1` tal como llega, y se debe confirmar con su dueño.
-- **Cobertura:** cuántos equipos miden un indicador es contexto, no un peso. Un indicador nuevo o medido en pocos equipos puede ser un riesgo clave, y el score de un equipo no debe depender de lo que miden los demás.
+- **Cobertura:** cuántos equipos miden un indicador es contexto, no un peso. Un indicador medido en pocos equipos puede ser un riesgo clave.
 
-**2.3 Agregación por entorno: mediana de los equipos.** Cada equipo cuenta una vez, sin importar cuántos indicadores reporte. Un equipo extremo no mueve el resultado, lo que importa porque muchos entornos tienen 1 a 4 equipos. Junto a la mediana siempre va `n_equipos` y el rango (mín–máx).
-- **Equipos con vicepresidencia:** los 11 equipos que en el catálogo cuelgan de una vicepresidencia se agrupan con su VP, con `nivel = vicepresidencia`.
-- **Equipos sin entorno:** los 28 equipos sin entorno (26 que no están en el catálogo y 2 marcados así) aparecen a nivel de equipo y frente. A nivel de entorno solo se cuentan, sin calificarlos, porque juntarlos compararía áreas sin relación entre sí.
-
-**2.5 Trazabilidad.** La hoja `trazabilidad` tiene una fila por cada fila de origen excluida, corregida o agrupada, con su número de fila en Excel, la regla y el detalle (por ejemplo `EQU0024 → EQU00024`). Las marcas que no cambian el dato quedan en la columna `marcas` del dataset.
-
-**2.6 Reejecución.** Cada ejecución parte del archivo original, que nunca se modifica, y da el mismo resultado. Las validaciones comprueban que entrada = dataset + excluidas + agrupadas.
+**2.3 Agregación por entorno: mediana de los equipos.** Cada equipo cuenta una vez, sin importar cuántos indicadores reporte, y un equipo extremo no mueve el resultado; muchos entornos tienen 1 a 4 equipos. Junto a la mediana siempre van `n_equipos` y el rango.
+- **Vicepresidencias:** los equipos que cuelgan de una vicepresidencia se agrupan con ella.
+- **Equipos sin entorno:** aparecen a nivel de equipo y frente. A nivel de entorno solo se cuentan, sin calificarlos como grupo, porque juntarlos mezclaría áreas sin relación entre sí.
 
 *(La prueba no tiene numeral 2.4.)*
-
-## Salida
-
-| Hoja | Contenido |
-|---|---|
-| `registro_calidad` | Los problemas de 1.3 con las filas afectadas en esta ejecución y su tratamiento |
-| `trazabilidad` | Qué se excluyó, corrigió o agrupó, fila por fila |
-| `validaciones` | Cada validación y su resultado |
-| `dataset_analitico` | El dataset final: una fila por mes × equipo × indicador, con `meta_cumplida` y `marcas` |
-| `indicadores` | Por indicador: sentido, unidad, cobertura (equipos, meses), tasa de cumplimiento y dispersión entre equipos |
-| `equipos_mes` | Score de cada equipo por mes, n.º de indicadores y variación frente a sus 3 meses anteriores |
-| `frentes_mes` · `entornos_mes` | Mediana, mínimo, máximo y n.º de equipos por frente o entorno y mes |
-| `evolucion_mes` | Filas, equipos e indicadores detrás de cada mes y su score mediano |
 
 ## Limitaciones
 
 - **Se pierde magnitud:** quedar al 99% o al 50% de la meta cuenta igual.
-- **Encuestas:** su meta es 5 sobre 5, así que casi nunca se cumple (Talento + Agilidad: 0%). Bajan por igual a todos los equipos medidos en esos meses.
+- **Encuestas:** su meta es el puntaje máximo, así que casi nunca se cumple (Talento + Agilidad: 0%). Bajan por igual a todos los equipos medidos en esos meses.
 - **Indicadores que cambian por año:** la mezcla de indicadores cambia cada año, así que el score compara bien entre equipos de un mismo mes. A lo largo del tiempo compara "qué tanto se cumplió lo que se medía", no los mismos indicadores.

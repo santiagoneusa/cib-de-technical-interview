@@ -3,4 +3,4 @@
 .ipynb_checkpoints/
 __pycache__/
 *.docx
-0_datos/salida/ejecucion.log
+0_datos/ejecucion.log

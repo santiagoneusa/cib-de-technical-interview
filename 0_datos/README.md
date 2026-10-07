@@ -2,10 +2,13 @@
 
 | Carpeta | Contenido |
 |---|---|
-| `entrada/` | Archivos a procesar. `KPIS_historico.xlsx` es el original entregado y **nunca se modifica** |
-| `salida/` | Lo que publica el proceso de [transformación](../2_transformacion/README.md): `<archivo>_analitico.xlsx` y `ejecucion.log` |
+| `1_originales/` | Archivos a procesar tal como se entregan. `KPIS_historico.xlsx` **nunca se modifica** |
+| `2_procesados/` | `<archivo>_procesado.xlsx`: datos limpios, catálogo de indicadores actualizado, registro de calidad y trazabilidad |
+| `3_score/` | `<archivo>_score.xlsx`: meta cumplida y score por equipo, frente, entorno y mes |
 
-Hojas del archivo de entrada:
+Las carpetas 2 y 3 las genera el proceso de [transformación](../2_transformacion/README.md), que además escribe `ejecucion.log`.
+
+Hojas del archivo original:
 
 | Hoja | Filas | Qué contiene |
 |---|---|---|

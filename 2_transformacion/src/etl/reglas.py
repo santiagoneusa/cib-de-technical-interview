@@ -1,55 +1,61 @@
-"""Reglas de negocio de la limpieza. Se editan aquí, sin tocar la lógica de limpieza.py."""
+"""Reglas de negocio de la limpieza. Se editan aquí, sin tocar la lógica de limpieza.py ni catalogos.py."""
 
-# Columnas de la hoja query tal como llegan
-COLUMNAS_ORIGEN = ["Frente", "Corte", "Codigo_EQU", "EQU", "Indicador", "Resultado", "Meta", "Cumplimiento"]
+# Columnas de la hoja query y su nombre en el dataset procesado
+COLUMNAS = {
+    "Corte": "corte", "Codigo_EQU": "cod_equipo", "EQU": "equipo", "Frente": "frente",
+    "Indicador": "indicador", "Resultado": "resultado", "Meta": "meta", "Cumplimiento": "cumplimiento",
+}
 
-# Llave de la granularidad final: una fila por mes × equipo × indicador
+# Granularidad final: una fila por mes × equipo × indicador
 LLAVE = ["corte", "cod_equipo", "indicador"]
 
-# Códigos con un dígito de menos (EQU0024 → EQU00024); se aplica después de pasar a mayúsculas
+# Código de equipo: mayúsculas y 5 dígitos (EQU0024 → EQU00024)
 PATRON_CODIGO = r"^([A-Z]{3})0(\d{3})$"
 REEMPLAZO_CODIGO = r"\g<1>00\2"
 FORMATO_CODIGO = r"^(EQU|CEX)\d{5}$"
 
-# El frente de agilidad cambió de nombre cada año; se homologa al nombre correcto
-FRENTES_HOMOLOGADOS = {
-    "Talento + Agilidad": "Modelos de trabajo y Agilidad",
-    "Modeos de trabajo y Agilidad": "Modelos de trabajo y Agilidad",
+# Errores de digitación en el nombre del frente. "Talento + Agilidad" NO está aquí: es un frente
+# que no aparece en el catálogo y no se puede asumir que sea el mismo que "Modelos de trabajo y Agilidad".
+FRENTES_MAL_ESCRITOS = {"Modeos de trabajo y Agilidad": "Modelos de trabajo y Agilidad"}
+
+# Sentido de cada indicador: si cumplir es quedar por encima ("mayor") o por debajo ("menor") de la meta.
+# Se dedujo comparando el Cumplimiento de origen con Resultado vs Meta. En "no verificado" ningún sentido
+# explica el dato de origen: se confía en su Cumplimiento y se debe confirmar con el dueño del indicador.
+SENTIDO = {
+    "Obsolescencia": "menor",
+    "Pérdida esperada por fraude": "menor",
+    "Gestión del Gasto": "menor",
+    "Brecha Ingresos Gastos": "no verificado",
+    "Impactos a clientes activos por fricciones, quejas y requerimientos": "no verificado",
+    "Índice AQR's": "no verificado",
 }
+SENTIDO_POR_DEFECTO = "mayor"
 
-# Indicadores de encuesta: su Cumplimiento es el puntaje, no el % de la meta
-INDICADORES_ENCUESTA = ["Percepción", "Adopción", "Talento + Agilidad"]
+# Cumplimiento: diferencia a partir de la cual el dato de origen no coincide con Resultado / Meta,
+# y valor a partir del cual es imposible (más de 3 veces la meta)
+TOLERANCIA_CUMPLIMIENTO = 0.001
+CUMPLIMIENTO_MAXIMO = 3
 
-# Valores de Cumplimiento que no son mediciones
-VALOR_COPIADO = 1.014683
-TOLERANCIA_COPIADO = 1e-5
-CUMPLIMIENTO_MAXIMO = 3  # fuera de encuestas, más de 3 veces la meta se considera imposible
+# Entorno: en catalogo_entornos, Codigo_Padre empieza por ENX (entorno) o VPX (vicepresidencia);
+# cualquier otro valor ("CdE sin Entorno") o un equipo que no está en el catálogo queda sin entorno
+PREFIJOS_ENTORNO = ("ENX", "VPX")
+SIN_ENTORNO = "Sin entorno"
+PENDIENTE = "Pendiente: no está en catalogo_indicadores"
 
-# Un mes es "con pocos equipos" si reportan menos de esta fracción de la mediana de equipos por mes
-FRACCION_POCOS_EQUIPOS = 0.5
-
-# Nivel del padre en catalogo_entornos según el prefijo de Codigo_Padre; cualquier otro es "sin entorno"
-NIVEL_POR_PREFIJO = {"ENX": "entorno", "VPX": "vicepresidencia"}
-SIN_ENTORNO = "Sin entorno asignado"
-
-# Cada problema del registro de calidad (1.3): categoría, descripción y tratamiento aplicado
-PROBLEMAS = {
-    "sin_codigo": ("Faltantes", "Filas sin código de equipo", "corregir desde el nombre del equipo; excluir si no se puede"),
-    "nombre_vacio": ("Faltantes", "Nombre de equipo vacío", "corregir con otras filas del código o el catálogo"),
-    "sin_resultado_meta": ("Faltantes", "Sin Resultado o Meta: no se puede saber si cumplió", "marcar (no cuenta en el score)"),
-    "pocos_equipos": ("Faltantes", "Mes con pocos equipos reportando", "marcar"),
-    "copia_exacta": ("Duplicados", "Filas repetidas exactamente", "excluir (se deja una)"),
-    "igual_salvo_nombre": ("Duplicados", "Filas iguales salvo el nombre del equipo", "excluir (se deja la que tiene nombre)"),
-    "valores_en_conflicto": ("Duplicados", "Mismo equipo, indicador y mes con valores distintos", "corregir (promedio)"),
-    "codigo_mal_escrito": ("Formato", "Código de equipo mal escrito", "corregir (mayúsculas y 5 dígitos)"),
-    "frente_homologado": ("Formato", "Frente con nombre anterior o mal escrito", "corregir (homologar)"),
-    "equipo_fantasma": ("Catálogo", "Equipo que no está en el catálogo", "marcar como sin entorno asignado"),
-    "vp_o_sin_entorno": ("Catálogo", "Equipo con vicepresidencia o sin entorno en el catálogo", "marcar (se agrupa por su VP si la tiene)"),
-    "indicador_sin_definicion": ("Catálogo", "Indicador sin definición en el catálogo", "marcar"),
-    "escala_encuesta": ("Valores", "Encuesta: Cumplimiento es el puntaje, no el % de la meta", "corregir (la métrica compara Resultado con Meta)"),
-    "cumplimiento_imposible": ("Valores", f"Cumplimiento mayor a {CUMPLIMIENTO_MAXIMO} fuera de encuestas", "marcar (no cuenta en el score)"),
-    "cumplimiento_copiado": ("Valores", f"Cumplimiento copiado ({VALOR_COPIADO})", "marcar (no cuenta en el score)"),
+# Registro de calidad: cada regla con el problema que resuelve y su tratamiento, en orden de ejecución
+REGLAS = {
+    "codigo_mal_escrito": ("Código de equipo en minúsculas o con un dígito de menos", "corregir: mayúsculas y 5 dígitos"),
+    "codigo_vacio": ("Código de equipo vacío", "completar con el código que corresponde al nombre del equipo; excluir si no hay nombre"),
+    "frente_mal_escrito": ("Frente con error de digitación (Modeos de trabajo y Agilidad)", "corregir"),
+    "frente_vacio": ("Frente vacío", "completar con el frente más reciente del indicador"),
+    "resultado_vacio": ("Resultado vacío: no hay medición", "excluir"),
+    "meta_vacia": ("Meta vacía: no hay contra qué comparar el resultado", "excluir"),
+    "fila_repetida": ("La misma medición repetida en varias filas", "excluir (se deja una)"),
+    "valores_en_conflicto": ("Mismo mes, equipo e indicador con valores distintos", "agrupar en una fila con el promedio"),
+    "nombre_vacio": ("Nombre de equipo vacío", "completar con el nombre de su código (otras filas o catálogo)"),
+    "cumplimiento_recalculado": ("Cumplimiento distinto de Resultado / Meta en indicadores donde más es mejor", "corregir: Resultado / Meta"),
+    "cumplimiento_imposible": (f"Cumplimiento mayor a {CUMPLIMIENTO_MAXIMO} que no se puede recalcular", "dejar vacío"),
+    "equipo_fuera_de_catalogo": ("Equipo que no está en catalogo_entornos", f"entorno = '{SIN_ENTORNO}'"),
+    "indicador_fuera_de_catalogo": ("Indicador que no está en catalogo_indicadores", "agregarlo al catálogo como pendiente de documentar"),
+    "frente_fuera_de_catalogo": ("Frente que no está en catalogo_indicadores", "conservarlo y reportarlo para actualizar el catálogo"),
 }
-
-# Marcas que sacan una fila del score (las demás solo informan)
-MARCAS_EXCLUYENTES = ["sin_resultado_meta", "cumplimiento_imposible", "cumplimiento_copiado"]

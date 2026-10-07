@@ -90,3 +90,19 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
     - Las 13 filas que 1.3 clasificó como "iguales salvo el nombre" eran equipos distintos sin código, no duplicados. Se corrigió 1.3: el problema desaparece y el registro queda en 15 problemas; las filas sin código pasan de "excluir" a "corregir". En el pipeline la regla se mantiene como control (1 fila tras recuperar códigos).
   - **Verificación del proceso:** la salida es idéntica entre dos ejecuciones. Con un archivo sin la columna Meta, el proceso no publica nada y termina con código 1.
 - **Decisión humana:** las encuestas (meta 5 de 5, casi nunca se cumple) se mantienen en el score y se declara la limitación.
+
+### 2026-10-07 · Actividad 2 · Reglas honestas, funciones con una sola responsabilidad y dos salidas
+- **Pedido humano:**
+  - **Código:** `limpiar()` estaba recargada; cada función debe tener una sola responsabilidad.
+  - **Excel:** debe mostrar solo información coherente. "Mes con pocos equipos" no se entendía, las marcas y las columnas `estado` y `nivel` no decían nada, y `cumplimiento_origen` rompía la homogeneidad de nombres.
+  - **Frente (corrección humana):** la traza decía "Talento + Agilidad → Modelos de trabajo y Agilidad". Eso es falso: el frente no está en el catálogo y sus indicadores (Percepción, Adopción) no coinciden con los del catálogo (Adopción de la metodología, Productividad). Hay que reportarlo para actualizar el catálogo, no homologarlo.
+  - **Salidas:** separar los datos procesados del score, con carpetas de datos mejor nombradas.
+- **Propuesta de la IA:**
+  - **Código:** `limpieza.py` con una función por regla, cada una devuelve (datos, traza), y `limpiar()` solo las encadena en orden. Se prefirieron funciones de módulo a una clase de métodos estáticos: es el idioma de pandas y cada función se explica sola.
+  - **Datos:** carpetas `0_datos/1_originales`, `2_procesados` y `3_score`. La sábana tiene 11 columnas con nombres homogéneos, y la traza dice exactamente qué cambió (`Cumplimiento: 9.434 → 0.943`).
+  - **Catálogo de indicadores:** se actualiza con `sentido` y con los indicadores que se miden sin estar catalogados.
+  - **Cumplimiento:** se recalcula como Resultado / Meta donde más es mejor, en vez de marcar y excluir. Así la columna queda útil y coincide con la hipótesis humana original.
+- **Validación contra datos:**
+  - **Valores imposibles:** son Incidentes 202408, todos con 155,42 aunque los resultados son distintos (se recalculan), y Gestión del Gasto 202308, donde el origen calculó Meta − Resultado (se dejan vacíos).
+  - **Columnas vacías:** ninguna fila trae Frente, Indicador o Corte vacíos. Solo faltan Codigo_EQU, EQU, Resultado, Meta y Cumplimiento.
+  - **Actividad 1:** 1.2 y 1.3 se corrigieron para no tratar "Talento + Agilidad" como un nombre anterior del mismo frente. El registro de 1.3 queda con 16 problemas, porque se agrega "Frente que no está en el catálogo".

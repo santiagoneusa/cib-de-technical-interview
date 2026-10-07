@@ -1,120 +1,176 @@
-"""Aplica los tratamientos del registro de calidad (actividad 1.3) y deja la traza de cada fila tocada."""
+"""Limpieza de la hoja query. Cada función aplica una regla de reglas.py y devuelve (datos, traza):
+los datos ya tratados y una fila por cada fila de origen que la regla excluyó, corrigió, completó o agrupó."""
 
 import pandas as pd
 
 from etl import reglas
 
 
-def simplificar(texto):
-    """Minúsculas y sin tildes, para cruzar nombres que solo difieren en la escritura."""
-    return texto.lower().replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u")
+def limpiar(kpis, cat_entornos):
+    """Aplica las reglas en orden. Devuelve el dataset limpio y la traza completa."""
+    pasos = [
+        normalizar_codigo_equipo,
+        lambda datos: completar_codigo_equipo(datos, cat_entornos),
+        corregir_frente_mal_escrito,
+        completar_frente_vacio,
+        excluir_resultado_vacio,
+        excluir_meta_vacia,
+        excluir_filas_repetidas,
+        agrupar_valores_en_conflicto,
+        lambda datos: completar_nombre_equipo(datos, cat_entornos),
+        recalcular_cumplimiento,
+        vaciar_cumplimiento_imposible,
+    ]
+    datos, trazas = preparar(kpis), []
+    for paso in pasos:
+        datos, traza = paso(datos)
+        trazas.append(traza)
+    traza = pd.concat(trazas, ignore_index=True).sort_values("fila_origen", kind="stable", ignore_index=True)
+    return datos.sort_values(reglas.LLAVE, ignore_index=True), traza
 
 
-def limpiar(kpis, cat_indicadores, cat_entornos):
-    """Devuelve (datos, traza): una fila por mes × equipo × indicador, y una fila por cada fila de origen
-    excluida, corregida o agrupada. Las marcas no cambian datos: se listan en la columna `marcas`."""
-    datos = kpis.copy()
-    datos.insert(0, "fila_origen", datos.index + 2)  # número de fila en la hoja query de Excel
-    traza = []
+def preparar(kpis):
+    """Renombra las columnas, convierte el corte a fecha y guarda el número de fila de Excel de cada medición."""
+    datos = kpis.rename(columns=reglas.COLUMNAS)[list(reglas.COLUMNAS.values())]
+    datos["corte"] = pd.to_datetime(datos["corte"], format="%Y%m", errors="coerce")
+    datos["fila_origen"] = kpis.index + 2  # +1 por el encabezado y +1 porque Excel cuenta desde 1
+    return datos
 
-    def registrar(filas, accion, regla, detalle=""):
-        if isinstance(detalle, pd.Series):
-            detalle = detalle.loc[filas.index].values
-        traza.append(pd.DataFrame({"fila_origen": filas["fila_origen"].values, "accion": accion,
-                                   "regla": regla, "detalle": detalle}))
 
-    # Excluir: copias exactas (se deja la primera) y filas sin código de equipo
-    primera = datos.groupby(reglas.COLUMNAS_ORIGEN, dropna=False)["fila_origen"].transform("first")
-    copia = datos["fila_origen"] != primera
-    registrar(datos[copia], "excluida", "copia_exacta", "copia de la fila " + primera.astype(str))
-    datos = datos[~copia]
+def normalizar_codigo_equipo(datos):
+    """Código en mayúsculas y con 5 dígitos: Equ00074 → EQU00074, EQU0024 → EQU00024."""
+    normalizado = datos["cod_equipo"].str.strip().str.upper().str.replace(reglas.PATRON_CODIGO, reglas.REEMPLAZO_CODIGO, regex=True)
+    cambia = datos["cod_equipo"].notna() & (normalizado != datos["cod_equipo"])
+    traza = _traza(datos[cambia], "codigo_mal_escrito", "corregida",
+                   "Codigo_EQU: " + datos["cod_equipo"] + " → " + normalizado)
+    return datos.assign(cod_equipo=normalizado), traza
 
-    # Corregir: código vacío desde el nombre del equipo (cada nombre corresponde a un solo código); excluir si no se puede
-    catalogo = cat_entornos.assign(cod_equipo=cat_entornos["Codigo_EQU"].str.upper()).set_index("cod_equipo")
-    conocidos = pd.concat([datos[["EQU", "Codigo_EQU"]].dropna(), cat_entornos[["EQU", "Codigo_EQU"]]])
-    unicos = conocidos.assign(Codigo_EQU=conocidos["Codigo_EQU"].str.upper()).drop_duplicates()
-    codigo_por_nombre = unicos[~unicos["EQU"].duplicated(keep=False)].set_index("EQU")["Codigo_EQU"]
-    sin_codigo = datos["Codigo_EQU"].isna()
-    recuperado = datos["EQU"].map(codigo_por_nombre)
-    registrar(datos[sin_codigo & recuperado.notna()], "corregida", "sin_codigo", "código tomado del nombre: " + recuperado)
-    registrar(datos[sin_codigo & recuperado.isna()], "excluida", "sin_codigo", "sin nombre que identifique al equipo")
-    datos["Codigo_EQU"] = datos["Codigo_EQU"].fillna(recuperado)
-    datos = datos[datos["Codigo_EQU"].notna()]
 
-    datos = datos.rename(columns={"Frente": "frente", "Codigo_EQU": "codigo_origen", "EQU": "nombre_equipo",
-                                  "Indicador": "indicador", "Resultado": "resultado", "Meta": "meta",
-                                  "Cumplimiento": "cumplimiento_origen"})
-    datos["corte"] = pd.to_datetime(datos["Corte"], format="%Y%m", errors="coerce")
+def completar_codigo_equipo(datos, cat_entornos):
+    """Código vacío: se toma del nombre del equipo, solo si ese nombre corresponde a un único código
+    en la base y en el catálogo. Si no hay nombre que lo identifique, la fila se excluye."""
+    codigo_por_nombre = _codigo_por_nombre(datos, cat_entornos)
+    vacio = datos["cod_equipo"].isna()
+    encontrado = datos["equipo"].map(codigo_por_nombre)
+    completar, excluir = vacio & encontrado.notna(), vacio & encontrado.isna()
+    traza = pd.concat([
+        _traza(datos[completar], "codigo_vacio", "completada", "Codigo_EQU: vacío → " + encontrado + " (por el nombre " + datos["equipo"] + ")"),
+        _traza(datos[excluir], "codigo_vacio", "excluida", "sin nombre que identifique al equipo"),
+    ])
+    return datos.assign(cod_equipo=datos["cod_equipo"].fillna(encontrado))[~excluir], traza
 
-    # Corregir: código de equipo en mayúsculas y con 5 dígitos
-    datos["cod_equipo"] = datos["codigo_origen"].str.strip().str.upper().str.replace(
-        reglas.PATRON_CODIGO, reglas.REEMPLAZO_CODIGO, regex=True)
-    mal_escrito = datos["cod_equipo"] != datos["codigo_origen"]
-    registrar(datos[mal_escrito], "corregida", "codigo_mal_escrito", datos["codigo_origen"] + " → " + datos["cod_equipo"])
 
-    # Excluir: la misma medición repetida, una con nombre de equipo y otra sin él (se deja la que tiene nombre)
-    medicion = ["frente", "corte", "cod_equipo", "indicador", "resultado", "meta", "cumplimiento_origen"]
-    datos = datos.sort_values(["nombre_equipo", "fila_origen"], na_position="last")
-    repetida = datos.duplicated(medicion)
-    registrar(datos[repetida], "excluida", "igual_salvo_nombre")
-    datos = datos[~repetida].sort_values("fila_origen")
+def corregir_frente_mal_escrito(datos):
+    """Frentes con error de digitación, según reglas.FRENTES_MAL_ESCRITOS."""
+    mal_escrito = datos["frente"].isin(reglas.FRENTES_MAL_ESCRITOS)
+    corregido = datos["frente"].replace(reglas.FRENTES_MAL_ESCRITOS)
+    traza = _traza(datos[mal_escrito], "frente_mal_escrito", "corregida", "Frente: " + datos["frente"] + " → " + corregido)
+    return datos.assign(frente=corregido), traza
 
-    # Corregir: frente homologado
-    homologar = datos["frente"].isin(reglas.FRENTES_HOMOLOGADOS)
-    registrar(datos[homologar], "corregida", "frente_homologado", datos["frente"] + " → " + datos["frente"].map(reglas.FRENTES_HOMOLOGADOS))
-    datos["frente"] = datos["frente"].replace(reglas.FRENTES_HOMOLOGADOS)
 
-    # Corregir: varias filas para el mismo mes, equipo e indicador se promedian en la primera
+def completar_frente_vacio(datos):
+    """Frente vacío: se toma el frente más reciente con el que se reportó el mismo indicador."""
+    frente_reciente = datos.dropna(subset=["frente"]).sort_values("corte").groupby("indicador")["frente"].last()
+    encontrado = datos["indicador"].map(frente_reciente)
+    completar = datos["frente"].isna() & encontrado.notna()
+    traza = _traza(datos[completar], "frente_vacio", "completada", "Frente: vacío → " + encontrado)
+    return datos.assign(frente=datos["frente"].fillna(encontrado)), traza
+
+
+def excluir_resultado_vacio(datos):
+    """Sin Resultado no hay medición."""
+    return _excluir(datos, datos["resultado"].isna(), "resultado_vacio", "Resultado: vacío")
+
+
+def excluir_meta_vacia(datos):
+    """Sin Meta no se puede saber si el resultado cumplió."""
+    return _excluir(datos, datos["meta"].isna(), "meta_vacia", "Meta: vacío")
+
+
+def excluir_filas_repetidas(datos):
+    """La misma medición (mes, equipo, frente, indicador, resultado, meta y cumplimiento) en varias filas:
+    se deja una, preferiblemente la que trae el nombre del equipo."""
+    medicion = ["corte", "cod_equipo", "frente", "indicador", "resultado", "meta", "cumplimiento"]
+    ordenados = datos.sort_values(["equipo", "fila_origen"], na_position="last")
+    conservada = ordenados.groupby(medicion, dropna=False)["fila_origen"].transform("first")
+    repetida = ordenados["fila_origen"] != conservada
+    datos_sin_repetidas, traza = _excluir(ordenados, repetida, "fila_repetida", "repite la fila " + conservada.astype(str))
+    return datos_sin_repetidas.sort_values("fila_origen"), traza
+
+
+def agrupar_valores_en_conflicto(datos):
+    """Varias filas para el mismo mes, equipo e indicador con valores distintos (sobre todo respuestas
+    individuales de encuesta): se agrupan en la primera fila con el promedio de Resultado, Meta y Cumplimiento."""
     grupo = datos.groupby(reglas.LLAVE)["fila_origen"]
-    n_filas, representante = grupo.transform("size"), grupo.transform("min")
-    conflicto = n_filas > 1
-    absorbida = conflicto & (datos["fila_origen"] != representante)
-    registrar(datos[absorbida], "agrupada", "valores_en_conflicto", "promediada en la fila " + representante.astype(str))
-    registrar(datos[conflicto & ~absorbida], "corregida", "valores_en_conflicto", "promedio de " + n_filas.astype(str) + " filas")
-    datos = datos.groupby(reglas.LLAVE, as_index=False).agg(
-        fila_origen=("fila_origen", "min"), frente=("frente", "first"), nombre_equipo=("nombre_equipo", "first"),
-        resultado=("resultado", "mean"), meta=("meta", "mean"), cumplimiento_origen=("cumplimiento_origen", "mean"))
+    n_filas, primera = grupo.transform("size"), grupo.transform("min")
+    en_conflicto = n_filas > 1
+    absorbida = en_conflicto & (datos["fila_origen"] != primera)
+    traza = pd.concat([
+        _traza(datos[en_conflicto & ~absorbida], "valores_en_conflicto", "corregida",
+               "Resultado, Meta y Cumplimiento: promedio de " + n_filas.astype(str) + " filas"),
+        _traza(datos[absorbida], "valores_en_conflicto", "agrupada", "promediada en la fila " + primera.astype(str)),
+    ])
+    agrupados = datos.groupby(reglas.LLAVE, as_index=False).agg(
+        equipo=("equipo", "first"), frente=("frente", "first"), resultado=("resultado", "mean"),
+        meta=("meta", "mean"), cumplimiento=("cumplimiento", "mean"), fila_origen=("fila_origen", "min"))
+    return agrupados[datos.columns], traza
 
-    # Corregir: nombre de equipo vacío, desde otras filas del mismo código o desde el catálogo
-    nombre_frecuente = datos.dropna(subset=["nombre_equipo"]).groupby("cod_equipo")["nombre_equipo"].agg(lambda s: s.mode()[0])
-    vacio = datos["nombre_equipo"].isna()
-    de_filas = datos["cod_equipo"].map(nombre_frecuente)
-    de_catalogo = datos["cod_equipo"].map(catalogo["EQU"])
-    origen_nombre = de_filas.notna().map({True: "tomado de otras filas del código", False: "tomado del catálogo"})
-    corregible = vacio & (de_filas.notna() | de_catalogo.notna())
-    registrar(datos[corregible], "corregida", "nombre_vacio", origen_nombre)
-    datos["nombre_equipo"] = datos["nombre_equipo"].fillna(de_filas).fillna(de_catalogo)
 
-    # Entorno: del catálogo; los equipos que no están quedan "sin entorno asignado"
-    datos["tipo_equipo"] = datos["cod_equipo"].str[:3]
-    datos["cod_padre"] = datos["cod_equipo"].map(catalogo["Codigo_Padre"])
-    datos["nivel"] = datos["cod_padre"].str[:3].map(reglas.NIVEL_POR_PREFIJO).fillna("sin entorno")
-    agrupable = datos["nivel"] != "sin entorno"
-    datos["grupo_entorno"] = datos["cod_equipo"].map(catalogo["Nombre_Padre"]).where(agrupable, reglas.SIN_ENTORNO)
-    ultimo_anio = datos["corte"].dt.year.max()
-    anio_equipo = datos.groupby("cod_equipo")["corte"].transform("max").dt.year
-    datos["estado"] = (anio_equipo == ultimo_anio).map({True: "vigente", False: "histórico"})
+def completar_nombre_equipo(datos, cat_entornos):
+    """Nombre vacío: se toma el nombre más frecuente del mismo código en otras filas; si no hay, el del catálogo."""
+    nombre_en_filas = datos.dropna(subset=["equipo"]).groupby("cod_equipo")["equipo"].agg(lambda nombres: nombres.mode()[0])
+    nombre_en_catalogo = cat_entornos.set_index(cat_entornos["Codigo_EQU"].str.upper())["EQU"]
+    de_filas = datos["cod_equipo"].map(nombre_en_filas)
+    encontrado = de_filas.fillna(datos["cod_equipo"].map(nombre_en_catalogo))
+    fuente = de_filas.notna().map({True: " (otras filas del código)", False: " (catálogo)"})
+    completar = datos["equipo"].isna() & encontrado.notna()
+    traza = _traza(datos[completar], "nombre_vacio", "completada", "EQU: vacío → " + encontrado + fuente)
+    return datos.assign(equipo=datos["equipo"].fillna(encontrado)), traza
 
-    # Marcar: problemas que no cambian el dato pero hay que tener presentes al analizar
-    equipos_mes = datos.groupby("corte")["cod_equipo"].nunique()
-    pocos = equipos_mes.index[equipos_mes < equipos_mes.median() * reglas.FRACCION_POCOS_EQUIPOS]
-    encuesta = datos["indicador"].isin(reglas.INDICADORES_ENCUESTA)
-    documentados = set(cat_indicadores["Indicador"].map(simplificar))
-    marcas = {
-        "sin_resultado_meta": datos["resultado"].isna() | datos["meta"].isna(),
-        "pocos_equipos": datos["corte"].isin(pocos),
-        "equipo_fantasma": datos["cod_padre"].isna(),
-        "vp_o_sin_entorno": datos["cod_padre"].notna() & (datos["nivel"] != "entorno"),
-        "indicador_sin_definicion": ~datos["indicador"].map(simplificar).isin(documentados),
-        "escala_encuesta": encuesta,
-        "cumplimiento_imposible": ~encuesta & (datos["cumplimiento_origen"].abs() > reglas.CUMPLIMIENTO_MAXIMO),
-        "cumplimiento_copiado": (datos["cumplimiento_origen"] - reglas.VALOR_COPIADO).abs() < reglas.TOLERANCIA_COPIADO,
-    }
-    marcas = pd.DataFrame(marcas)
-    datos["marcas"] = marcas.dot(marcas.columns + ", ").str.removesuffix(", ")
-    datos["apta_para_score"] = ~marcas[reglas.MARCAS_EXCLUYENTES].any(axis=1)
 
-    columnas = ["corte", "cod_equipo", "nombre_equipo", "tipo_equipo", "estado", "grupo_entorno", "nivel", "cod_padre",
-                "frente", "indicador", "resultado", "meta", "cumplimiento_origen", "marcas", "apta_para_score", "fila_origen"]
-    traza = pd.concat(traza, ignore_index=True).sort_values(["fila_origen", "accion"], ignore_index=True)
-    return datos[columnas].sort_values(reglas.LLAVE, ignore_index=True), traza
+def recalcular_cumplimiento(datos):
+    """En indicadores donde más es mejor y la meta es positiva, Cumplimiento = Resultado / Meta. Corrige las
+    encuestas (traían el puntaje), los valores copiados y los vacíos. En los demás se conserva el de origen."""
+    calculable = (_sentido(datos) == "mayor") & (datos["meta"] > 0)
+    nuevo = (datos["resultado"] / datos["meta"]).where(calculable, datos["cumplimiento"])
+    distinto = datos["cumplimiento"].isna() | ((nuevo - datos["cumplimiento"]).abs() > reglas.TOLERANCIA_CUMPLIMIENTO)
+    cambia = calculable & distinto
+    traza = _traza(datos[cambia], "cumplimiento_recalculado", "corregida",
+                   "Cumplimiento: " + _texto(datos["cumplimiento"]) + " → " + _texto(nuevo))
+    return datos.assign(cumplimiento=nuevo), traza
+
+
+def vaciar_cumplimiento_imposible(datos):
+    """Cumplimiento mayor a reglas.CUMPLIMIENTO_MAXIMO que no se pudo recalcular: no es una medición creíble."""
+    imposible = datos["cumplimiento"].abs() > reglas.CUMPLIMIENTO_MAXIMO
+    traza = _traza(datos[imposible], "cumplimiento_imposible", "corregida", "Cumplimiento: " + _texto(datos["cumplimiento"]) + " → vacío")
+    return datos.assign(cumplimiento=datos["cumplimiento"].mask(imposible)), traza
+
+
+def _codigo_por_nombre(datos, cat_entornos):
+    """Nombre → código, solo para los nombres que corresponden a un único código en la base y en el catálogo."""
+    pares = pd.concat([
+        datos[["equipo", "cod_equipo"]].dropna(),
+        cat_entornos.rename(columns={"EQU": "equipo", "Codigo_EQU": "cod_equipo"})[["equipo", "cod_equipo"]],
+    ]).drop_duplicates()
+    unicos = pares[~pares["equipo"].duplicated(keep=False)]
+    return unicos.set_index("equipo")["cod_equipo"]
+
+
+def _sentido(datos):
+    return datos["indicador"].map(reglas.SENTIDO).fillna(reglas.SENTIDO_POR_DEFECTO)
+
+
+def _excluir(datos, excluir, regla, detalle):
+    return datos[~excluir], _traza(datos[excluir], regla, "excluida", detalle)
+
+
+def _traza(filas, regla, accion, detalle):
+    """Una fila de traza por cada fila tocada: número de fila en Excel, regla, acción y qué cambió."""
+    if isinstance(detalle, pd.Series):
+        detalle = detalle.loc[filas.index].values
+    return pd.DataFrame({"fila_origen": filas["fila_origen"].values, "regla": regla, "accion": accion, "detalle": detalle})
+
+
+def _texto(valores):
+    return valores.map(lambda valor: "vacío" if pd.isna(valor) else f"{valor:.3f}")

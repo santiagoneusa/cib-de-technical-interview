@@ -5,7 +5,7 @@ Prueba técnica – Ingeniero de Datos N2, Estrategia Corporativa. Se presenta l
 ## Estructura
 
 ```text
-0_datos/              # archivo original (nunca se modifica)
+0_datos/              # 1_originales (nunca se modifica), 2_procesados y 3_score
 1_experimentacion/    # exploración y calidad de datos (actividad 1)
 2_transformacion/     # limpieza y dataset analítico (actividades 2 y 3)
 3_aplicacion/         # proceso recurrente, decisiones tecnológicas y uso de IA (actividad 4)
@@ -22,7 +22,7 @@ En esta sección se entienden los datos, desde su forma hasta el contenido que y
 - Un mismo equipo aparece escrito de varias formas
 - Más de un tercio de las filas reporta el cumplimiento en otra escala
 
-Como conclusión, se registran 15 problemas de calidad con su tratamiento, sin embargo, para evitar que se repitan se propone un modelo donde cada dato vive una sola vez, identificado por un código estable, y las mediciones solo apuntan a esos códigos:
+Como conclusión, se registran 16 problemas de calidad con su tratamiento, sin embargo, para evitar que se repitan se propone un modelo donde cada dato vive una sola vez, identificado por un código estable, y las mediciones solo apuntan a esos códigos:
 
 ```mermaid
 erDiagram
@@ -66,7 +66,7 @@ erDiagram
 
 ### 2. Transformación
 
-Un solo comando (`uv run python 2_transformacion/src/main.py`) limpia el archivo original, valida su calidad y publica un Excel con el dataset analítico (una fila por mes × equipo × indicador), la trazabilidad de cada fila tocada y el desempeño por equipo, frente y entorno. La métrica es la **meta cumplida**, según el sentido de cada indicador: no depende de la columna Cumplimiento, que usa fórmulas distintas según el indicador. Los entornos se comparan con la **mediana de sus equipos**, y los equipos sin entorno no se mezclan en un grupo artificial.
+Un solo comando (`uv run python 2_transformacion/src/main.py`) limpia el archivo original y publica dos Excel: los **datos procesados** (una fila por mes × equipo × indicador, con el catálogo de indicadores actualizado y la trazabilidad de cada fila tocada) y el **score** por equipo, frente y entorno. La métrica es la **meta cumplida** según el sentido de cada indicador; los entornos se comparan con la **mediana de sus equipos**, y los equipos sin entorno no se mezclan en un grupo artificial.
 
 ### 3. Aplicación
 

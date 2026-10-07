@@ -11,7 +11,7 @@ uv sync
 uv run jupyter lab
 ```
 
-Abrir `1_experimentacion/notebooks/` y ejecutar cada notebook de arriba a abajo, en orden. Los notebooks solo leen `0_datos/entrada/KPIS_historico.xlsx`; no escriben archivos.
+Abrir `1_experimentacion/notebooks/` y ejecutar cada notebook de arriba a abajo, en orden. Los notebooks solo leen `0_datos/1_originales/KPIS_historico.xlsx`; no escriben archivos.
 
 | # | Notebook | Contenido |
 |---|---|---|
@@ -81,7 +81,7 @@ Cada dato vive **una sola vez, con un código estable**, y las mediciones solo a
 | Equipos | Equipos (EQU) y células (CEX), vigentes e históricos | Un mismo equipo aparece escrito de muchas formas; con un solo registro por código el nombre se corrige en un lugar |
 | Entornos | La unidad que agrupa equipos: entorno, vicepresidencia o "sin entorno" | Hoy la columna "padre" mezcla niveles; separarlo permite declarar el nivel y analizar por entorno sin ambigüedad |
 | Indicadores | Qué se mide, en qué unidad y si más alto es mejor | El mismo indicador se escribe distinto entre hojas; un código propio y su unidad permiten comparar cumplimientos |
-| Frentes | La agrupación estratégica de los indicadores | El frente de agilidad tuvo tres nombres; existiendo una vez, los indicadores lo heredan sin repetirlo |
+| Frentes | La agrupación estratégica de los indicadores | Hay frentes mal escritos y frentes que no están en el catálogo; existiendo una vez, los indicadores lo heredan sin repetirlo |
 
 ### 1.2 Coincidencia del dataset con los catálogos
 
@@ -89,7 +89,7 @@ Cada dato vive **una sola vez, con un código estable**, y las mediciones solo a
 |---|---|
 | Indicadores del dataset registrados en el catálogo | **Solo 10 de 25 (40%)**. Los otros 15 (14 que no aparecen y 1 escrito distinto) representan el **57% de las filas** |
 | Indicadores del catálogo con mediciones | **11 de 13**: 2 nunca se miden y tienen la misma definición (un índice consolidado de agilidad) |
-| Nombres de frente | El frente de agilidad tiene **3 nombres** en el tiempo; el error "Modeos…" viene del propio catálogo |
+| Frentes de la base en el catálogo | **"Talento + Agilidad" no está** en el catálogo (17,6% de las filas), y "Modeos…" es un error de digitación que viene del propio catálogo |
 | Escritura de los códigos de equipo | **146 formas de escribir 89 equipos** (minúsculas, dígitos de menos) |
 | Equipos del dataset registrados en el catálogo | **63 de 89 (71%)**. 26 son equipos fantasma: 18 históricos y **8 activos en 2026** que faltan en el catálogo |
 | Equipos con entorno asignado | **Solo 56% (50 de 89)**. 11 cuelgan de una vicepresidencia y 2 están marcados "sin entorno" |
@@ -105,13 +105,14 @@ Cada dato vive **una sola vez, con un código estable**, y las mediciones solo a
 | ![Duplicados](https://img.shields.io/badge/Duplicados-59cbe8) | Filas repetidas exactamente | 2.182 filas (14,4%) | excluir (se deja una) |
 | ![Duplicados](https://img.shields.io/badge/Duplicados-59cbe8) | Mismo equipo, indicador y mes con valores distintos | 1.265 filas; 962 son respuestas de encuesta | corregir (promedio) |
 | ![Formato](https://img.shields.io/badge/Formato-fdda24) | Código de equipo mal escrito | 325 filas (2,1%) | corregir |
-| ![Formato](https://img.shields.io/badge/Formato-fdda24) | Un frente con tres nombres | 3.089 filas (20,3%) | corregir (homologar) |
+| ![Formato](https://img.shields.io/badge/Formato-fdda24) | Frente mal escrito (Modeos de trabajo y Agilidad) | 417 filas (2,7%); el error también está en el catálogo | corregir |
 | ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Equipos fantasma | 1.473 filas (9,7%), 26 equipos | marcar "Sin entorno" |
-| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Equipos con vicepresidencia o sin entorno | 2.218 filas (14,6%), 13 equipos | marcar "Sin entorno" (se conserva la VP) |
-| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Indicadores sin definición | 14 de 25; 8.267 filas (54,4%) | marcar y documentar |
+| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Frente que no está en el catálogo | 2.672 filas (17,6%): Talento + Agilidad (2023-24) | aceptar y reportar para actualizar el catálogo |
+| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Equipos con vicepresidencia o sin entorno | 2.218 filas (14,6%), 13 equipos | agrupar con su VP; los marcados sin entorno quedan "Sin entorno" |
+| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Indicadores sin definición | 14 de 25; 8.267 filas (54,4%) | agregar al catálogo como pendiente y documentar |
 | ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Indicadores del catálogo que nadie mide | 2 de 13 | aceptar y reportar |
 | ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento en escalas distintas | 5.498 filas (36,2%): mediana 4,6 en encuestas vs 1,0 en el resto | corregir (Resultado / Meta) |
-| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimientos imposibles (155 y −1873) | 22 filas | marcar y excluir del análisis |
-| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento copiado (1.014683) | 530 filas (3,5%), casi todas en Disponibilidad e Incidentes | marcar y excluir del análisis |
+| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimientos imposibles (155 y −1873) | 22 filas | corregir (Resultado / Meta); si no se puede, dejar vacío |
+| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento copiado (1.014683) | 530 filas (3,5%), casi todas en Disponibilidad e Incidentes | corregir (Resultado / Meta) |
 
 Impacto y detalle: [`notebooks/1_3_evaluacion_calidad.ipynb`](notebooks/1_3_evaluacion_calidad.ipynb).
