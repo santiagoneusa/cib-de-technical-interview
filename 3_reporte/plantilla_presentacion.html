@@ -74,7 +74,9 @@ p, ul { margin: 0; }
 
 /* Diapositiva 2 */
 .hallazgos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr) auto; gap: 1.6cqw 3cqw; min-height: 0; }
-.hallazgo { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 1cqw; min-height: 0; }
+.hallazgo { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 0.6cqw; min-height: 0; }
+.respuesta { font-size: 1.4cqw; line-height: 1.35; color: var(--suave); }
+.respuesta b { color: var(--texto); }
 .hallazgo h2 { font-size: 1.95cqw; font-weight: 750; font-stretch: 88%; line-height: 1.15; }
 .hallazgo h2 i { font-style: normal; color: var(--suave); font-weight: 600; }
 .lienzo { position: relative; min-height: 0; }
@@ -161,16 +163,18 @@ p, ul { margin: 0; }
       <h2 class="titulo">Comparar de forma justa <span>cambia a quién acompañar</span></h2>
       <div class="hallazgos">
         <div class="hallazgo">
-          <h2>1. Lo que se mide pesa {{veces}}× más que quién lo mide<span class="certeza">Certeza alta</span></h2>
+          <h2>¿Qué explica que una meta se cumpla o no?</h2>
+          <p class="respuesta"><b>Lo que se mide pesa {{veces}}× más que quién lo mide.</b><span class="certeza">Certeza alta</span></p>
           <div class="lienzo"><canvas id="grafica-1" role="img" aria-label="Qué explica que una meta se cumpla o no"></canvas></div>
         </div>
         <div class="hallazgo">
-          <h2>2. {{ejemplo_entorno}}: puesto {{ejemplo_puesto_antes}} → {{ejemplo_puesto_despues}} <i>frente a equipos que miden lo mismo</i><span class="certeza">Certeza media</span></h2>
+          <h2>¿Cambia el ranking de entornos si los comparamos de forma justa?</h2>
+          <p class="respuesta"><b>Sí: {{ejemplo_entorno}} pasa del puesto {{ejemplo_puesto_antes}} al {{ejemplo_puesto_despues}}</b> frente a equipos que miden lo mismo.<span class="certeza">Certeza media</span></p>
           <div class="lienzo"><canvas id="grafica-2" role="img" aria-label="Mapa de entornos: metas cumplidas frente a la comparación justa"></canvas></div>
         </div>
         <div class="tercero">
           <b>{{cumplieron_antes}}% <em>→</em> {{cumplieron_despues}}%</b>
-          <p><strong>3. En 2026 no bajó el desempeño: subió la meta</strong>{{seguido}} se mantuvo cerca de {{resultado_despues}}%, pero la meta pasó de {{meta_antes}}% a {{meta_despues}}%.</p>
+          <p><strong>¿Bajó el desempeño en 2026? No: subió la meta.<span class="certeza">Certeza alta</span></strong>En {{seguido}} pasamos de un cumplimiento del {{cumplieron_antes}}% de los equipos en 2025 a uno del {{cumplieron_despues}}% en 2026, aunque el resultado se mantuvo cerca de {{resultado_despues}}%: la meta subió de {{meta_antes}}% a {{meta_despues}}%.</p>
         </div>
       </div>
       <div class="pie"><span>No se puede concluir si las metas están bien calibradas ni si acompañar mejora el cumplimiento.</span><span>2 / 3</span></div>
@@ -196,11 +200,11 @@ p, ul { margin: 0; }
         </div>
         <div class="ia">
           <span class="etiqueta">Uso de inteligencia artificial</span>
-          <h3>Claude Code para construir; reglas para Copilot en <code>.github/</code></h3>
+          <h3>La IA como ayudante: yo oriento y decido, ella implementa rápido para iterar</h3>
           <ul>
-            <li><b>Para qué</b>Explorar con agregados, escribir el pipeline y probar hipótesis contra los datos.</li>
-            <li><b>Corregido</b>La IA unió "Talento + Agilidad" con otro frente; sus indicadores no coinciden.</li>
-            <li><b>Validado</b>Recalcular todo el cumplimiento inventaba valores; se limitó a encuestas y copiados.</li>
+            <li><b>Para qué</b>Diseño e implementación con agentes (Claude), cargados de contexto desde que se toman las decisiones.</li>
+            <li><b>Prompt clave</b>Plantear cómo presentar los hallazgos y cuestionar si cada uno aporta valor; de esa iteración salieron skills y reglas.</li>
+            <li><b>Validado</b>Recalcular todo el cumplimiento inventaba valores; se limitó a encuestas y valores copiados.</li>
           </ul>
         </div>
       </div>

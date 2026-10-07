@@ -83,7 +83,8 @@ Es un proceso **semiautomatizado** en el stack del banco (Cloudera, Impala y Clo
 
 ## 6. Uso de inteligencia artificial
 
-**Claude Code** (Claude Opus) ayudó a explorar con agregados, escribir el pipeline y los notebooks, probar hipótesis y redactar. Las decisiones fueron humanas y cada propuesta se validó con código. `.github/` deja reglas, skills y prompts de GitHub Copilot para que el equipo trabaje con el mismo estándar.
-- **Prompts principales:** "Construyamos la prueba como equipo, sin leer el Excel completo", "Prueba el cumplimiento recalculado antes de aplicarlo" y "Cada función debe tener una responsabilidad única".
+Usé **Claude Code** (Claude Opus) como ayudante en las tareas de **diseño e implementación**. El desarrollo con agentes es más rápido y completo cuando una persona lo orquesta: le doy contexto desde que se toman las decisiones, la IA implementa rápido y yo itero sobre el resultado. De ese trabajo salieron las **skills y reglas de implementación** de `.github/`, para que las próximas iteraciones (con Claude o con GitHub Copilot) sigan el mismo estándar.
+- **Prompt clave:** tenía ideas para presentar los hallazgos, pero la forma resultaba compleja. Pedí a la IA plantear una estructura para presentarlos y cuestionar si lo que quería mostrar aportaba valor; tras varias iteraciones quedó el formato de hallazgo, evidencia, interpretación y certeza del reporte.
+- **Otros prompts:** "Construyamos la prueba como equipo, sin leer el Excel completo" y "Prueba el cumplimiento recalculado antes de aplicarlo".
 - **Corregido:** la IA homologó "Talento + Agilidad" a otro frente. Se corrigió porque sus indicadores no coinciden con el catálogo.
 - **Validado:** recalcular todo el Cumplimiento como Resultado / Meta inventaba valores (Regulatorio topa en 1), así que se limitó a encuestas y valores copiados.
