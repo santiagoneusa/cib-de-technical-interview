@@ -45,7 +45,7 @@ erDiagram
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Los indicadores medidos están en el catálogo? | **Solo 10 de 25 indicadores están registrados en el catálogo (40%)**. Los otros 15 indicadores no registrados representan el **54% de las filas** |
+| ¿Los indicadores medidos están en el catálogo? | **Solo 10 de 25 indicadores están registrados en el catálogo (40%)**. Los otros 15 (14 que no aparecen y 1 escrito distinto) representan el **57% de las filas** |
 | ¿Los indicadores registrados en el catálogo se miden? | **No: 2 de 13 nunca se miden** y tienen la misma definición (un índice consolidado de agilidad) |
 | ¿Los frentes tienen un solo nombre? | **No**: el frente de agilidad tiene 3 nombres en el tiempo, y el error "Modeos…" viene del propio catálogo |
 | ¿Los códigos de equipo son confiables? | **146 formas de escribir 89 equipos** (minúsculas, dígitos de menos) |
