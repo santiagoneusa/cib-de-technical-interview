@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- fragmento -->
+<title>Presentación KPI Estrategia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Tres diapositivas 16:9 apiladas: quién y qué, hallazgos con dos gráficas, proceso recurrente e IA; fondo blanco por decisión */
+:root {
+  --fondo: #ffffff;
+  --mesa: #efeeec;
+  --panel: #f6f5f3;
+  --texto: #1f1b1a;
+  --suave: #5c5654;
+  --linea: #e7e4e2;
+  --amarillo: #fdda24;
+  --verde: #00a676;
+  --naranja: #e8692b;
+  --azul: #2b9fc4;
+  --gris: #bdb8b6;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --cuerpo: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { margin: 0; background: var(--mesa); color: var(--texto); font-family: var(--cuerpo); }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+p, ul { margin: 0; }
+:focus-visible { outline: 3px solid var(--azul); outline-offset: 3px; }
+
+.escenario { min-height: 100vh; display: grid; place-items: center; padding: 20px 16px; scroll-snap-align: center; }
+.diapositiva {
+  width: min(100%, calc((100vh - 72px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  container-type: inline-size;
+  background: var(--fondo);
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(31, 27, 26, 0.12);
+  padding: 4.2cqw 5cqw;
+  display: grid;
+  gap: 2.4cqw;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+}
+
+.etiqueta { font: 700 max(11px, 0.95cqw)/1.2 var(--cuerpo); letter-spacing: 0.09em; text-transform: uppercase; color: var(--suave); }
+.titulo { font-size: 3.6cqw; font-weight: 800; font-stretch: 82%; line-height: 1.04; }
+.titulo span { background: linear-gradient(transparent 60%, var(--amarillo) 60%); }
+.pie { display: flex; justify-content: space-between; align-items: center; gap: 2cqw; color: var(--suave); font-size: max(11px, 1.05cqw); border-top: 1px solid var(--linea); padding-top: 1.2cqw; }
+
+/* Diapositiva 1 */
+.presentacion { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 4cqw; align-items: center; }
+.persona { display: grid; gap: 1.6cqw; }
+.persona h1 { font-size: 6.4cqw; font-weight: 800; font-stretch: 78%; line-height: 0.95; }
+.persona .rol { font-size: 1.6cqw; font-weight: 600; }
+.persona p { font-size: 1.8cqw; line-height: 1.4; color: var(--suave); max-width: 32ch; }
+.cifras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4cqw; }
+.cifra { background: var(--panel); border-radius: 12px; padding: 1.8cqw; display: grid; gap: 0.6cqw; align-content: start; }
+.cifra b { font: 800 4.2cqw/1 var(--display); font-stretch: 78%; font-variant-numeric: tabular-nums; }
+.cifra span { font-size: 1.35cqw; line-height: 1.3; color: var(--suave); }
+.cifra.destacada { background: var(--amarillo); }
+.cifra.destacada span { color: var(--texto); }
+
+/* Diapositiva 2 */
+.hallazgos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr) auto; gap: 1.6cqw 3cqw; min-height: 0; }
+.hallazgo { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 1cqw; min-height: 0; }
+.hallazgo h2 { font-size: 1.95cqw; font-weight: 750; font-stretch: 88%; line-height: 1.15; }
+.hallazgo h2 i { font-style: normal; color: var(--suave); font-weight: 600; }
+.lienzo { position: relative; min-height: 0; }
+.certeza { display: inline-block; font: 700 max(10px, 0.85cqw)/1 var(--cuerpo); text-transform: uppercase; letter-spacing: 0.06em; padding: 0.45cqw 0.8cqw; border-radius: 999px; background: var(--panel); margin-left: 0.6cqw; vertical-align: middle; }
+.tercero { grid-column: 1 / -1; display: flex; align-items: center; gap: 2.4cqw; background: var(--panel); border-radius: 12px; padding: 1.4cqw 2cqw; }
+.tercero b { font: 800 3.4cqw/1 var(--display); font-stretch: 78%; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tercero b em { color: var(--naranja); font-style: normal; }
+.tercero p { font-size: 1.55cqw; line-height: 1.35; }
+.tercero strong { font-family: var(--display); font-size: 1.9cqw; display: block; }
+
+/* Diapositiva 3 */
+.cierre { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 4cqw; min-height: 0; align-items: center; }
+.flujo { display: grid; gap: 1.6cqw; align-content: start; }
+.flujo ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1cqw; counter-reset: paso; }
+.flujo li { background: var(--panel); border-radius: 12px; padding: 1.8cqw 1.4cqw; display: grid; gap: 0.5cqw; align-content: start; position: relative; }
+.flujo li b { font-family: var(--display); font-size: 2.1cqw; font-stretch: 88%; }
+.flujo li span { font-size: 1.5cqw; line-height: 1.3; color: var(--suave); }
+.flujo li:not(:last-child)::after { content: "→"; position: absolute; right: -0.95cqw; top: 1.4cqw; font-size: 1.4cqw; color: var(--suave); }
+.flujo .nota { font-size: 1.75cqw; line-height: 1.4; display: grid; gap: 0.8cqw; padding-left: 1cqw; border-left: 3px solid var(--texto); }
+.ia { display: grid; gap: 1.2cqw; align-content: start; }
+.ia h3 { font-size: 2.5cqw; font-stretch: 86%; }
+.ia ul { padding: 0; list-style: none; display: grid; gap: 1.6cqw; }
+.ia li { font-size: 1.75cqw; line-height: 1.35; display: grid; gap: 0.3cqw; }
+.ia li b { font-size: max(10px, 0.9cqw); text-transform: uppercase; letter-spacing: 0.08em; color: var(--suave); }
+
+.controles { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 8px; align-items: center; background: var(--fondo); border-radius: 999px; padding: 6px 8px 6px 14px; box-shadow: 0 4px 18px rgba(31, 27, 26, 0.15); font: 600 0.9rem var(--cuerpo); }
+.controles button { font: inherit; border: 0; background: var(--panel); color: var(--texto); border-radius: 999px; width: 34px; height: 34px; cursor: pointer; }
+.controles button:hover { background: var(--amarillo); }
+
+@media (max-width: 760px) {
+  html { scroll-snap-type: none; }
+  .escenario { min-height: auto; padding-block: 12px; }
+  .diapositiva { width: 100%; aspect-ratio: auto; padding: 22px 18px; gap: 18px; container-type: normal; }
+  .titulo { font-size: 1.7rem; }
+  .persona h1 { font-size: 2.6rem; }
+  .persona .rol, .persona p, .cifra span, .tercero p, .flujo li span, .flujo .nota, .ia li { font-size: 1rem; }
+  .cifra b, .tercero b { font-size: 2rem; }
+  .hallazgo h2, .tercero strong, .ia h3, .flujo li b { font-size: 1.2rem; }
+  .presentacion, .hallazgos, .cierre, .flujo ol { grid-template-columns: minmax(0, 1fr); }
+  .cifra, .flujo li, .tercero { padding: 14px; }
+  .tercero { flex-direction: column; align-items: flex-start; }
+  .lienzo { height: 300px; }
+  .flujo li::after { display: none; }
+  .etiqueta, .pie, .certeza, .ia li b { font-size: 0.75rem; }
+  .controles { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<main>
+  <section class="escenario" id="d1" aria-label="Diapositiva 1">
+    <article class="diapositiva">
+      <span class="etiqueta">Prueba técnica · Ingeniero de Datos N2 · Estrategia Corporativa</span>
+      <div class="presentacion">
+        <div class="persona">
+          <h1>{{autor}}</h1>
+          <span class="rol">Candidato a Ingeniero de Datos N2</span>
+          <p>Convertí un Excel de KPIs en una base confiable que se actualiza cada mes, para decidir dónde acompañar a los equipos.</p>
+        </div>
+        <div class="cifras" aria-label="La base en cifras">
+          <div class="cifra"><b>{{filas_originales}}</b><span>filas en el archivo original</span></div>
+          <div class="cifra destacada"><b>{{mediciones}}</b><span>mediciones confiables, una por mes, equipo e indicador</span></div>
+          <div class="cifra"><b>{{filas_salientes}}</b><span>filas excluidas o agrupadas, trazadas una a una</span></div>
+          <div class="cifra"><b>{{pct_fuera_catalogo}}%</b><span>de las mediciones usan indicadores que no están en el catálogo</span></div>
+        </div>
+      </div>
+      <div class="pie"><span>{{equipos}} equipos · {{n_entornos}} entornos · {{periodo}}</span><span>1 / 3</span></div>
+    </article>
+  </section>
+
+  <section class="escenario" id="d2" aria-label="Diapositiva 2">
+    <article class="diapositiva">
+      <h2 class="titulo">Comparar de forma justa <span>cambia a quién acompañar</span></h2>
+      <div class="hallazgos">
+        <div class="hallazgo">
+          <h2>1. Lo que se mide pesa {{veces}}× más que quién lo mide<span class="certeza">Certeza alta</span></h2>
+          <div class="lienzo"><canvas id="grafica-1" role="img" aria-label="Qué explica que una meta se cumpla o no"></canvas></div>
+        </div>
+        <div class="hallazgo">
+          <h2>2. {{ejemplo_entorno}}: puesto {{ejemplo_puesto_antes}} → {{ejemplo_puesto_despues}} <i>frente a equipos que miden lo mismo</i><span class="certeza">Certeza media</span></h2>
+          <div class="lienzo"><canvas id="grafica-2" role="img" aria-label="Mapa de entornos: metas cumplidas frente a la comparación justa"></canvas></div>
+        </div>
+        <div class="tercero">
+          <b>{{cumplieron_antes}}% <em>→</em> {{cumplieron_despues}}%</b>
+          <p><strong>3. En 2026 no bajó el desempeño: subió la meta</strong>{{seguido}} se mantuvo cerca de {{resultado_despues}}%, pero la meta pasó de {{meta_antes}}% a {{meta_despues}}%.</p>
+        </div>
+      </div>
+      <div class="pie"><span>No se puede concluir si las metas están bien calibradas ni si acompañar mejora el cumplimiento.</span><span>2 / 3</span></div>
+    </article>
+  </section>
+
+  <section class="escenario" id="d3" aria-label="Diapositiva 3">
+    <article class="diapositiva">
+      <h2 class="titulo">Un proceso que corre cada mes, <span>construido con IA y criterio</span></h2>
+      <div class="cierre">
+        <div class="flujo">
+          <span class="etiqueta">Proceso recurrente en el stack del banco</span>
+          <ol>
+            <li><b>Excel</b><span>El negocio carga el mes con listas de los catálogos</span></li>
+            <li><b>Cloudera AI</b><span>Python y PySpark: carga incremental, reglas y validaciones</span></li>
+            <li><b>Impala</b><span>Crudos, modelo normalizado, calidad y score</span></li>
+            <li><b>Streamlit</b><span>Equipos, entornos y calidad en una sola aplicación</span></li>
+          </ol>
+          <div class="nota">
+            <p>Si una validación falla, no se publica y se avisa al responsable.</p>
+            <p>Con 20 veces más datos el motor sirve: lo que cambia es la captura.</p>
+          </div>
+        </div>
+        <div class="ia">
+          <span class="etiqueta">Uso de inteligencia artificial</span>
+          <h3>Claude Code para construir; reglas para Copilot en <code>.github/</code></h3>
+          <ul>
+            <li><b>Para qué</b>Explorar con agregados, escribir el pipeline y probar hipótesis contra los datos.</li>
+            <li><b>Corregido</b>La IA unió "Talento + Agilidad" con otro frente; sus indicadores no coinciden.</li>
+            <li><b>Validado</b>Recalcular todo el cumplimiento inventaba valores; se limitó a encuestas y copiados.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pie"><span>Código, datos y reporte: README del repositorio</span><span>3 / 3</span></div>
+    </article>
+  </section>
+</main>
+
+<nav class="controles" aria-label="Navegación entre diapositivas">
+  <span id="contador">1 / 3</span>
+  <button type="button" id="anterior" aria-label="Diapositiva anterior">←</button>
+  <button type="button" id="siguiente" aria-label="Diapositiva siguiente">→</button>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+__GRAFICAS__
+
+const DATOS = __DATOS__;
+const escenarios = [...document.querySelectorAll(".escenario")];
+let actual = 0;
+
+function ir(indice) {
+  actual = Math.max(0, Math.min(escenarios.length - 1, indice));
+  escenarios[actual].scrollIntoView({ block: "center" });
+  document.getElementById("contador").textContent = `${actual + 1} / ${escenarios.length}`;
+}
+
+document.getElementById("anterior").addEventListener("click", () => ir(actual - 1));
+document.getElementById("siguiente").addEventListener("click", () => ir(actual + 1));
+document.addEventListener("keydown", evento => {
+  if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(evento.key)) { evento.preventDefault(); ir(actual + 1); }
+  if (["ArrowLeft", "ArrowUp", "PageUp"].includes(evento.key)) { evento.preventDefault(); ir(actual - 1); }
+});
+const observador = new IntersectionObserver(entradas => entradas.forEach(entrada => {
+  if (!entrada.isIntersecting) return;
+  actual = escenarios.indexOf(entrada.target);
+  document.getElementById("contador").textContent = `${actual + 1} / ${escenarios.length}`;
+}), { threshold: 0.6 });
+escenarios.forEach(escenario => observador.observe(escenario));
+
+if (window.Chart) {
+  prepararChart();
+  graficaFactores("grafica-1", DATOS.variacion, 13);
+  graficaEntornos("grafica-2", DATOS.entornos);
+} else {
+  sinConexion();
+}
+</script>
+</html>

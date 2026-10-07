@@ -22,4 +22,4 @@ description: Agregar, cambiar o quitar una regla de limpieza en el proceso recur
    - **Validaciones:** todas en `ok`.
    - **Registro de calidad:** las filas de la regla en `registro_calidad` coinciden con la prueba.
    - **Idempotencia:** dos ejecuciones dan el mismo resultado.
-6. **Actualizar** la sección de transformación del `README.md` y el registro de 1.3 si cambia un tratamiento. Agregar una entrada a la bitácora (skill `bitacora-ia`).
+6. **Actualizar** la sección de transformación del `README.md` y el registro de 1.3 si cambia un tratamiento. Registrar la decisión con la skill `bitacora-ia`.

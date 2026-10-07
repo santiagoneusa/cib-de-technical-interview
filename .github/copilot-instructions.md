@@ -5,7 +5,7 @@ Prueba técnica de Ingeniero de Datos N2 (Bancolombia, Estrategia Corporativa) s
 ## Contexto
 - La audiencia son **analistas de negocio** del equipo de estrategia, que administrarán la solución. Lo simple gana: "no se premia usar más herramientas, sino elegir bien".
 - Todo (código, nombres, comentarios, documentos) va en **español**.
-- Las decisiones de criterio son humanas. La IA propone, implementa y valida contra los datos, y cada decisión queda en `4_aplicacion/bitacora_ia.md` (skill `bitacora-ia`).
+- Las decisiones de criterio son humanas. La IA propone, implementa y valida contra los datos, y las correcciones relevantes quedan en la sección "Uso de IA" del README (skill `bitacora-ia`).
 
 ## Estructura
 | Carpeta | Contenido |
@@ -15,8 +15,7 @@ Prueba técnica de Ingeniero de Datos N2 (Bancolombia, Estrategia Corporativa) s
 | `0_datos/3_score/` | `_score.xlsx` |
 | `1_experimentacion/notebooks/` | Un notebook por numeral de la actividad 1 |
 | `2_transformacion/src/` | `main.py`, `etl/` (reglas, limpieza, modelo, calidad) y `score/` (features, agregación) |
-| `3_reporte/` | `generar_reporte.py` + `plantilla.html` → `reporte.html` (hallazgos interactivos) |
-| `4_aplicacion/` | Bitácora de IA |
+| `3_reporte/` | `generar_reporte.py` + plantillas → `reporte.html` (hallazgos) y `presentacion.html` (3 diapositivas) |
 
 Hay un solo `README.md`, en la raíz. No se crean READMEs por carpeta.
 

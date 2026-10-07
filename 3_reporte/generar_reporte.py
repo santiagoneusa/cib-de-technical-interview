@@ -4,9 +4,17 @@ from pathlib import Path
 import pandas as pd
 
 CARPETA = Path(__file__).resolve().parent
-SCORE = CARPETA.parent / "0_datos" / "3_score" / "KPIS_historico_score.xlsx"
-PLANTILLA = CARPETA / "plantilla.html"
-REPORTE = CARPETA / "reporte.html"
+DATOS = CARPETA.parent / "0_datos"
+CRUDO = DATOS / "1_crudos" / "KPIS_historico.xlsx"
+PROCESADO = DATOS / "2_procesados" / "KPIS_historico_procesado.xlsx"
+SCORE = DATOS / "3_score" / "KPIS_historico_score.xlsx"
+GRAFICAS = CARPETA / "graficas.js"
+PAGINAS = {
+    CARPETA / "plantilla.html": CARPETA / "reporte.html",
+    CARPETA / "plantilla_presentacion.html": CARPETA / "presentacion.html",
+}
+
+AUTOR = "Santiago Neusa"
 
 INDICADOR = ["frente", "indicador"]
 SIN_ENTORNO = "Sin entorno"
@@ -24,9 +32,10 @@ def main():
     seguimiento = seguimiento_mensual(mediciones, INDICADOR_SEGUIDO)
 
     datos = {"variacion": variacion, "entornos": entornos, "seguimiento": seguimiento}
-    textos = redactar(mediciones, desde, variacion, entornos, seguimiento)
+    textos = redactar(mediciones, desde, variacion, entornos, seguimiento) | resumir_base(mediciones)
 
-    escribir(datos, textos)
+    for plantilla, destino in PAGINAS.items():
+        escribir(plantilla, destino, datos, textos)
 
 
 def cargar_mediciones():
@@ -116,7 +125,7 @@ def redactar(mediciones, desde, variacion, entornos, seguimiento):
     nuevos = indicadores_nuevos_que_bajan(mediciones, FRENTE_SEGUIDO, 2025, 2026)
 
     return {
-        "mediciones": f"{len(mediciones):,}".replace(",", "."),
+        "mediciones": _miles(len(mediciones)),
         "equipos": str(mediciones["cod_equipo"].nunique()),
         "periodo": f"{mediciones['corte'].min():%Y-%m} a {mediciones['corte'].max():%Y-%m}",
         "ventana": f"{desde:%Y-%m} a {mediciones['corte'].max():%Y-%m}",
@@ -148,15 +157,35 @@ def redactar(mediciones, desde, variacion, entornos, seguimiento):
     }
 
 
-def escribir(datos, textos):
-    html = PLANTILLA.read_text(encoding="utf-8")
+def resumir_base(mediciones):
+    filas_originales = len(pd.read_excel(CRUDO, sheet_name="query", usecols=["Corte"]))
+    indicadores = pd.read_excel(PROCESADO, sheet_name="indicadores")
+    pendientes = indicadores.loc[indicadores["definicion"] == "Pendiente", "nombre"]
+    fuera_de_catalogo = mediciones["indicador"].isin(pendientes).mean()
+
+    return {
+        "autor": AUTOR,
+        "filas_originales": _miles(filas_originales),
+        "filas_salientes": _miles(filas_originales - len(mediciones)),
+        "pct_fuera_catalogo": _entero(fuera_de_catalogo * 100),
+        "n_entornos": str(mediciones.loc[mediciones["entorno"] != SIN_ENTORNO, "entorno"].nunique()),
+    }
+
+
+def escribir(plantilla, destino, datos, textos):
+    html = plantilla.read_text(encoding="utf-8")
 
     for clave, valor in textos.items():
         html = html.replace("{{" + clave + "}}", valor)
+    html = html.replace("__GRAFICAS__", GRAFICAS.read_text(encoding="utf-8"))
     html = html.replace("__DATOS__", json.dumps(datos, ensure_ascii=False, default=str))
 
-    REPORTE.write_text(html, encoding="utf-8")
-    print(f"Reporte publicado en {REPORTE.relative_to(CARPETA.parent)}")
+    destino.write_text(html, encoding="utf-8")
+    print(f"Publicado {destino.relative_to(CARPETA.parent)}")
+
+
+def _miles(valor):
+    return f"{valor:,}".replace(",", ".")
 
 
 def _entero(valor):

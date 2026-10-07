@@ -14,6 +14,6 @@ Antes de afirmar algo sobre los datos o de implementar una regla, se comprueba c
    - **Cuándo aplicar:** la regla se aplica solo donde la evidencia es inequívoca.
    - **Qué hacer con el resto:** se conserva y se documenta.
    - **Antecedente:** recalcular todo como Resultado / Meta inventaba valores (Regulatorio topa en 1; Índice AQR's está en otra unidad), así que solo se recalcularon las encuestas.
-5. **Registrar** la prueba y la decisión en la bitácora (skill `bitacora-ia`), con las cifras.
+5. **Registrar** la prueba y la decisión con la skill `bitacora-ia`, con las cifras.
 
 Una afirmación sin prueba (por ejemplo "son el mismo frente" o "ese valor es imposible") no entra al código ni al README.

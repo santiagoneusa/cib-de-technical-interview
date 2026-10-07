@@ -4,14 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- fragmento -->
-<title>Hallazgos KPI Estrategia</title>
+<title>Presentación KPI Estrategia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Sans+3:wght@400;600;700&display=swap">
 <style>
-/* Una lámina por hallazgo: mensaje y acción a la izquierda, una sola gráfica a la derecha; fondo blanco por decisión */
+/* Tres diapositivas 16:9 apiladas: quién y qué, hallazgos con dos gráficas, proceso recurrente e IA; fondo blanco por decisión */
 :root {
   --fondo: #ffffff;
+  --mesa: #efeeec;
   --panel: #f6f5f3;
   --texto: #1f1b1a;
   --suave: #5c5654;
@@ -27,159 +28,176 @@
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--fondo); color: var(--texto); font: 400 1.05rem/1.55 var(--cuerpo); }
-.contenedor { max-width: 1160px; margin: 0 auto; padding-inline: 24px; }
-h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; }
-p { margin: 0; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { margin: 0; background: var(--mesa); color: var(--texto); font-family: var(--cuerpo); }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+p, ul { margin: 0; }
 :focus-visible { outline: 3px solid var(--azul); outline-offset: 3px; }
 
-.etiqueta { font: 700 0.74rem/1.2 var(--cuerpo); letter-spacing: 0.09em; text-transform: uppercase; color: var(--suave); }
-
-.portada { padding-block: 56px 40px; display: grid; gap: 32px; }
-.portada h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 800; font-stretch: 82%; line-height: 1.02; max-width: 16ch; }
-.portada h1 span { background: linear-gradient(transparent 60%, var(--amarillo) 60%); }
-.fuente { color: var(--suave); font-variant-numeric: tabular-nums; }
-
-.mensajes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 2px solid var(--texto); }
-.mensajes a { display: grid; gap: 6px; padding: 20px 20px 4px 0; text-decoration: none; color: inherit; }
-.mensajes a + a { padding-left: 20px; border-left: 1px solid var(--linea); }
-.mensajes b { font: 800 clamp(2.4rem, 4vw, 3.2rem)/1 var(--display); font-stretch: 78%; font-variant-numeric: tabular-nums; }
-.mensajes a:hover b { text-decoration: underline 4px var(--amarillo); text-underline-offset: 6px; }
-
-.glosario { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; background: var(--panel); border-radius: 14px; padding: 20px 22px; margin: 0; }
-.glosario dt { font-weight: 700; }
-.glosario dd { margin: 4px 0 0; color: var(--suave); font-size: 0.95rem; }
-
-.lamina { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; padding-block: 56px; border-top: 1px solid var(--linea); align-items: start; }
-.mensaje { display: grid; gap: 22px; }
-.numero { display: inline-flex; align-items: center; gap: 10px; }
-.numero b { background: var(--amarillo); font: 800 0.8rem/1 var(--display); padding: 6px 10px; border-radius: 999px; }
-.mensaje h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 800; font-stretch: 85%; line-height: 1.08; }
-.bloque { display: grid; gap: 4px; }
-.accion { background: var(--panel); border-radius: 12px; padding: 14px 16px; }
-.accion p { font-weight: 600; }
-.certeza { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; color: var(--suave); font-size: 0.95rem; }
-.certeza b { display: inline-flex; align-items: center; gap: 6px; color: var(--texto); }
-.certeza b::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--color, var(--verde)); }
-
-.evidencia { margin: 0; display: grid; gap: 14px; min-width: 0; }
-.evidencia h3 { margin: 0; font: 700 1.1rem/1.3 var(--cuerpo); }
-.lienzo { position: relative; height: 340px; }
-.lienzo.alto { height: 430px; }
-.evidencia figcaption { display: grid; gap: 4px; border-left: 3px solid var(--texto); padding-left: 12px; }
-.cifras { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-.cifras span { font: 800 2rem/1 var(--display); font-stretch: 80%; font-variant-numeric: tabular-nums; }
-.cifras small { display: block; font: 600 0.78rem/1.2 var(--cuerpo); color: var(--suave); letter-spacing: 0.04em; text-transform: uppercase; }
-.flecha { color: var(--naranja); font-size: 1.6rem; }
-
-.cierre { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; padding-block: 48px; border-top: 2px solid var(--texto); }
-.cierre h2 { font-size: 1.5rem; font-stretch: 85%; margin-bottom: 14px; }
-.cierre ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 10px; }
-footer { padding-block: 20px 48px; color: var(--suave); font-size: 0.85rem; border-top: 1px solid var(--linea); }
-footer code { font-size: 0.9em; }
-
-@media (max-width: 900px) {
-  .lamina, .cierre { grid-template-columns: minmax(0, 1fr); gap: 28px; }
-  .mensajes, .glosario { grid-template-columns: minmax(0, 1fr); }
-  .mensajes a + a { padding-left: 0; border-left: 0; border-top: 1px solid var(--linea); }
+.escenario { min-height: 100vh; display: grid; place-items: center; padding: 20px 16px; scroll-snap-align: center; }
+.diapositiva {
+  width: min(100%, calc((100vh - 72px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  container-type: inline-size;
+  background: var(--fondo);
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(31, 27, 26, 0.12);
+  padding: 4.2cqw 5cqw;
+  display: grid;
+  gap: 2.4cqw;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
 }
-@media (max-width: 520px) {
-  .contenedor { padding-inline: 16px; }
-  .lienzo, .lienzo.alto { height: 320px; }
+
+.etiqueta { font: 700 max(11px, 0.95cqw)/1.2 var(--cuerpo); letter-spacing: 0.09em; text-transform: uppercase; color: var(--suave); }
+.titulo { font-size: 3.6cqw; font-weight: 800; font-stretch: 82%; line-height: 1.04; }
+.titulo span { background: linear-gradient(transparent 60%, var(--amarillo) 60%); }
+.pie { display: flex; justify-content: space-between; align-items: center; gap: 2cqw; color: var(--suave); font-size: max(11px, 1.05cqw); border-top: 1px solid var(--linea); padding-top: 1.2cqw; }
+
+/* Diapositiva 1 */
+.presentacion { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 4cqw; align-items: center; }
+.persona { display: grid; gap: 1.6cqw; }
+.persona h1 { font-size: 6.4cqw; font-weight: 800; font-stretch: 78%; line-height: 0.95; }
+.persona .rol { font-size: 1.6cqw; font-weight: 600; }
+.persona p { font-size: 1.8cqw; line-height: 1.4; color: var(--suave); max-width: 32ch; }
+.cifras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4cqw; }
+.cifra { background: var(--panel); border-radius: 12px; padding: 1.8cqw; display: grid; gap: 0.6cqw; align-content: start; }
+.cifra b { font: 800 4.2cqw/1 var(--display); font-stretch: 78%; font-variant-numeric: tabular-nums; }
+.cifra span { font-size: 1.35cqw; line-height: 1.3; color: var(--suave); }
+.cifra.destacada { background: var(--amarillo); }
+.cifra.destacada span { color: var(--texto); }
+
+/* Diapositiva 2 */
+.hallazgos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr) auto; gap: 1.6cqw 3cqw; min-height: 0; }
+.hallazgo { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 1cqw; min-height: 0; }
+.hallazgo h2 { font-size: 1.95cqw; font-weight: 750; font-stretch: 88%; line-height: 1.15; }
+.hallazgo h2 i { font-style: normal; color: var(--suave); font-weight: 600; }
+.lienzo { position: relative; min-height: 0; }
+.certeza { display: inline-block; font: 700 max(10px, 0.85cqw)/1 var(--cuerpo); text-transform: uppercase; letter-spacing: 0.06em; padding: 0.45cqw 0.8cqw; border-radius: 999px; background: var(--panel); margin-left: 0.6cqw; vertical-align: middle; }
+.tercero { grid-column: 1 / -1; display: flex; align-items: center; gap: 2.4cqw; background: var(--panel); border-radius: 12px; padding: 1.4cqw 2cqw; }
+.tercero b { font: 800 3.4cqw/1 var(--display); font-stretch: 78%; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tercero b em { color: var(--naranja); font-style: normal; }
+.tercero p { font-size: 1.55cqw; line-height: 1.35; }
+.tercero strong { font-family: var(--display); font-size: 1.9cqw; display: block; }
+
+/* Diapositiva 3 */
+.cierre { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 4cqw; min-height: 0; align-items: center; }
+.flujo { display: grid; gap: 1.6cqw; align-content: start; }
+.flujo ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1cqw; counter-reset: paso; }
+.flujo li { background: var(--panel); border-radius: 12px; padding: 1.8cqw 1.4cqw; display: grid; gap: 0.5cqw; align-content: start; position: relative; }
+.flujo li b { font-family: var(--display); font-size: 2.1cqw; font-stretch: 88%; }
+.flujo li span { font-size: 1.5cqw; line-height: 1.3; color: var(--suave); }
+.flujo li:not(:last-child)::after { content: "→"; position: absolute; right: -0.95cqw; top: 1.4cqw; font-size: 1.4cqw; color: var(--suave); }
+.flujo .nota { font-size: 1.75cqw; line-height: 1.4; display: grid; gap: 0.8cqw; padding-left: 1cqw; border-left: 3px solid var(--texto); }
+.ia { display: grid; gap: 1.2cqw; align-content: start; }
+.ia h3 { font-size: 2.5cqw; font-stretch: 86%; }
+.ia ul { padding: 0; list-style: none; display: grid; gap: 1.6cqw; }
+.ia li { font-size: 1.75cqw; line-height: 1.35; display: grid; gap: 0.3cqw; }
+.ia li b { font-size: max(10px, 0.9cqw); text-transform: uppercase; letter-spacing: 0.08em; color: var(--suave); }
+
+.controles { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 8px; align-items: center; background: var(--fondo); border-radius: 999px; padding: 6px 8px 6px 14px; box-shadow: 0 4px 18px rgba(31, 27, 26, 0.15); font: 600 0.9rem var(--cuerpo); }
+.controles button { font: inherit; border: 0; background: var(--panel); color: var(--texto); border-radius: 999px; width: 34px; height: 34px; cursor: pointer; }
+.controles button:hover { background: var(--amarillo); }
+
+@media (max-width: 760px) {
+  html { scroll-snap-type: none; }
+  .escenario { min-height: auto; padding-block: 12px; }
+  .diapositiva { width: 100%; aspect-ratio: auto; padding: 22px 18px; gap: 18px; container-type: normal; }
+  .titulo { font-size: 1.7rem; }
+  .persona h1 { font-size: 2.6rem; }
+  .persona .rol, .persona p, .cifra span, .tercero p, .flujo li span, .flujo .nota, .ia li { font-size: 1rem; }
+  .cifra b, .tercero b { font-size: 2rem; }
+  .hallazgo h2, .tercero strong, .ia h3, .flujo li b { font-size: 1.2rem; }
+  .presentacion, .hallazgos, .cierre, .flujo ol { grid-template-columns: minmax(0, 1fr); }
+  .cifra, .flujo li, .tercero { padding: 14px; }
+  .tercero { flex-direction: column; align-items: flex-start; }
+  .lienzo { height: 300px; }
+  .flujo li::after { display: none; }
+  .etiqueta, .pie, .certeza, .ia li b { font-size: 0.75rem; }
+  .controles { display: none; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
 
-<div class="contenedor">
-  <header class="portada">
-    <span class="etiqueta">Actividad 3 · Primeros hallazgos</span>
-    <h1>Comparar de forma justa <span>cambia a quién acompañar</span></h1>
-    <p class="fuente">11.466 mediciones · 87 equipos · 2023-01 a 2026-08</p>
-
-    <nav class="mensajes" aria-label="Los tres hallazgos">
-      <a href="#hallazgo-1"><b>10×</b><span>pesa más <strong>qué</strong> se mide que <strong>quién</strong> lo mide</span></a>
-      <a href="#hallazgo-2"><b>Puesto 20 → 5</b><span>Entorno 8 al compararlo de forma justa</span></a>
-      <a href="#hallazgo-3"><b>98% → 57%</b><span>cayó Disponibilidad en 2026 sin que bajara el resultado</span></a>
-    </nav>
-
-    <dl class="glosario">
-      <div><dt>Meta cumplida</dt><dd>Un mes en que el equipo alcanzó la meta de un indicador (o quedó por debajo, si menos es mejor).</dd></div>
-      <div><dt>% de metas cumplidas</dt><dd>De todas las mediciones de un equipo o entorno, cuántas alcanzaron su meta.</dd></div>
-      <div><dt>Comparación justa</dt><dd>Cada resultado frente al de los equipos que miden el mismo indicador en el mismo mes.</dd></div>
-    </dl>
-  </header>
-
-  <section class="lamina" id="hallazgo-1">
-    <div class="mensaje">
-      <span class="numero"><b>Hallazgo 1</b><span class="etiqueta">Equipos</span></span>
-      <h2>Lo que se mide pesa 10 veces más que quién lo mide</h2>
-      <div class="bloque"><span class="etiqueta">Interpretación</span><p>Un equipo puede verse mal solo porque le tocaron metas difíciles: hay indicadores que se cumplen el 0% de las veces y otros el 86%.</p></div>
-      <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Calibrar las metas antes de comparar equipos.</p></div>
-      <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>11.466 mediciones, al menos 5 equipos por indicador y mes.</p>
-    </div>
-    <figure class="evidencia">
-      <h3>¿Qué explica que una meta se cumpla o no?</h3>
-      <div class="lienzo"><canvas id="grafica-1" role="img" aria-label="Porcentaje de las diferencias en metas cumplidas que explica cada factor"></canvas></div>
-      <figcaption><span class="etiqueta">Evidencia</span><span>Saber qué indicador y en qué mes explica el 48% de las diferencias; saber qué equipo, solo el 5%.</span></figcaption>
-    </figure>
-  </section>
-
-  <section class="lamina" id="hallazgo-2">
-    <div class="mensaje">
-      <span class="numero"><b>Hallazgo 2</b><span class="etiqueta">Entornos</span></span>
-      <h2>La comparación justa cambia a quién acompañar</h2>
-      <div class="bloque"><span class="etiqueta">Interpretación</span><p>Entorno 8 cumple solo el 33% de sus metas, pero supera en 9,5 puntos a los equipos que miden lo mismo: sus metas son difíciles, no su desempeño. Al revés, Entorno 13 parece bien y está 6,6 puntos bajo sus pares.</p></div>
-      <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Priorizar el acompañamiento con la comparación justa, no con el % de metas cumplidas.</p></div>
-      <p class="certeza" style="--color: var(--naranja)"><span class="etiqueta">Certeza</span><b>Media</b>Hay entornos de 1 a 4 equipos: un equipo mueve el resultado.</p>
-    </div>
-    <figure class="evidencia">
-      <h3>Entornos según su % de metas cumplidas y la comparación justa</h3>
-      <div class="lienzo alto"><canvas id="grafica-2" role="img" aria-label="Mapa de entornos: porcentaje de metas cumplidas frente a puntos sobre o bajo sus pares"></canvas></div>
-      <figcaption><span class="etiqueta">Evidencia · 2025-09 a 2026-08</span><span>En color, los 3 de 23 entornos cuyo % de metas cumplidas cuenta otra historia: se alejan 5 puntos o más de sus pares. Pase el cursor para ver cada entorno.</span></figcaption>
-    </figure>
-  </section>
-
-  <section class="lamina" id="hallazgo-3">
-    <div class="mensaje">
-      <span class="numero"><b>Hallazgo 3</b><span class="etiqueta">Tendencia</span></span>
-      <h2>En 2026 no bajó el desempeño: subió la meta</h2>
-      <div class="bloque"><span class="etiqueta">Interpretación</span><p>Una caída en el tablero puede venir de una meta más exigente o de un indicador nuevo, no de los equipos. En Excelencia operativa la caída la trae Perdida esperada por fraude, nuevo en 2026.</p></div>
-      <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Registrar cada cambio de meta y mostrarlo junto a la tendencia.</p></div>
-      <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>en los datos; la razón del cambio de meta no está en el archivo.</p>
-    </div>
-    <figure class="evidencia">
-      <h3>Disponibilidad: resultado y meta de los equipos, mes a mes</h3>
-      <div class="cifras">
-        <div><small>Cumplieron 2025</small><span>98%</span></div>
-        <span class="flecha" aria-hidden="true">→</span>
-        <div><small>Cumplieron 2026</small><span>57%</span></div>
+<main>
+  <section class="escenario" id="d1" aria-label="Diapositiva 1">
+    <article class="diapositiva">
+      <span class="etiqueta">Prueba técnica · Ingeniero de Datos N2 · Estrategia Corporativa</span>
+      <div class="presentacion">
+        <div class="persona">
+          <h1>Santiago Neusa</h1>
+          <span class="rol">Candidato a Ingeniero de Datos N2</span>
+          <p>Convertí un Excel de KPIs en una base confiable que se actualiza cada mes, para decidir dónde acompañar a los equipos.</p>
+        </div>
+        <div class="cifras" aria-label="La base en cifras">
+          <div class="cifra"><b>15.188</b><span>filas en el archivo original</span></div>
+          <div class="cifra destacada"><b>11.466</b><span>mediciones confiables, una por mes, equipo e indicador</span></div>
+          <div class="cifra"><b>3.722</b><span>filas excluidas o agrupadas, trazadas una a una</span></div>
+          <div class="cifra"><b>52%</b><span>de las mediciones usan indicadores que no están en el catálogo</span></div>
+        </div>
       </div>
-      <div class="lienzo"><canvas id="grafica-3" role="img" aria-label="Resultado y meta medianos de Disponibilidad por mes"></canvas></div>
-      <figcaption><span class="etiqueta">Evidencia</span><span>El resultado sigue cerca de 99,7%, pero la meta pasó de 99,2% a 99,6%.</span></figcaption>
-    </figure>
+      <div class="pie"><span>87 equipos · 23 entornos · 2023-01 a 2026-08</span><span>1 / 3</span></div>
+    </article>
   </section>
 
-  <section class="cierre">
-    <div>
-      <h2>Qué no podemos concluir</h2>
-      <ul>
-        <li>Si las metas están bien calibradas.</li>
-        <li>Si acompañar a un equipo mejora su cumplimiento.</li>
-        <li>Qué tan lejos de la meta quedó cada equipo: solo sabemos si la cumplió.</li>
-      </ul>
-    </div>
-    <div>
-      <h2>Qué información necesitamos</h2>
-      <ul>
-        <li>Histórico de metas y el criterio con que se fijan.</li>
-        <li>Entorno de cada equipo mes a mes, no solo el de hoy.</li>
-        <li>Registro de acompañamientos: equipo, fecha y tipo.</li>
-      </ul>
-    </div>
+  <section class="escenario" id="d2" aria-label="Diapositiva 2">
+    <article class="diapositiva">
+      <h2 class="titulo">Comparar de forma justa <span>cambia a quién acompañar</span></h2>
+      <div class="hallazgos">
+        <div class="hallazgo">
+          <h2>1. Lo que se mide pesa 10× más que quién lo mide<span class="certeza">Certeza alta</span></h2>
+          <div class="lienzo"><canvas id="grafica-1" role="img" aria-label="Qué explica que una meta se cumpla o no"></canvas></div>
+        </div>
+        <div class="hallazgo">
+          <h2>2. Entorno 8: puesto 20 → 5 <i>frente a equipos que miden lo mismo</i><span class="certeza">Certeza media</span></h2>
+          <div class="lienzo"><canvas id="grafica-2" role="img" aria-label="Mapa de entornos: metas cumplidas frente a la comparación justa"></canvas></div>
+        </div>
+        <div class="tercero">
+          <b>98% <em>→</em> 57%</b>
+          <p><strong>3. En 2026 no bajó el desempeño: subió la meta</strong>Disponibilidad se mantuvo cerca de 99,7%, pero la meta pasó de 99,2% a 99,6%.</p>
+        </div>
+      </div>
+      <div class="pie"><span>No se puede concluir si las metas están bien calibradas ni si acompañar mejora el cumplimiento.</span><span>2 / 3</span></div>
+    </article>
   </section>
 
-  <footer>Fuente: <code>0_datos/3_score/KPIS_historico_score.xlsx</code> · Se regenera con <code>uv run python 3_reporte/generar_reporte.py</code></footer>
-</div>
+  <section class="escenario" id="d3" aria-label="Diapositiva 3">
+    <article class="diapositiva">
+      <h2 class="titulo">Un proceso que corre cada mes, <span>construido con IA y criterio</span></h2>
+      <div class="cierre">
+        <div class="flujo">
+          <span class="etiqueta">Proceso recurrente en el stack del banco</span>
+          <ol>
+            <li><b>Excel</b><span>El negocio carga el mes con listas de los catálogos</span></li>
+            <li><b>Cloudera AI</b><span>Python y PySpark: carga incremental, reglas y validaciones</span></li>
+            <li><b>Impala</b><span>Crudos, modelo normalizado, calidad y score</span></li>
+            <li><b>Streamlit</b><span>Equipos, entornos y calidad en una sola aplicación</span></li>
+          </ol>
+          <div class="nota">
+            <p>Si una validación falla, no se publica y se avisa al responsable.</p>
+            <p>Con 20 veces más datos el motor sirve: lo que cambia es la captura.</p>
+          </div>
+        </div>
+        <div class="ia">
+          <span class="etiqueta">Uso de inteligencia artificial</span>
+          <h3>Claude Code para construir; reglas para Copilot en <code>.github/</code></h3>
+          <ul>
+            <li><b>Para qué</b>Explorar con agregados, escribir el pipeline y probar hipótesis contra los datos.</li>
+            <li><b>Corregido</b>La IA unió "Talento + Agilidad" con otro frente; sus indicadores no coinciden.</li>
+            <li><b>Validado</b>Recalcular todo el cumplimiento inventaba valores; se limitó a encuestas y copiados.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pie"><span>Código, datos y reporte: README del repositorio</span><span>3 / 3</span></div>
+    </article>
+  </section>
+</main>
+
+<nav class="controles" aria-label="Navegación entre diapositivas">
+  <span id="contador">1 / 3</span>
+  <button type="button" id="anterior" aria-label="Diapositiva anterior">←</button>
+  <button type="button" id="siguiente" aria-label="Diapositiva siguiente">→</button>
+</nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
@@ -390,12 +408,32 @@ function sinConexion() {
 
 
 const DATOS = {"variacion": [{"grupo": "Qué indicador y en qué mes", "pct": 47.8}, {"grupo": "Qué equipo", "pct": 4.6}, {"grupo": "Qué entorno", "pct": 1.8}], "entornos": {"corte_cumplimiento": 57.8, "margen": 5, "filas": [{"entorno": "Entorno 1", "equipos": 4, "cumplimiento": 56.9, "frente_a_pares": 2.1, "lectura": "coincide", "puesto_cumplimiento": 12, "puesto_justo": 8}, {"entorno": "Entorno 10", "equipos": 3, "cumplimiento": 68.3, "frente_a_pares": 12.4, "lectura": "coincide", "puesto_cumplimiento": 3, "puesto_justo": 2}, {"entorno": "Entorno 11", "equipos": 3, "cumplimiento": 0.0, "frente_a_pares": -7.1, "lectura": "coincide", "puesto_cumplimiento": 22, "puesto_justo": 20}, {"entorno": "Entorno 12", "equipos": 4, "cumplimiento": 56.8, "frente_a_pares": -2.4, "lectura": "coincide", "puesto_cumplimiento": 13, "puesto_justo": 17}, {"entorno": "Entorno 13", "equipos": 3, "cumplimiento": 58.8, "frente_a_pares": -6.6, "lectura": "parece bien, está bajo sus pares", "puesto_cumplimiento": 11, "puesto_justo": 19}, {"entorno": "Entorno 14", "equipos": 3, "cumplimiento": 64.1, "frente_a_pares": 0.1, "lectura": "coincide", "puesto_cumplimiento": 5, "puesto_justo": 11}, {"entorno": "Entorno 15", "equipos": 2, "cumplimiento": 59.5, "frente_a_pares": 21.8, "lectura": "coincide", "puesto_cumplimiento": 10, "puesto_justo": 1}, {"entorno": "Entorno 16", "equipos": 2, "cumplimiento": 32.5, "frente_a_pares": 1.8, "lectura": "coincide", "puesto_cumplimiento": 21, "puesto_justo": 9}, {"entorno": "Entorno 2", "equipos": 2, "cumplimiento": 66.9, "frente_a_pares": 10.7, "lectura": "coincide", "puesto_cumplimiento": 4, "puesto_justo": 3}, {"entorno": "Entorno 3", "equipos": 1, "cumplimiento": 61.7, "frente_a_pares": 8.4, "lectura": "coincide", "puesto_cumplimiento": 6, "puesto_justo": 6}, {"entorno": "Entorno 4", "equipos": 10, "cumplimiento": 59.6, "frente_a_pares": -1.6, "lectura": "coincide", "puesto_cumplimiento": 8, "puesto_justo": 15}, {"entorno": "Entorno 5", "equipos": 4, "cumplimiento": 53.8, "frente_a_pares": -8.9, "lectura": "coincide", "puesto_cumplimiento": 17, "puesto_justo": 22}, {"entorno": "Entorno 6", "equipos": 3, "cumplimiento": 53.6, "frente_a_pares": -0.4, "lectura": "coincide", "puesto_cumplimiento": 18, "puesto_justo": 14}, {"entorno": "Entorno 7", "equipos": 1, "cumplimiento": 60.9, "frente_a_pares": -2.3, "lectura": "coincide", "puesto_cumplimiento": 7, "puesto_justo": 16}, {"entorno": "Entorno 8", "equipos": 2, "cumplimiento": 33.3, "frente_a_pares": 9.5, "lectura": "parece bajo, supera a sus pares", "puesto_cumplimiento": 20, "puesto_justo": 5}, {"entorno": "Entorno 9", "equipos": 3, "cumplimiento": 69.4, "frente_a_pares": 1.8, "lectura": "coincide", "puesto_cumplimiento": 1, "puesto_justo": 10}, {"entorno": "Vicepresidencia 2", "equipos": 1, "cumplimiento": 59.6, "frente_a_pares": 0.1, "lectura": "coincide", "puesto_cumplimiento": 9, "puesto_justo": 12}, {"entorno": "Vicepresidencia 3", "equipos": 3, "cumplimiento": 55.1, "frente_a_pares": 0.0, "lectura": "coincide", "puesto_cumplimiento": 15, "puesto_justo": 13}, {"entorno": "Vicepresidencia 4", "equipos": 1, "cumplimiento": 55.0, "frente_a_pares": 9.8, "lectura": "parece bajo, supera a sus pares", "puesto_cumplimiento": 16, "puesto_justo": 4}, {"entorno": "Vicepresidencia 5", "equipos": 3, "cumplimiento": 55.8, "frente_a_pares": -4.8, "lectura": "coincide", "puesto_cumplimiento": 14, "puesto_justo": 18}, {"entorno": "Vicepresidencia 6", "equipos": 1, "cumplimiento": 69.4, "frente_a_pares": 7.0, "lectura": "coincide", "puesto_cumplimiento": 2, "puesto_justo": 7}, {"entorno": "Vicepresidencia 7", "equipos": 1, "cumplimiento": 51.7, "frente_a_pares": -7.9, "lectura": "coincide", "puesto_cumplimiento": 19, "puesto_justo": 21}]}, "seguimiento": [{"mes": "2023-09", "resultado": 99.56, "meta": 99.29, "cumplieron": 85.71}, {"mes": "2023-11", "resultado": 99.59, "meta": 99.33, "cumplieron": 77.14}, {"mes": "2023-12", "resultado": 99.45, "meta": 99.23, "cumplieron": 77.42}, {"mes": "2024-01", "resultado": 99.73, "meta": 98.88, "cumplieron": 100.0}, {"mes": "2024-02", "resultado": 99.84, "meta": 99.01, "cumplieron": 97.06}, {"mes": "2024-03", "resultado": 99.69, "meta": 98.92, "cumplieron": 97.06}, {"mes": "2024-04", "resultado": 99.73, "meta": 98.9, "cumplieron": 96.97}, {"mes": "2024-05", "resultado": 99.78, "meta": 99.01, "cumplieron": 96.97}, {"mes": "2024-06", "resultado": 99.75, "meta": 99.01, "cumplieron": 90.24}, {"mes": "2024-07", "resultado": 99.7, "meta": 99.01, "cumplieron": 82.93}, {"mes": "2024-08", "resultado": 99.71, "meta": 99.12, "cumplieron": 90.24}, {"mes": "2024-10", "resultado": 99.71, "meta": 99.11, "cumplieron": 95.24}, {"mes": "2024-11", "resultado": 99.72, "meta": 99.06, "cumplieron": 90.24}, {"mes": "2024-12", "resultado": 99.74, "meta": 99.09, "cumplieron": 92.86}, {"mes": "2025-01", "resultado": 99.81, "meta": 99.2, "cumplieron": 95.24}, {"mes": "2025-02", "resultado": 99.84, "meta": 99.15, "cumplieron": 97.62}, {"mes": "2025-03", "resultado": 99.74, "meta": 99.15, "cumplieron": 97.62}, {"mes": "2025-04", "resultado": 99.77, "meta": 99.16, "cumplieron": 97.67}, {"mes": "2025-05", "resultado": 99.82, "meta": 99.18, "cumplieron": 97.67}, {"mes": "2025-06", "resultado": 99.85, "meta": 99.17, "cumplieron": 100.0}, {"mes": "2025-07", "resultado": 99.82, "meta": 99.17, "cumplieron": 100.0}, {"mes": "2025-08", "resultado": 99.82, "meta": 99.18, "cumplieron": 100.0}, {"mes": "2025-09", "resultado": 99.84, "meta": 99.15, "cumplieron": 100.0}, {"mes": "2026-01", "resultado": 99.94, "meta": 99.55, "cumplieron": 93.33}, {"mes": "2026-02", "resultado": 99.19, "meta": 99.51, "cumplieron": 42.22}, {"mes": "2026-03", "resultado": 99.66, "meta": 99.55, "cumplieron": 46.67}, {"mes": "2026-04", "resultado": 99.61, "meta": 99.59, "cumplieron": 47.62}, {"mes": "2026-05", "resultado": 99.68, "meta": 99.6, "cumplieron": 48.78}, {"mes": "2026-06", "resultado": 99.73, "meta": 99.62, "cumplieron": 56.1}, {"mes": "2026-07", "resultado": 99.77, "meta": 99.62, "cumplieron": 57.14}, {"mes": "2026-08", "resultado": 99.79, "meta": 99.61, "cumplieron": 64.29}]};
+const escenarios = [...document.querySelectorAll(".escenario")];
+let actual = 0;
+
+function ir(indice) {
+  actual = Math.max(0, Math.min(escenarios.length - 1, indice));
+  escenarios[actual].scrollIntoView({ block: "center" });
+  document.getElementById("contador").textContent = `${actual + 1} / ${escenarios.length}`;
+}
+
+document.getElementById("anterior").addEventListener("click", () => ir(actual - 1));
+document.getElementById("siguiente").addEventListener("click", () => ir(actual + 1));
+document.addEventListener("keydown", evento => {
+  if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(evento.key)) { evento.preventDefault(); ir(actual + 1); }
+  if (["ArrowLeft", "ArrowUp", "PageUp"].includes(evento.key)) { evento.preventDefault(); ir(actual - 1); }
+});
+const observador = new IntersectionObserver(entradas => entradas.forEach(entrada => {
+  if (!entrada.isIntersecting) return;
+  actual = escenarios.indexOf(entrada.target);
+  document.getElementById("contador").textContent = `${actual + 1} / ${escenarios.length}`;
+}), { threshold: 0.6 });
+escenarios.forEach(escenario => observador.observe(escenario));
 
 if (window.Chart) {
   prepararChart();
-  graficaFactores("grafica-1", DATOS.variacion);
+  graficaFactores("grafica-1", DATOS.variacion, 13);
   graficaEntornos("grafica-2", DATOS.entornos);
-  graficaSeguimiento("grafica-3", DATOS.seguimiento);
 } else {
   sinConexion();
 }
