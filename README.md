@@ -22,7 +22,7 @@ En esta sección se entienden los datos, desde su forma hasta el contenido que y
 - Un mismo equipo aparece escrito de varias formas
 - Más de un tercio de las filas reporta el cumplimiento en otra escala
 
-Como conclusión, se registran 16 problemas de calidad con su tratamiento, sin embargo, para evitar que se repitan se propone un modelo donde cada dato vive una sola vez, identificado por un código estable, y las mediciones solo apuntan a esos códigos:
+Como conclusión, se registran 15 problemas de calidad con su tratamiento, sin embargo, para evitar que se repitan se propone un modelo donde cada dato vive una sola vez, identificado por un código estable, y las mediciones solo apuntan a esos códigos:
 
 ```mermaid
 erDiagram

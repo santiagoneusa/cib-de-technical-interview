@@ -87,5 +87,6 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
   - **Ponderar por cobertura:** se descartó con el propio argumento humano (un indicador en pocos equipos puede ser un riesgo clave). La cobertura queda como contexto.
   - **Corrección a la actividad 1:**
     - Las 36 filas "sin código" sí tienen nombre, y cada nombre corresponde a un solo código. Se recuperan en vez de excluirse.
-    - Las 13 filas que 1.3 clasificó como "iguales salvo el nombre" eran equipos distintos sin código, no duplicados.
+    - Las 13 filas que 1.3 clasificó como "iguales salvo el nombre" eran equipos distintos sin código, no duplicados. Se corrigió 1.3: el problema desaparece y el registro queda en 15 problemas; las filas sin código pasan de "excluir" a "corregir". En el pipeline la regla se mantiene como control (1 fila tras recuperar códigos).
   - **Verificación del proceso:** la salida es idéntica entre dos ejecuciones. Con un archivo sin la columna Meta, el proceso no publica nada y termina con código 1.
+- **Decisión humana:** las encuestas (meta 5 de 5, casi nunca se cumple) se mantienen en el score y se declara la limitación.
