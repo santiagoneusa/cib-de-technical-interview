@@ -99,7 +99,7 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
   - **Salidas:** separar los datos procesados del score, con carpetas de datos mejor nombradas.
 - **Propuesta de la IA:**
   - **Código:** `limpieza.py` con una función por regla, cada una devuelve (datos, traza), y `limpiar()` solo las encadena en orden. Se prefirieron funciones de módulo a una clase de métodos estáticos: es el idioma de pandas y cada función se explica sola.
-  - **Datos:** carpetas `0_datos/1_originales`, `2_procesados` y `3_score`. La sábana tiene 11 columnas con nombres homogéneos, y la traza dice exactamente qué cambió (`Cumplimiento: 9.434 → 0.943`).
+  - **Datos:** carpetas `0_datos/1_crudos` (nombre elegido por el humano en vez de `1_originales`), `2_procesados` y `3_score`. La sábana tiene 11 columnas con nombres homogéneos, y la traza dice exactamente qué cambió (`Cumplimiento: 9.434 → 0.943`).
   - **Catálogo de indicadores:** se actualiza con `sentido` y con los indicadores que se miden sin estar catalogados.
   - **Cumplimiento:** se recalcula como Resultado / Meta donde más es mejor, en vez de marcar y excluir. Así la columna queda útil y coincide con la hipótesis humana original.
 - **Validación contra datos:**

@@ -11,7 +11,7 @@ uv sync
 uv run jupyter lab
 ```
 
-Abrir `1_experimentacion/notebooks/` y ejecutar cada notebook de arriba a abajo, en orden. Los notebooks solo leen `0_datos/1_originales/KPIS_historico.xlsx`; no escriben archivos.
+Abrir `1_experimentacion/notebooks/` y ejecutar cada notebook de arriba a abajo, en orden. Los notebooks solo leen `0_datos/1_crudos/KPIS_historico.xlsx`; no escriben archivos.
 
 | # | Notebook | Contenido |
 |---|---|---|

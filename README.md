@@ -5,7 +5,7 @@ Prueba técnica – Ingeniero de Datos N2, Estrategia Corporativa. Se presenta l
 ## Estructura
 
 ```text
-0_datos/              # 1_originales (nunca se modifica), 2_procesados y 3_score
+0_datos/              # 1_crudos (nunca se modifica), 2_procesados y 3_score
 1_experimentacion/    # exploración y calidad de datos (actividad 1)
 2_transformacion/     # limpieza y dataset analítico (actividades 2 y 3)
 3_aplicacion/         # proceso recurrente, decisiones tecnológicas y uso de IA (actividad 4)

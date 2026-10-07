@@ -2,7 +2,7 @@
 
     uv run python 2_transformacion/src/main.py
 
-Por cada Excel de 0_datos/1_originales publica dos archivos:
+Por cada Excel de 0_datos/1_crudos publica dos archivos:
   - 0_datos/2_procesados/<archivo>_procesado.xlsx: datos limpios, catálogo de indicadores actualizado,
     registro de calidad, trazabilidad y validaciones (etl/).
   - 0_datos/3_score/<archivo>_score.xlsx: meta cumplida y score por equipo, frente, entorno y mes (score/).
@@ -19,7 +19,7 @@ from etl import calidad, catalogos, limpieza
 from score import agregacion, features
 
 DATOS = Path(__file__).resolve().parents[2] / "0_datos"
-ORIGINALES = DATOS / "1_originales"
+CRUDOS = DATOS / "1_crudos"
 PROCESADOS = DATOS / "2_procesados"
 SCORE = DATOS / "3_score"
 
@@ -28,9 +28,9 @@ log = logging.getLogger("kpis")
 
 def main():
     configurar_log()
-    archivos = sorted(archivo for archivo in ORIGINALES.glob("*.xlsx") if not archivo.name.startswith("~$"))
+    archivos = sorted(archivo for archivo in CRUDOS.glob("*.xlsx") if not archivo.name.startswith("~$"))
     if not archivos:
-        log.error("no hay archivos .xlsx en %s", ORIGINALES)
+        log.error("no hay archivos .xlsx en %s", CRUDOS)
         sys.exit(1)
     publicados = [procesar(archivo) for archivo in archivos]
     sys.exit(0 if all(publicados) else 1)

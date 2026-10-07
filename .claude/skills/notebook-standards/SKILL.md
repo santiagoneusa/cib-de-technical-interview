@@ -11,7 +11,7 @@ The readers are **business analysts of the strategy team**, not engineers. Prefe
 ## Structure (one folder per stage, each with its own README)
 | Folder | Content | Test activity |
 |---|---|---|
-| `0_datos/` | `1_originales/KPIS_historico.xlsx` as delivered (never modified); `2_procesados/` and `3_score/` pipeline output | – |
+| `0_datos/` | `1_crudos/KPIS_historico.xlsx` as delivered (never modified); `2_procesados/` and `3_score/` pipeline output | – |
 | `1_experimentacion/` | `notebooks/1_1_exploracion_datos.ipynb`, `1_2_validacion_catalogos.ipynb`, `1_3_evaluacion_calidad.ipynb` (no output files) | 1 |
 | `2_transformacion/` | `src/main.py` + `src/etl/` (one function per cleaning rule, catalogs, quality) + `src/score/` (metric, aggregation) | 2 and 3 |
 | `3_aplicacion/` | recurrent process, tech decisions, `bitacora_ia.md` | 4 |

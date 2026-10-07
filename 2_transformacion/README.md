@@ -10,7 +10,7 @@ Desde la raíz del repositorio:
 uv run python 2_transformacion/src/main.py
 ```
 
-Por cada `.xlsx` de `0_datos/1_originales/` publica dos archivos y deja una línea en `0_datos/ejecucion.log`:
+Por cada `.xlsx` de `0_datos/1_crudos/` publica dos archivos y deja una línea en `0_datos/ejecucion.log`:
 
 | Archivo | Hojas |
 |---|---|
@@ -21,7 +21,7 @@ Si al archivo le falta una hoja o columna, o una validación falla, **no publica
 
 ```text
 src/
-  main.py            # originales → etl → procesados → score
+  main.py            # crudos → etl → procesados → score
   etl/
     reglas.py        # reglas de negocio editables: formatos, frentes mal escritos, sentido de cada indicador
     limpieza.py      # una función por regla; cada una devuelve los datos tratados y su traza

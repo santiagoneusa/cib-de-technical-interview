@@ -2,7 +2,7 @@
 
 | Carpeta | Contenido |
 |---|---|
-| `1_originales/` | Archivos a procesar tal como se entregan. `KPIS_historico.xlsx` **nunca se modifica** |
+| `1_crudos/` | Archivos a procesar tal como se entregan, sin ningún tratamiento. `KPIS_historico.xlsx` **nunca se modifica** |
 | `2_procesados/` | `<archivo>_procesado.xlsx`: datos limpios, catálogo de indicadores actualizado, registro de calidad y trazabilidad |
 | `3_score/` | `<archivo>_score.xlsx`: meta cumplida y score por equipo, frente, entorno y mes |
 
