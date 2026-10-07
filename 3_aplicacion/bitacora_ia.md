@@ -130,3 +130,18 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
   - **Corrección humana:** la IA había agregado una condición para trazar solo los cumplimientos que cambiaban de valor, y el humano la hizo quitar. Resultado 1 con meta 1 o Resultado 0 con meta 0 (por ejemplo, pérdidas que siempre deben ser 0) son válidos, y no hay contra qué comparar.
 - **Propuesta de la IA:** `cumplimiento_procesado = Resultado / Meta` cuando el original es el mismo Resultado y la meta es positiva. La meta positiva evita dividir por 0 o por una meta negativa (Impactos). La trazabilidad usa `fila_excel` porque es el único vínculo con el archivo original.
 - **Validación contra datos:** el valor solo cambia en Percepción, Adopción y Talento + Agilidad. En los demás indicadores donde Cumplimiento = Resultado la meta es 1, así que el valor no cambia.
+
+### 2026-10-07 · Entregables · Un solo README y reglas para GitHub Copilot
+- **Pedido humano:** eliminar los READMEs por carpeta y dejar un README principal con tabla de contenido, ejecución y supuestos de exploración y transformación. Pasar `.claude/` a la arquitectura de GitHub Copilot, condensando lo conversado en reglas y skills, y explicar en el README por qué la IA con prompts, skills y reglas agiliza el trabajo con buenas prácticas.
+- **Propuesta de la IA:**
+  - **Instrucciones:** `.github/copilot-instructions.md` con contexto, estructura y reglas de oro.
+  - **Reglas** (`.github/instructions/` con `applyTo`): Python, notebooks, datos y documentación.
+  - **Skills** (`.github/skills/`): `nueva-regla-de-limpieza`, `probar-hipotesis`, `bitacora-ia` y `estilo-visual-bancolombia`.
+  - **Prompts y agente:** tres prompts reutilizables (`.github/prompts/`) y el agente revisor de la presentación (`.github/agents/`).
+- **Validación:** las reglas recogen las correcciones humanas de la conversación:
+  - no asumir equivalencias como "Talento + Agilidad";
+  - no imputar vacíos;
+  - no condicionar el recálculo a que el valor cambie;
+  - nombres homogéneos;
+  - funciones con una responsabilidad;
+  - un solo README.

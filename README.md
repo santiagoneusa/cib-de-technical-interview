@@ -2,27 +2,42 @@
 
 Prueba técnica – Ingeniero de Datos N2, Estrategia Corporativa. Se presenta la construcción de una base confiable, junto con su análisis y propuesta de automatización.
 
-## Estructura
+## Contenido
+
+1. [Estructura y requisitos](#1-estructura-y-requisitos)
+2. [Exploración y calidad (actividad 1)](#2-exploración-y-calidad-actividad-1)
+3. [Transformación (actividad 2)](#3-transformación-actividad-2)
+4. [Hallazgos (actividad 3)](#4-hallazgos-actividad-3)
+5. [Solución técnica y decisiones tecnológicas (actividad 4)](#5-solución-técnica-y-decisiones-tecnológicas-actividad-4)
+6. [Uso de inteligencia artificial](#6-uso-de-inteligencia-artificial)
+
+## 1. Estructura y requisitos
 
 ```text
-0_datos/              # 1_crudos (nunca se modifica), 2_procesados y 3_score
-1_experimentacion/    # exploración y calidad de datos (actividad 1)
-2_transformacion/     # limpieza y dataset analítico (actividades 2 y 3)
-3_aplicacion/         # proceso recurrente, decisiones tecnológicas y uso de IA (actividad 4)
+0_datos/1_crudos/       # KPIS_historico.xlsx tal como se entregó (nunca se modifica)
+0_datos/2_procesados/   # modelo normalizado (_procesado.xlsx) y calidad del proceso (_calidad.xlsx)
+0_datos/3_score/        # score por equipo, frente y entorno (_score.xlsx)
+1_experimentacion/      # notebooks de exploración y calidad
+2_transformacion/src/   # proceso recurrente: main.py, etl/ y score/
+3_aplicacion/           # bitácora de uso de IA
+.github/                # reglas, skills y prompts para la IA
 ```
 
-Cada módulo tiene su README con cómo ejecutarlo y el detalle de sus resultados.
+Requisitos: Python 3.12+ y [uv](https://docs.astral.sh/uv/). Desde la raíz, `uv sync` instala las dependencias.
 
-## Conclusiones por módulo
+## 2. Exploración y calidad (actividad 1)
 
-### 1. Experimentación
+```bash
+uv run jupyter lab
+```
 
-En esta sección se entienden los datos, desde su forma hasta el contenido que yace en el archivo. Empíricamente se evidencia una arquitectura de cuatro tablas (mediciones, equipos, entornos e indicadores), pero con problemas estructurales grandes como:
-- Más de la mitad de las filas usan indicadores que el catálogo no conoce
-- Un mismo equipo aparece escrito de varias formas
-- Más de un tercio de las filas reporta el cumplimiento en otra escala
+En `1_experimentacion/notebooks/` se ejecutan en orden `1_1_exploracion_datos`, `1_2_validacion_catalogos` y `1_3_evaluacion_calidad`. Solo leen el archivo crudo; el código está contraído para leer los resultados.
 
-Como conclusión, se registran 16 problemas de calidad con su tratamiento, sin embargo, para evitar que se repitan se propone un modelo donde cada dato vive una sola vez, identificado por un código estable, y las mediciones solo apuntan a esos códigos:
+### 1.1 Qué representa cada fila y estructura propuesta
+
+Cada fila es **el resultado de un indicador, para un equipo, en un mes**, identificada por `Corte` + `Codigo_EQU` + `Indicador`. Hoy todo vive en una hoja que repite nombres y frentes en cada fila y usa nombres como llave.
+
+**Supuesto de diseño:** el archivo sugiere cuatro tablas (mediciones, equipos, entornos e indicadores). Se corrige a cinco: cada dato vive una sola vez con un código estable, y las mediciones solo guardan códigos. Las mediciones guardan el frente porque un mismo indicador se reportó en frentes distintos.
 
 ```mermaid
 erDiagram
@@ -62,10 +77,101 @@ erDiagram
     }
 ```
 
-### 2. Transformación
+`PK` identifica cada fila; `FK` apunta a la llave de otra tabla y solo acepta valores que existan allí; `enum` es una lista cerrada.
 
-Un solo comando (`uv run python 2_transformacion/src/main.py`) limpia el archivo original y publica dos Excel: los **datos procesados**, separados en el modelo propuesto (mediciones, equipos, entornos, indicadores y frentes, con los catálogos completados y la trazabilidad de cada fila tocada), y el **score** por equipo, frente y entorno. La métrica es la **meta cumplida** según el sentido de cada indicador; los entornos se comparan con la **mediana de sus equipos**, y los equipos sin entorno no se mezclan en un grupo artificial.
+### 1.2 Coincidencia entre la base y los catálogos
 
-### 3. Aplicación
+| Validación | Resultado |
+|---|---|
+| Indicadores de la base en el catálogo | **10 de 25**; los otros 15 son el **57% de las filas** |
+| Indicadores del catálogo con mediciones | 11 de 13 |
+| Frentes de la base en el catálogo | "Talento + Agilidad" no está (17,6% de las filas); "Modeos…" es un error que viene del catálogo |
+| Escritura de los códigos de equipo | **146 formas de escribir 89 equipos** |
+| Equipos de la base en el catálogo | 63 de 89; **26 fantasma**, 8 de ellos activos en 2026 |
+| Equipos con entorno | **50 de 89**; 11 cuelgan de una vicepresidencia |
+
+### 1.3 Problemas de calidad
+
+| Tipo | Problema | Evidencia | Tratamiento |
+|---|---|---|---|
+| ![Faltantes](https://img.shields.io/badge/Faltantes-9063cd) | Código de equipo vacío | 36 filas; todas tienen un nombre que identifica un solo código | corregir |
+| ![Faltantes](https://img.shields.io/badge/Faltantes-9063cd) | Nombre de equipo vacío | 6.185 filas (40,7%) | corregir desde el código |
+| ![Faltantes](https://img.shields.io/badge/Faltantes-9063cd) | Resultado, Meta o Cumplimiento vacíos | 481 filas sin Resultado o Meta; 265 sin Cumplimiento (se solapan) | excluir |
+| ![Faltantes](https://img.shields.io/badge/Faltantes-9063cd) | Meses con pocos equipos | 202510: 20 equipos vs 64 normal | marcar |
+| ![Duplicados](https://img.shields.io/badge/Duplicados-59cbe8) | Filas repetidas | 2.182 filas (14,4%) | excluir (se deja una) |
+| ![Duplicados](https://img.shields.io/badge/Duplicados-59cbe8) | Mismo mes, equipo e indicador con valores distintos | 1.265 filas; 962 son respuestas de encuesta | corregir (promedio) |
+| ![Formato](https://img.shields.io/badge/Formato-fdda24) | Código de equipo mal escrito | 325 filas | corregir |
+| ![Formato](https://img.shields.io/badge/Formato-fdda24) | Frente mal escrito ("Modeos…") | 417 filas | corregir |
+| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Equipos fantasma | 1.473 filas, 26 equipos | agregar con entorno "Sin entorno" |
+| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Frente fuera del catálogo | 2.672 filas (Talento + Agilidad) | aceptar y reportar |
+| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Equipos con vicepresidencia o sin entorno | 2.218 filas, 13 equipos | agrupar con su VP o en "Sin entorno" |
+| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Indicadores sin definición | 14 de 25; 54% de las filas | agregar como pendientes |
+| ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Indicadores del catálogo que nadie mide | 2 de 13 | aceptar y reportar |
+| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento de encuestas en la escala del puntaje | 9,43 sobre una meta de 10 | corregir (Resultado / Meta) |
+| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimientos imposibles (155 y −1873) | 22 filas | aceptar: el score compara Resultado con Meta |
+| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento copiado (1.014683) | 530 filas | aceptar: el score compara Resultado con Meta |
+
+## 3. Transformación (actividad 2)
+
+```bash
+uv run python 2_transformacion/src/main.py
+```
+
+Por cada Excel de `0_datos/1_crudos/` publica:
+- **`_procesado.xlsx`**: el dataset analítico, que es el modelo normalizado (`frentes`, `indicadores`, `entornos`, `equipos`, `mediciones`).
+- **`_calidad.xlsx`**: `registro_calidad`, `trazabilidad` (cada fila excluida, corregida, completada o agrupada, con su fila en el Excel original y qué cambió) y `validaciones`.
+- **`_score.xlsx`**: el score por equipo, frente, entorno y mes.
+
+Si el archivo no trae las hojas o columnas esperadas, o falla una validación, no publica nada y termina con código 1. Cada ejecución parte del archivo crudo y da el mismo resultado.
+
+**Pasos de limpieza** (una función por regla en `etl/limpieza.py`, en este orden):
+1. **Código de equipo:** a mayúsculas y 5 dígitos; si está vacío, se toma del nombre del equipo, porque cada nombre corresponde a un solo código.
+2. **Frente:** se corrige "Modeos…". **"Talento + Agilidad" se conserva:** no está en el catálogo y sus indicadores no coinciden con los de ningún frente, así que no se asume que sea otro con otro nombre.
+3. **Vacíos:** se excluyen las filas sin Resultado, Meta o Cumplimiento. Imputarlas inventaría una medición que el equipo no reportó.
+4. **Repetidos:** se excluyen las filas repetidas y se deja una.
+5. **Promedio por indicador:** varias filas del mismo mes, equipo e indicador (sobre todo respuestas individuales de encuesta) se promedian en una sola medición.
+6. **Cumplimiento procesado:** se conserva el original y se agrega `cumplimiento_procesado`. Cuando el original es igual al Resultado y la meta es positiva, el procesado es Resultado / Meta, lo que corrige la escala de Percepción, Adopción y Talento + Agilidad. Con meta 0 o negativa no hay contra qué calcular.
+
+**Normalización al modelo propuesto** (`etl/modelo.py`): se separan las cinco tablas con códigos estables (`IND000`, `FRE00`, `SIN0000` para "Sin entorno") y se completan los catálogos.
+- **Indicadores:** se conservan los que nadie mide y se agregan los medidos sin catálogo, con definición y unidad "Pendiente".
+- **Equipos:** se agregan los que no están en el catálogo, con entorno "Sin entorno".
+- **Frentes:** se incluye "Talento + Agilidad".
+
+De 15.188 filas quedan **11.466 mediciones** (mes × equipo × indicador).
+
+**Métrica comparable (2.2): meta cumplida.**
+- **Definición:** vale 1 si el resultado alcanza la meta según el sentido del indicador (≥ si más es mejor, ≤ si menos es mejor) y 0 si no. El score de un equipo en un mes es la proporción de sus indicadores que cumplieron, todos con el mismo peso.
+- **Por qué es comparable:** no depende de la unidad ni de la escala, y ningún extremo domina.
+- **Sentido no verificado:** en 3 indicadores no se pudo deducir el sentido; se usa `cumplimiento_procesado ≥ 1` y se debe confirmar con su dueño.
+
+**Agregación por entorno (2.3): mediana de los equipos.**
+- **Por qué la mediana:** cada equipo cuenta una vez y un extremo no mueve el resultado; siempre se acompaña de `n_equipos` y el rango.
+- **Vicepresidencias:** los equipos que cuelgan de una vicepresidencia se agrupan con ella.
+- **Sin entorno:** esos equipos se cuentan pero no se califican como grupo, porque mezclarían áreas sin relación.
+
+**Limitaciones:**
+- Se pierde magnitud: quedar al 99% o al 50% de la meta cuenta igual.
+- Las encuestas tienen como meta el puntaje máximo, así que casi nunca se cumplen.
+- La mezcla de indicadores cambia cada año, así que el score compara bien entre equipos de un mismo mes.
+
+## 4. Hallazgos (actividad 3)
 
 Pendiente.
+
+## 5. Solución técnica y decisiones tecnológicas (actividad 4)
+
+Pendiente.
+
+## 6. Uso de inteligencia artificial
+
+La IA (Claude Code y GitHub Copilot) es fundamental para agilizar el trabajo: explora, escribe código y prueba hipótesis contra los datos en minutos. Para que esa velocidad no sacrifique calidad, el proyecto define en `.github/` las reglas, skills y prompts que la IA debe seguir:
+- **Reglas** (`instructions/`): código limpio, estándar de notebooks y de datos.
+- **Skills** (`skills/`): cómo agregar una regla de limpieza, probar una hipótesis contra los datos, registrar la bitácora y graficar con la paleta.
+- **Prompts** (`prompts/`): las tareas que se repiten.
+
+Así cualquier persona del equipo obtiene el mismo estándar y las buenas prácticas quedan escritas, no en la memoria de alguien.
+
+Las decisiones de criterio fueron humanas y cada propuesta de la IA se validó contra los datos. La [bitácora](3_aplicacion/bitacora_ia.md) registra los prompts, lo aceptado, lo corregido y lo descartado. Tres ejemplos:
+- **Frente "Talento + Agilidad":** la IA lo había homologado a "Modelos de trabajo y Agilidad". El humano lo corrigió porque sus indicadores no coinciden con el catálogo.
+- **Recálculo de Cumplimiento:** la IA propuso recalcular todo como Resultado / Meta. Una prueba por indicador mostró que eso inventaba valores (Regulatorio topa en 1, Índice AQR's está en otra unidad), así que solo se recalculan las encuestas.
+- **Filas sin código:** se iban a excluir. Al validarlas, las 36 resultaron recuperables desde el nombre del equipo.
