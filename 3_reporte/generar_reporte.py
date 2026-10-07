@@ -7,6 +7,7 @@ CARPETA = Path(__file__).resolve().parent
 DATOS = CARPETA.parent / "0_datos"
 CRUDO = DATOS / "1_crudos" / "KPIS_historico.xlsx"
 PROCESADO = DATOS / "2_procesados" / "KPIS_historico_procesado.xlsx"
+CALIDAD = DATOS / "2_procesados" / "KPIS_historico_calidad.xlsx"
 SCORE = DATOS / "3_score" / "KPIS_historico_score.xlsx"
 GRAFICAS = CARPETA / "graficas.js"
 PAGINAS = {
@@ -162,6 +163,7 @@ def resumir_base(mediciones):
     indicadores = pd.read_excel(PROCESADO, sheet_name="indicadores")
     pendientes = indicadores.loc[indicadores["definicion"] == "Pendiente", "nombre"]
     fuera_de_catalogo = mediciones["indicador"].isin(pendientes).mean()
+    acciones = pd.read_excel(CALIDAD, sheet_name="trazabilidad")["accion"].value_counts()
 
     return {
         "autor": AUTOR,
@@ -169,6 +171,12 @@ def resumir_base(mediciones):
         "filas_salientes": _miles(filas_originales - len(mediciones)),
         "pct_fuera_catalogo": _entero(fuera_de_catalogo * 100),
         "n_entornos": str(mediciones.loc[mediciones["entorno"] != SIN_ENTORNO, "entorno"].nunique()),
+        "filas_excluidas": _miles(acciones.get("excluida", 0)),
+        "peso_mediciones": str(len(mediciones)),
+        "peso_excluidas": str(acciones.get("excluida", 0)),
+        "peso_agrupadas": str(acciones.get("agrupada", 0)),
+        "filas_agrupadas": _miles(acciones.get("agrupada", 0)),
+        "filas_corregidas": _miles(acciones.get("corregida", 0) + acciones.get("completada", 0)),
     }
 
 
