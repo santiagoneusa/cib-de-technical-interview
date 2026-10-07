@@ -15,46 +15,89 @@ Abrir `1_experimentacion/notebooks/` y ejecutar cada notebook de arriba a abajo,
 
 | # | Notebook | Contenido |
 |---|---|---|
-| 1.1 | [`1_1_exploracion_datos.ipynb`](notebooks/1_1_exploracion_datos.ipynb) | Qué representa cada fila, cómo separar en tablas y si el dataset y los catálogos coinciden |
+| 1.1 | [`1_1_exploracion_datos.ipynb`](notebooks/1_1_exploracion_datos.ipynb) | Qué representa cada fila, qué columnas la identifican y si el dataset y los catálogos coinciden (la estructura propuesta está en este README) |
 | 1.2 | [`1_2_validacion_catalogos.ipynb`](notebooks/1_2_validacion_catalogos.ipynb) | Contraste con el catálogo de indicadores y el de entornos; diferencias documentadas |
 | 1.3 | [`1_3_evaluacion_calidad.ipynb`](notebooks/1_3_evaluacion_calidad.ipynb) | Registro de problemas de calidad: problema, evidencia, impacto y tratamiento |
 
 ## Conclusiones
 
-### 1.1 Arquitectura empírica de datos
+### 1.1 Estructura de datos propuesta
 
-El resultado de **un indicador, para un equipo, en un mes**. La identifican `Corte` + `Codigo_EQU` + `Indicador`: el frente depende del indicador y el nombre depende del código del equipo. Tal como viene en el Excel, la información se puede leer como cuatro tablas: es la **arquitectura empírica**, lo que los datos dejan ver sin intervenirlos. La notación se explica en la arquitectura propuesta.
+Cada fila del Excel es **el resultado de un indicador, para un equipo, en un mes**, y la identifican `Corte` + `Codigo_EQU` + `Indicador`. Hoy todo vive en una sola hoja que repite en cada fila el nombre del equipo y el frente, y usa nombres como llave. Se propone separarla en una tabla de mediciones y cuatro catálogos:
 
 ```mermaid
 erDiagram
-    INDICADORES ||--o{ MEDICIONES : "Indicador"
-    EQUIPOS ||--o{ MEDICIONES : "Codigo_EQU"
-    ENTORNOS ||--o{ EQUIPOS : "Codigo_Padre"
+    FRENTES ||--o{ INDICADORES : "agrupa"
+    INDICADORES ||--o{ MEDICIONES : "se mide en"
+    EQUIPOS ||--o{ MEDICIONES : "reporta"
+    ENTORNOS ||--o{ EQUIPOS : "contiene"
     MEDICIONES {
-        texto Corte PK "AAAAMM"
-        texto Codigo_EQU PK, FK
-        texto Indicador PK, FK "el nombre hace de llave"
-        decimal Resultado
-        decimal Meta
-        decimal Cumplimiento
+        corte fecha PK "primer día del mes"
+        cod_equipo texto PK, FK "EQU00000"
+        cod_indicador texto PK, FK "IND000"
+        resultado decimal
+        meta decimal
+        cumplimiento decimal "1 = meta cumplida"
     }
     EQUIPOS {
-        texto Codigo_EQU PK
-        texto EQU
-        enum Tipo "[EQU, CEX]"
-        texto Codigo_Padre FK
+        cod_equipo texto PK "EQU00000 o CEX00000"
+        nombre texto
+        tipo enum "[EQU, CEX]"
+        cod_entorno texto FK
+        estado enum "[vigente, histórico]"
     }
     ENTORNOS {
-        texto Codigo_Padre PK
-        texto Nombre_Padre
+        cod_entorno texto PK "ENX0000 o VPX0000"
+        nombre texto
+        nivel enum "[entorno, vicepresidencia, sin entorno]"
     }
     INDICADORES {
-        texto Indicador PK
-        texto Frente
-        texto Definicion
-        enum Unidad "[Porcentaje, Escala, Cantidad]"
+        cod_indicador texto PK "IND000"
+        nombre texto
+        cod_frente texto FK
+        definicion texto
+        unidad enum "[porcentaje, escala, cantidad]"
+        sentido enum "[mayor es mejor, menor es mejor]"
+    }
+    FRENTES {
+        cod_frente texto PK "FRE00"
+        nombre texto
     }
 ```
+
+| Notación | Significado |
+|---|---|
+| `PK` | Llave primaria: identifica cada fila y no se repite. En Mediciones son tres columnas juntas: un mes, un equipo y un indicador |
+| `FK` | Llave foránea: apunta a la llave primaria de otra tabla y solo acepta valores que existan allí |
+| `enum "[a, b]"` | Lista cerrada: la columna solo admite los valores entre corchetes |
+| `texto` · `fecha` · `decimal` | Tipo de dato de la columna; el texto entre comillas es el formato o una aclaración |
+| Línea `\|\|──o{` | Relación uno a muchos: el extremo con doble raya es el "uno" y el de tres patas el "muchos". Un frente agrupa muchos indicadores; cada indicador pertenece a un solo frente |
+
+**Qué representa cada entidad**
+
+| Entidad | Qué guarda | Una fila por | Llave |
+|---|---|---|---|
+| Mediciones | El resultado mensual de un indicador para un equipo: lo único que cambia cada mes | mes × equipo × indicador | `corte` + `cod_equipo` + `cod_indicador` |
+| Equipos | Los equipos (EQU) y células (CEX), vigentes e históricos, y el entorno al que pertenecen | equipo | `cod_equipo` |
+| Entornos | La unidad que agrupa equipos: un entorno, una vicepresidencia o "sin entorno" | entorno | `cod_entorno` |
+| Indicadores | Qué se mide, en qué unidad y si más alto es mejor | indicador | `cod_indicador` |
+| Frentes | La agrupación estratégica de los indicadores | frente | `cod_frente` |
+
+**Por qué es una buena estructura**
+
+Cada dato se guarda **una sola vez, en su tabla, con un código que no cambia**, y las mediciones solo apuntan a esos códigos. Así un cambio de nombre se corrige en un solo lugar, un mismo equipo no puede aparecer como dos, y una medición solo entra si su equipo y su indicador existen en los catálogos. Cada decisión responde a un problema encontrado en 1.2 y 1.3:
+
+| Hallazgo | Decisión de diseño | Evidencia |
+|---|---|---|
+| 146 escrituras para 89 equipos y nombre vacío en 41% de las filas | Mediciones guarda solo el `cod_equipo` normalizado; el nombre vive una vez en Equipos | 1.2.d · 1.3.a |
+| El mismo indicador se escribe distinto entre hojas | Cada indicador tiene un `cod_indicador` propio (hoy no existe: se crea al homologar); el nombre es solo una etiqueta | 1.2.a |
+| El frente de agilidad tuvo tres nombres | Mediciones no repite el frente: lo hereda de su indicador, y cada frente existe una vez en Frentes | 1.2.c |
+| Encuestas en otra escala; no se sabe si más alto es mejor | Indicadores declara unidad y sentido, para calcular el cumplimiento igual en todos | 1.3.e |
+| La columna "padre" mezcla entornos, vicepresidencias y "sin entorno" | Entornos tiene un `nivel` explícito | 1.2.f |
+| 26 equipos fantasma, 18 de ellos históricos | Equipos tiene un `estado`: la historia se conserva sin confundirse con lo vigente | 1.2.e |
+| Mediciones repetidas o en conflicto | Corte + equipo + indicador es la llave: una sola medición por mes | 1.3.b |
+
+Con esta estructura los problemas de catálogo se detienen en la carga en vez de descubrirse en el análisis. Es el punto de partida de la transformación (actividad 2).
 
 ### 1.2 Coincidencia del dataset con los catálogos
 
@@ -89,67 +132,3 @@ erDiagram
 | ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento copiado (1.014683) | 530 filas (3,5%), casi todas en Disponibilidad e Incidentes | marcar y excluir del análisis |
 
 Impacto y detalle: [`notebooks/1_3_evaluacion_calidad.ipynb`](notebooks/1_3_evaluacion_calidad.ipynb).
-
-### Arquitectura de datos propuesta
-
-La arquitectura empírica funciona como punto de partida, pero 1.2 y 1.3 muestran que no protege la información: los nombres cambian, un mismo código se escribe de varias formas y los catálogos no reconocen buena parte de lo que se mide. Por eso se propone un modelo donde **cada dato vive una sola vez, en su tabla, identificado por un código que no cambia**, y las mediciones solo apuntan a esos códigos:
-
-```mermaid
-erDiagram
-    FRENTES ||--o{ INDICADORES : "agrupa"
-    INDICADORES ||--o{ MEDICIONES : "se mide en"
-    EQUIPOS ||--o{ MEDICIONES : "reporta"
-    ENTORNOS ||--o{ EQUIPOS : "contiene"
-    MEDICIONES {
-        fecha corte PK "primer día del mes"
-        texto codigo_equipo PK, FK "EQU00000"
-        texto codigo_indicador PK, FK "IND000"
-        decimal resultado
-        decimal meta
-        decimal cumplimiento "resultado frente a la meta: 1 = meta cumplida"
-    }
-    EQUIPOS {
-        texto codigo_equipo PK "EQU00000 o CEX00000"
-        texto nombre
-        enum tipo "[EQU, CEX]"
-        texto codigo_entorno FK
-        enum estado "[vigente, histórico]"
-    }
-    ENTORNOS {
-        texto codigo_entorno PK "ENX0000 o VPX0000"
-        texto nombre
-        enum nivel "[entorno, vicepresidencia, sin entorno]"
-    }
-    INDICADORES {
-        texto codigo_indicador PK "IND000"
-        texto nombre
-        texto codigo_frente FK
-        texto definicion
-        enum unidad "[porcentaje, escala, cantidad]"
-        enum sentido "[mayor es mejor, menor es mejor]"
-    }
-    FRENTES {
-        texto codigo_frente PK "FRE00"
-        texto nombre
-    }
-```
-
-| Notación | Significado |
-|---|---|
-| `PK` | Llave primaria: identifica cada fila y no se repite. En Mediciones son tres columnas juntas: un mes, un equipo y un indicador |
-| `FK` | Llave foránea: apunta a la llave primaria de otra tabla y solo acepta valores que existan allí |
-| `enum "[a, b]"` | Lista cerrada: la columna solo admite los valores entre corchetes |
-| `texto` · `fecha` · `decimal` | Tipo de dato de la columna; el texto entre comillas es el formato o una aclaración |
-| Línea `\|\|──o{` | Relación uno a muchos: el extremo con doble raya es el "uno" y el de tres patas el "muchos". Un frente agrupa muchos indicadores; cada indicador pertenece a un solo frente |
-
-| Hallazgo | Decisión de diseño | Evidencia |
-|---|---|---|
-| 146 escrituras para 89 equipos y nombre vacío en 41% de las filas | Mediciones guarda solo el `codigo_equipo` normalizado; el nombre vive una vez en Equipos | 1.2.d · 1.3.a |
-| El mismo indicador se escribe distinto entre hojas | Cada indicador tiene un `codigo_indicador` propio (hoy no existe: se crea al homologar); el nombre es solo una etiqueta | 1.2.a |
-| El frente de agilidad tuvo tres nombres | Mediciones no repite el frente: lo hereda de su indicador, y cada frente existe una vez en Frentes | 1.2.c |
-| Encuestas en otra escala; no se sabe si más alto es mejor | Indicadores declara unidad y sentido, para calcular el cumplimiento igual en todos | 1.3.e |
-| La columna "padre" mezcla entornos, vicepresidencias y "sin entorno" | Entornos tiene un `nivel` explícito | 1.2.f |
-| 26 equipos fantasma, 18 de ellos históricos | Equipos tiene un `estado`: la historia se conserva sin confundirse con lo vigente | 1.2.e |
-| Mediciones repetidas o en conflicto | Corte + equipo + indicador es la llave: una sola medición por mes | 1.3.b |
-
-Con este modelo, una medición solo entra si su equipo y su indicador existen en los catálogos: los problemas de catálogo se detienen en la carga en vez de descubrirse en el análisis. Es el punto de partida de la transformación (actividad 2).

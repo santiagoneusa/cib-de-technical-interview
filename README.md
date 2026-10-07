@@ -31,46 +31,38 @@ erDiagram
     EQUIPOS ||--o{ MEDICIONES : "reporta"
     ENTORNOS ||--o{ EQUIPOS : "contiene"
     MEDICIONES {
-        fecha corte PK "primer día del mes"
-        texto codigo_equipo PK, FK "EQU00000"
-        texto codigo_indicador PK, FK "IND000"
-        decimal resultado
-        decimal meta
-        decimal cumplimiento "resultado frente a la meta: 1 = meta cumplida"
+        corte fecha PK "primer día del mes"
+        cod_equipo texto PK, FK "EQU00000"
+        cod_indicador texto PK, FK "IND000"
+        resultado decimal
+        meta decimal
+        cumplimiento decimal "1 = meta cumplida"
     }
     EQUIPOS {
-        texto codigo_equipo PK "EQU00000 o CEX00000"
-        texto nombre
-        enum tipo "[EQU, CEX]"
-        texto codigo_entorno FK
-        enum estado "[vigente, histórico]"
+        cod_equipo texto PK "EQU00000 o CEX00000"
+        nombre texto
+        tipo enum "[EQU, CEX]"
+        cod_entorno texto FK
+        estado enum "[vigente, histórico]"
     }
     ENTORNOS {
-        texto codigo_entorno PK "ENX0000 o VPX0000"
-        texto nombre
-        enum nivel "[entorno, vicepresidencia, sin entorno]"
+        cod_entorno texto PK "ENX0000 o VPX0000"
+        nombre texto
+        nivel enum "[entorno, vicepresidencia, sin entorno]"
     }
     INDICADORES {
-        texto codigo_indicador PK "IND000"
-        texto nombre
-        texto codigo_frente FK
-        texto definicion
-        enum unidad "[porcentaje, escala, cantidad]"
-        enum sentido "[mayor es mejor, menor es mejor]"
+        cod_indicador texto PK "IND000"
+        nombre texto
+        cod_frente texto FK
+        definicion texto
+        unidad enum "[porcentaje, escala, cantidad]"
+        sentido enum "[mayor es mejor, menor es mejor]"
     }
     FRENTES {
-        texto codigo_frente PK "FRE00"
-        texto nombre
+        cod_frente texto PK "FRE00"
+        nombre texto
     }
 ```
-
-| Notación | Significado |
-|---|---|
-| `PK` | Llave primaria: identifica cada fila y no se repite. En Mediciones son tres columnas juntas: un mes, un equipo y un indicador |
-| `FK` | Llave foránea: apunta a la llave primaria de otra tabla y solo acepta valores que existan allí |
-| `enum "[a, b]"` | Lista cerrada: la columna solo admite los valores entre corchetes |
-| `texto` · `fecha` · `decimal` | Tipo de dato de la columna; el texto entre comillas es el formato o una aclaración |
-| Línea `\|\|──o{` | Relación uno a muchos: el extremo con doble raya es el "uno" y el de tres patas el "muchos". Un frente agrupa muchos indicadores; cada indicador pertenece a un solo frente |
 
 ### 2. Transformación
 

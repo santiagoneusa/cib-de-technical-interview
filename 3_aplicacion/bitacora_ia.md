@@ -73,3 +73,8 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
 - **Pedido humano:** explicar PK, FK y tipos de dato en el diagrama; mostrar las listas cerradas como `enum [EQU, CEX]`; títulos de README afirmativos en vez de preguntas (el humano ya había renombrado 1.1.b a "Arquitectura de Datos según Evidencia Empírica").
 - **Propuesta de la IA:** tipos en español (`texto`, `fecha`, `decimal`, `enum`), formato de cada código como aclaración (EQU00000, IND000…), una tabla de notación bajo el diagrama, la arquitectura empírica con la misma notación, y la tabla 1.2 como "Validación | Resultado".
 - **Validación:** los tres diagramas mermaid se renderizaron con mermaid 11 sin errores.
+
+### 2026-10-07 · Actividad 1 · La estructura propuesta responde 1.1
+- **Pedido humano:** releyendo la prueba ("indica cómo separarías la información en tablas o catálogos"), la respuesta es la estructura propuesta y no el modelo empírico: quitar el diagrama del notebook 1.1.b y explicar en el README de experimentación qué es cada entidad y por qué es una buena estructura; el README principal solo muestra el diagrama.
+- **Propuesta de la IA:** 1.1.b del notebook enlaza al README; el README del módulo une en 1.1 el diagrama, la notación, el significado de cada entidad y la tabla hallazgo → decisión. Además, Mermaid no permite poner `PK`/`FK` antes del tipo (son palabras reservadas): el orden más cercano a lo pedido es nombre | tipo | llave.
+- **Validación:** el notebook 1.1 se ejecutó completo tras quitar el diagrama y las funciones que solo él usaba.
