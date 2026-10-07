@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- fragmento -->
+<title>Hallazgos KPI Estrategia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Una lámina por hallazgo: mensaje y acción a la izquierda, una sola gráfica a la derecha; fondo blanco por decisión */
+:root {
+  --fondo: #ffffff;
+  --panel: #f6f5f3;
+  --texto: #1f1b1a;
+  --suave: #5c5654;
+  --linea: #e7e4e2;
+  --amarillo: #fdda24;
+  --verde: #00a676;
+  --naranja: #e8692b;
+  --azul: #2b9fc4;
+  --gris: #bdb8b6;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --cuerpo: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fondo); color: var(--texto); font: 400 1.05rem/1.55 var(--cuerpo); }
+.contenedor { max-width: 1160px; margin: 0 auto; padding-inline: 24px; }
+h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--azul); outline-offset: 3px; }
+
+.etiqueta { font: 700 0.74rem/1.2 var(--cuerpo); letter-spacing: 0.09em; text-transform: uppercase; color: var(--suave); }
+
+.portada { padding-block: 56px 40px; display: grid; gap: 32px; }
+.portada h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 800; font-stretch: 82%; line-height: 1.02; max-width: 16ch; }
+.portada h1 span { background: linear-gradient(transparent 60%, var(--amarillo) 60%); }
+.fuente { color: var(--suave); font-variant-numeric: tabular-nums; }
+
+.mensajes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 2px solid var(--texto); }
+.mensajes a { display: grid; gap: 6px; padding: 20px 20px 4px 0; text-decoration: none; color: inherit; }
+.mensajes a + a { padding-left: 20px; border-left: 1px solid var(--linea); }
+.mensajes b { font: 800 clamp(2.4rem, 4vw, 3.2rem)/1 var(--display); font-stretch: 78%; font-variant-numeric: tabular-nums; }
+.mensajes a:hover b { text-decoration: underline 4px var(--amarillo); text-underline-offset: 6px; }
+
+.glosario { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; background: var(--panel); border-radius: 14px; padding: 20px 22px; margin: 0; }
+.glosario dt { font-weight: 700; }
+.glosario dd { margin: 4px 0 0; color: var(--suave); font-size: 0.95rem; }
+
+.lamina { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; padding-block: 56px; border-top: 1px solid var(--linea); align-items: start; }
+.mensaje { display: grid; gap: 22px; }
+.numero { display: inline-flex; align-items: center; gap: 10px; }
+.numero b { background: var(--amarillo); font: 800 0.8rem/1 var(--display); padding: 6px 10px; border-radius: 999px; }
+.mensaje h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 800; font-stretch: 85%; line-height: 1.08; }
+.bloque { display: grid; gap: 4px; }
+.accion { background: var(--panel); border-radius: 12px; padding: 14px 16px; }
+.accion p { font-weight: 600; }
+.certeza { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; color: var(--suave); font-size: 0.95rem; }
+.certeza b { display: inline-flex; align-items: center; gap: 6px; color: var(--texto); }
+.certeza b::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--color, var(--verde)); }
+
+.evidencia { margin: 0; display: grid; gap: 14px; min-width: 0; }
+.evidencia h3 { margin: 0; font: 700 1.1rem/1.3 var(--cuerpo); }
+.lienzo { position: relative; height: 340px; }
+.lienzo.alto { height: 430px; }
+.evidencia figcaption { display: grid; gap: 4px; border-left: 3px solid var(--texto); padding-left: 12px; }
+.cifras { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.cifras span { font: 800 2rem/1 var(--display); font-stretch: 80%; font-variant-numeric: tabular-nums; }
+.cifras small { display: block; font: 600 0.78rem/1.2 var(--cuerpo); color: var(--suave); letter-spacing: 0.04em; text-transform: uppercase; }
+.flecha { color: var(--naranja); font-size: 1.6rem; }
+
+.cierre { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; padding-block: 48px; border-top: 2px solid var(--texto); }
+.cierre h2 { font-size: 1.5rem; font-stretch: 85%; margin-bottom: 14px; }
+.cierre ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 10px; }
+footer { padding-block: 20px 48px; color: var(--suave); font-size: 0.85rem; border-top: 1px solid var(--linea); }
+footer code { font-size: 0.9em; }
+
+@media (max-width: 900px) {
+  .lamina, .cierre { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .mensajes, .glosario { grid-template-columns: minmax(0, 1fr); }
+  .mensajes a + a { padding-left: 0; border-left: 0; border-top: 1px solid var(--linea); }
+}
+@media (max-width: 520px) {
+  .contenedor { padding-inline: 16px; }
+  .lienzo, .lienzo.alto { height: 320px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="contenedor">
+  <header class="portada">
+    <span class="etiqueta">Actividad 3 · Primeros hallazgos</span>
+    <h1>Comparar de forma justa <span>cambia a quién acompañar</span></h1>
+    <p class="fuente">11.466 mediciones · 87 equipos · 2023-01 a 2026-08</p>
+
+    <nav class="mensajes" aria-label="Los tres hallazgos">
+      <a href="#hallazgo-1"><b>10×</b><span>pesa más <strong>qué</strong> se mide que <strong>quién</strong> lo mide</span></a>
+      <a href="#hallazgo-2"><b>Puesto 20 → 5</b><span>Entorno 8 al compararlo de forma justa</span></a>
+      <a href="#hallazgo-3"><b>98% → 57%</b><span>cayó Disponibilidad en 2026 sin que bajara el resultado</span></a>
+    </nav>
+
+    <dl class="glosario">
+      <div><dt>Meta cumplida</dt><dd>Un mes en que el equipo alcanzó la meta de un indicador (o quedó por debajo, si menos es mejor).</dd></div>
+      <div><dt>% de metas cumplidas</dt><dd>De todas las mediciones de un equipo o entorno, cuántas alcanzaron su meta.</dd></div>
+      <div><dt>Comparación justa</dt><dd>Cada resultado frente al de los equipos que miden el mismo indicador en el mismo mes.</dd></div>
+    </dl>
+  </header>
+
+  <section class="lamina" id="hallazgo-1">
+    <div class="mensaje">
+      <span class="numero"><b>Hallazgo 1</b><span class="etiqueta">Equipos</span></span>
+      <h2>Lo que se mide pesa 10 veces más que quién lo mide</h2>
+      <div class="bloque"><span class="etiqueta">Interpretación</span><p>Un equipo puede verse mal solo porque le tocaron metas difíciles: hay indicadores que se cumplen el 0% de las veces y otros el 86%.</p></div>
+      <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Calibrar las metas antes de comparar equipos.</p></div>
+      <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>11.466 mediciones, al menos 5 equipos por indicador y mes.</p>
+    </div>
+    <figure class="evidencia">
+      <h3>¿Qué explica que una meta se cumpla o no?</h3>
+      <div class="lienzo"><canvas id="grafica-1" role="img" aria-label="Porcentaje de las diferencias en metas cumplidas que explica cada factor"></canvas></div>
+      <figcaption><span class="etiqueta">Evidencia</span><span>Saber qué indicador y en qué mes explica el 48% de las diferencias; saber qué equipo, solo el 5%.</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="lamina" id="hallazgo-2">
+    <div class="mensaje">
+      <span class="numero"><b>Hallazgo 2</b><span class="etiqueta">Entornos</span></span>
+      <h2>La comparación justa cambia a quién acompañar</h2>
+      <div class="bloque"><span class="etiqueta">Interpretación</span><p>Entorno 8 cumple solo el 33% de sus metas, pero supera en 9,5 puntos a los equipos que miden lo mismo: sus metas son difíciles, no su desempeño. Al revés, Entorno 13 parece bien y está 6,6 puntos bajo sus pares.</p></div>
+      <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Priorizar el acompañamiento con la comparación justa, no con el % de metas cumplidas.</p></div>
+      <p class="certeza" style="--color: var(--naranja)"><span class="etiqueta">Certeza</span><b>Media</b>Hay entornos de 1 a 4 equipos: un equipo mueve el resultado.</p>
+    </div>
+    <figure class="evidencia">
+      <h3>Entornos según su % de metas cumplidas y la comparación justa</h3>
+      <div class="lienzo alto"><canvas id="grafica-2" role="img" aria-label="Mapa de entornos: porcentaje de metas cumplidas frente a puntos sobre o bajo sus pares"></canvas></div>
+      <figcaption><span class="etiqueta">Evidencia · 2025-09 a 2026-08</span><span>En color, los 3 de 23 entornos cuyo % de metas cumplidas cuenta otra historia: se alejan 5 puntos o más de sus pares. Pase el cursor para ver cada entorno.</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="lamina" id="hallazgo-3">
+    <div class="mensaje">
+      <span class="numero"><b>Hallazgo 3</b><span class="etiqueta">Tendencia</span></span>
+      <h2>En 2026 no bajó el desempeño: subió la meta</h2>
+      <div class="bloque"><span class="etiqueta">Interpretación</span><p>Una caída en el tablero puede venir de una meta más exigente o de un indicador nuevo, no de los equipos. En Excelencia operativa la caída la trae Perdida esperada por fraude, nuevo en 2026.</p></div>
+      <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Registrar cada cambio de meta y mostrarlo junto a la tendencia.</p></div>
+      <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>en los datos; la razón del cambio de meta no está en el archivo.</p>
+    </div>
+    <figure class="evidencia">
+      <h3>Disponibilidad: resultado y meta de los equipos, mes a mes</h3>
+      <div class="cifras">
+        <div><small>Cumplieron 2025</small><span>98%</span></div>
+        <span class="flecha" aria-hidden="true">→</span>
+        <div><small>Cumplieron 2026</small><span>57%</span></div>
+      </div>
+      <div class="lienzo"><canvas id="grafica-3" role="img" aria-label="Resultado y meta medianos de Disponibilidad por mes"></canvas></div>
+      <figcaption><span class="etiqueta">Evidencia</span><span>El resultado sigue cerca de 99,7%, pero la meta pasó de 99,2% a 99,6%.</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="cierre">
+    <div>
+      <h2>Qué no podemos concluir</h2>
+      <ul>
+        <li>Si las metas están bien calibradas.</li>
+        <li>Si acompañar a un equipo mejora su cumplimiento.</li>
+        <li>Qué tan lejos de la meta quedó cada equipo: solo sabemos si la cumplió.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Qué información necesitamos</h2>
+      <ul>
+        <li>Histórico de metas y el criterio con que se fijan.</li>
+        <li>Entorno de cada equipo mes a mes, no solo el de hoy.</li>
+        <li>Registro de acompañamientos: equipo, fecha y tipo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Fuente: <code>0_datos/3_score/KPIS_historico_score.xlsx</code> · Se regenera con <code>uv run python 3_reporte/generar_reporte.py</code></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const color = nombre => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+const coma = valor => String(valor).replace(".", ",");
+
+function enDosLineas(texto) {
+  const palabras = texto.split(" ");
+  if (palabras.length < 4) return texto;
+  const mitad = Math.ceil(palabras.length / 2);
+  return [palabras.slice(0, mitad).join(" "), palabras.slice(mitad).join(" ")];
+}
+
+const COLOR_LECTURA = {
+  "parece bajo, supera a sus pares": "--verde",
+  "parece bien, está bajo sus pares": "--naranja",
+  "coincide": "--gris",
+};
+
+const valoresAlFinal = {
+  id: "valoresAlFinal",
+  afterDatasetsDraw(grafica) {
+    const { ctx } = grafica;
+    ctx.save();
+    ctx.font = `800 ${grafica.options.tamanoValor || 22}px ${color("--display")}`;
+    ctx.fillStyle = color("--texto");
+    ctx.textBaseline = "middle";
+    grafica.getDatasetMeta(0).data.forEach((barra, i) => {
+      ctx.fillText(`${Math.round(grafica.data.datasets[0].data[i])}%`, barra.x + 10, barra.y);
+    });
+    ctx.restore();
+  },
+};
+
+const cuadrantes = {
+  id: "cuadrantes",
+  beforeDatasetsDraw(grafica) {
+    const { ctx, chartArea: area, scales: { x, y } } = grafica;
+    const { corte_cumplimiento: corte, margen } = grafica.options.entornos;
+    const xCorte = x.getPixelForValue(corte);
+    const yCero = y.getPixelForValue(0);
+    const ySobre = y.getPixelForValue(margen);
+    const yBajo = y.getPixelForValue(-margen);
+
+    ctx.save();
+    ctx.fillStyle = "rgba(0, 166, 118, 0.08)";
+    ctx.fillRect(area.left, area.top, xCorte - area.left, ySobre - area.top);
+    ctx.fillStyle = "rgba(232, 105, 43, 0.09)";
+    ctx.fillRect(xCorte, yBajo, area.right - xCorte, area.bottom - yBajo);
+
+    ctx.strokeStyle = color("--suave");
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(xCorte, area.top);
+    ctx.lineTo(xCorte, area.bottom);
+    ctx.moveTo(area.left, yCero);
+    ctx.lineTo(area.right, yCero);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.font = `700 12px ${color("--cuerpo")}`;
+    ctx.fillStyle = color("--verde");
+    ctx.fillText("Cumplen poco, pero superan a sus pares", area.left + 10, area.top + 18);
+    ctx.fillStyle = color("--naranja");
+    ctx.textAlign = "right";
+    ctx.fillText("Cumplen mucho, pero están bajo sus pares", area.right - 10, area.bottom - 12);
+    ctx.restore();
+  },
+  afterDatasetsDraw(grafica) {
+    const { ctx } = grafica;
+    ctx.save();
+    ctx.font = `600 12px ${color("--cuerpo")}`;
+    ctx.fillStyle = color("--texto");
+    grafica.data.datasets.forEach((serie, d) => {
+      if (!serie.etiquetar) return;
+      grafica.getDatasetMeta(d).data.forEach((punto, i) => {
+        ctx.fillText(serie.data[i].entorno, punto.x + punto.options.radius + 4, punto.y + 4);
+      });
+    });
+    ctx.restore();
+  },
+};
+
+const banda2026 = {
+  id: "banda2026",
+  beforeDatasetsDraw(grafica) {
+    const { ctx, chartArea: area, scales: { x } } = grafica;
+    const inicio = grafica.data.labels.findIndex(mes => mes.startsWith("2026"));
+    if (inicio < 1) return;
+
+    const izquierda = (x.getPixelForValue(inicio - 1) + x.getPixelForValue(inicio)) / 2;
+    ctx.save();
+    ctx.fillStyle = "rgba(253, 218, 36, 0.22)";
+    ctx.fillRect(izquierda, area.top, area.right - izquierda, area.bottom - area.top);
+    ctx.font = `700 12px ${color("--cuerpo")}`;
+    ctx.fillStyle = color("--texto");
+    ctx.fillText("2026: meta más alta", izquierda + 8, area.bottom - 10);
+    ctx.restore();
+  },
+};
+
+function prepararChart() {
+  Chart.defaults.font.family = color("--cuerpo");
+  Chart.defaults.color = color("--suave");
+}
+
+function graficaFactores(id, variacion, tamanoEtiqueta = 15) {
+  return new Chart(document.getElementById(id), {
+    type: "bar",
+    data: {
+      labels: variacion.map(f => enDosLineas(f.grupo)),
+      datasets: [{ data: variacion.map(f => f.pct), backgroundColor: variacion.map((_, i) => (i === 0 ? color("--azul") : color("--gris"))), borderRadius: 8, barPercentage: 0.7 }],
+    },
+    options: {
+      indexAxis: "y",
+      maintainAspectRatio: false,
+      tamanoValor: tamanoEtiqueta + 7,
+      layout: { padding: { right: 80 } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `Explica el ${Math.round(c.raw)}% de las diferencias` } } },
+      scales: {
+        x: { display: false, min: 0, max: Math.max(...variacion.map(f => f.pct)) },
+        y: { grid: { display: false }, border: { display: false }, ticks: { color: color("--texto"), font: { size: tamanoEtiqueta, weight: 600 } } },
+      },
+    },
+    plugins: [valoresAlFinal],
+  });
+}
+
+function graficaEntornos(id, entornos) {
+  const radio = equipos => 6 + equipos * 1.6;
+  const serie = (lectura, etiquetar) => ({
+    data: entornos.filas.filter(f => f.lectura === lectura).map(f => ({ x: f.cumplimiento, y: f.frente_a_pares, ...f })),
+    backgroundColor: color(COLOR_LECTURA[lectura]),
+    pointRadius: ctx => radio(ctx.raw?.equipos ?? 1),
+    pointHoverRadius: ctx => radio(ctx.raw?.equipos ?? 1) + 3,
+    etiquetar,
+  });
+
+  return new Chart(document.getElementById(id), {
+    type: "scatter",
+    data: {
+      datasets: [
+        serie("coincide", false),
+        serie("parece bajo, supera a sus pares", true),
+        serie("parece bien, está bajo sus pares", true),
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      entornos,
+      layout: { padding: { right: 40 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => {
+          const f = c.raw;
+          const signo = f.frente_a_pares > 0 ? "+" : "";
+          return [
+            `${f.entorno} · ${f.equipos} equipo${f.equipos > 1 ? "s" : ""}`,
+            `Metas cumplidas: ${coma(f.cumplimiento)}% (puesto ${f.puesto_cumplimiento})`,
+            `Frente a sus pares: ${signo}${coma(f.frente_a_pares)} puntos (puesto ${f.puesto_justo})`,
+          ];
+        } } },
+      },
+      scales: {
+        x: { min: 0, max: 80, title: { display: true, text: "% de metas cumplidas →", color: color("--texto"), font: { weight: 600 } }, ticks: { callback: v => `${v}%` }, grid: { display: false } },
+        y: { min: -15, max: 25, title: { display: true, text: "Comparación justa: puntos frente a sus pares →", color: color("--texto"), font: { weight: 600 } }, ticks: { callback: v => (v > 0 ? `+${v}` : v) }, grid: { color: color("--linea") } },
+      },
+    },
+    plugins: [cuadrantes],
+  });
+}
+
+function graficaSeguimiento(id, seguimiento) {
+  return new Chart(document.getElementById(id), {
+    type: "line",
+    data: {
+      labels: seguimiento.map(f => f.mes),
+      datasets: [
+        { label: "Resultado de los equipos", data: seguimiento.map(f => f.resultado), borderColor: color("--azul"), backgroundColor: color("--azul"), borderWidth: 3, tension: 0.3, pointRadius: 0, pointHoverRadius: 5 },
+        { label: "Meta", data: seguimiento.map(f => f.meta), borderColor: color("--texto"), backgroundColor: color("--texto"), borderWidth: 2.5, borderDash: [7, 5], pointRadius: 0, pointHoverRadius: 5 },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { position: "bottom", labels: { color: color("--texto"), usePointStyle: true, pointStyle: "line", font: { size: 13 } } },
+        tooltip: { callbacks: {
+          label: c => `${c.dataset.label}: ${coma(c.raw.toFixed(2))}%`,
+          afterBody: c => `Cumplieron: ${Math.round(seguimiento[c[0].dataIndex].cumplieron)}% de los equipos`,
+        } },
+      },
+      scales: {
+        y: { min: 98.6, max: 100, ticks: { callback: v => `${coma(v.toFixed(1))}%` }, grid: { color: color("--linea") } },
+        x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 7 } },
+      },
+    },
+    plugins: [banda2026],
+  });
+}
+
+function sinConexion() {
+  document.querySelectorAll(".lienzo").forEach(lienzo => {
+    lienzo.style.height = "auto";
+    lienzo.innerHTML = '<p class="etiqueta">La gráfica necesita conexión a internet para cargar Chart.js.</p>';
+  });
+}
+
+
+const DATOS = {"variacion": [{"grupo": "Qué indicador y en qué mes", "pct": 47.8}, {"grupo": "Qué equipo", "pct": 4.6}, {"grupo": "Qué entorno", "pct": 1.8}], "entornos": {"corte_cumplimiento": 57.8, "margen": 5, "filas": [{"entorno": "Entorno 1", "equipos": 4, "cumplimiento": 56.9, "frente_a_pares": 2.1, "lectura": "coincide", "puesto_cumplimiento": 12, "puesto_justo": 8}, {"entorno": "Entorno 10", "equipos": 3, "cumplimiento": 68.3, "frente_a_pares": 12.4, "lectura": "coincide", "puesto_cumplimiento": 3, "puesto_justo": 2}, {"entorno": "Entorno 11", "equipos": 3, "cumplimiento": 0.0, "frente_a_pares": -7.1, "lectura": "coincide", "puesto_cumplimiento": 22, "puesto_justo": 20}, {"entorno": "Entorno 12", "equipos": 4, "cumplimiento": 56.8, "frente_a_pares": -2.4, "lectura": "coincide", "puesto_cumplimiento": 13, "puesto_justo": 17}, {"entorno": "Entorno 13", "equipos": 3, "cumplimiento": 58.8, "frente_a_pares": -6.6, "lectura": "parece bien, está bajo sus pares", "puesto_cumplimiento": 11, "puesto_justo": 19}, {"entorno": "Entorno 14", "equipos": 3, "cumplimiento": 64.1, "frente_a_pares": 0.1, "lectura": "coincide", "puesto_cumplimiento": 5, "puesto_justo": 11}, {"entorno": "Entorno 15", "equipos": 2, "cumplimiento": 59.5, "frente_a_pares": 21.8, "lectura": "coincide", "puesto_cumplimiento": 10, "puesto_justo": 1}, {"entorno": "Entorno 16", "equipos": 2, "cumplimiento": 32.5, "frente_a_pares": 1.8, "lectura": "coincide", "puesto_cumplimiento": 21, "puesto_justo": 9}, {"entorno": "Entorno 2", "equipos": 2, "cumplimiento": 66.9, "frente_a_pares": 10.7, "lectura": "coincide", "puesto_cumplimiento": 4, "puesto_justo": 3}, {"entorno": "Entorno 3", "equipos": 1, "cumplimiento": 61.7, "frente_a_pares": 8.4, "lectura": "coincide", "puesto_cumplimiento": 6, "puesto_justo": 6}, {"entorno": "Entorno 4", "equipos": 10, "cumplimiento": 59.6, "frente_a_pares": -1.6, "lectura": "coincide", "puesto_cumplimiento": 8, "puesto_justo": 15}, {"entorno": "Entorno 5", "equipos": 4, "cumplimiento": 53.8, "frente_a_pares": -8.9, "lectura": "coincide", "puesto_cumplimiento": 17, "puesto_justo": 22}, {"entorno": "Entorno 6", "equipos": 3, "cumplimiento": 53.6, "frente_a_pares": -0.4, "lectura": "coincide", "puesto_cumplimiento": 18, "puesto_justo": 14}, {"entorno": "Entorno 7", "equipos": 1, "cumplimiento": 60.9, "frente_a_pares": -2.3, "lectura": "coincide", "puesto_cumplimiento": 7, "puesto_justo": 16}, {"entorno": "Entorno 8", "equipos": 2, "cumplimiento": 33.3, "frente_a_pares": 9.5, "lectura": "parece bajo, supera a sus pares", "puesto_cumplimiento": 20, "puesto_justo": 5}, {"entorno": "Entorno 9", "equipos": 3, "cumplimiento": 69.4, "frente_a_pares": 1.8, "lectura": "coincide", "puesto_cumplimiento": 1, "puesto_justo": 10}, {"entorno": "Vicepresidencia 2", "equipos": 1, "cumplimiento": 59.6, "frente_a_pares": 0.1, "lectura": "coincide", "puesto_cumplimiento": 9, "puesto_justo": 12}, {"entorno": "Vicepresidencia 3", "equipos": 3, "cumplimiento": 55.1, "frente_a_pares": 0.0, "lectura": "coincide", "puesto_cumplimiento": 15, "puesto_justo": 13}, {"entorno": "Vicepresidencia 4", "equipos": 1, "cumplimiento": 55.0, "frente_a_pares": 9.8, "lectura": "parece bajo, supera a sus pares", "puesto_cumplimiento": 16, "puesto_justo": 4}, {"entorno": "Vicepresidencia 5", "equipos": 3, "cumplimiento": 55.8, "frente_a_pares": -4.8, "lectura": "coincide", "puesto_cumplimiento": 14, "puesto_justo": 18}, {"entorno": "Vicepresidencia 6", "equipos": 1, "cumplimiento": 69.4, "frente_a_pares": 7.0, "lectura": "coincide", "puesto_cumplimiento": 2, "puesto_justo": 7}, {"entorno": "Vicepresidencia 7", "equipos": 1, "cumplimiento": 51.7, "frente_a_pares": -7.9, "lectura": "coincide", "puesto_cumplimiento": 19, "puesto_justo": 21}]}, "seguimiento": [{"mes": "2023-09", "resultado": 99.56, "meta": 99.29, "cumplieron": 85.71}, {"mes": "2023-11", "resultado": 99.59, "meta": 99.33, "cumplieron": 77.14}, {"mes": "2023-12", "resultado": 99.45, "meta": 99.23, "cumplieron": 77.42}, {"mes": "2024-01", "resultado": 99.73, "meta": 98.88, "cumplieron": 100.0}, {"mes": "2024-02", "resultado": 99.84, "meta": 99.01, "cumplieron": 97.06}, {"mes": "2024-03", "resultado": 99.69, "meta": 98.92, "cumplieron": 97.06}, {"mes": "2024-04", "resultado": 99.73, "meta": 98.9, "cumplieron": 96.97}, {"mes": "2024-05", "resultado": 99.78, "meta": 99.01, "cumplieron": 96.97}, {"mes": "2024-06", "resultado": 99.75, "meta": 99.01, "cumplieron": 90.24}, {"mes": "2024-07", "resultado": 99.7, "meta": 99.01, "cumplieron": 82.93}, {"mes": "2024-08", "resultado": 99.71, "meta": 99.12, "cumplieron": 90.24}, {"mes": "2024-10", "resultado": 99.71, "meta": 99.11, "cumplieron": 95.24}, {"mes": "2024-11", "resultado": 99.72, "meta": 99.06, "cumplieron": 90.24}, {"mes": "2024-12", "resultado": 99.74, "meta": 99.09, "cumplieron": 92.86}, {"mes": "2025-01", "resultado": 99.81, "meta": 99.2, "cumplieron": 95.24}, {"mes": "2025-02", "resultado": 99.84, "meta": 99.15, "cumplieron": 97.62}, {"mes": "2025-03", "resultado": 99.74, "meta": 99.15, "cumplieron": 97.62}, {"mes": "2025-04", "resultado": 99.77, "meta": 99.16, "cumplieron": 97.67}, {"mes": "2025-05", "resultado": 99.82, "meta": 99.18, "cumplieron": 97.67}, {"mes": "2025-06", "resultado": 99.85, "meta": 99.17, "cumplieron": 100.0}, {"mes": "2025-07", "resultado": 99.82, "meta": 99.17, "cumplieron": 100.0}, {"mes": "2025-08", "resultado": 99.82, "meta": 99.18, "cumplieron": 100.0}, {"mes": "2025-09", "resultado": 99.84, "meta": 99.15, "cumplieron": 100.0}, {"mes": "2026-01", "resultado": 99.94, "meta": 99.55, "cumplieron": 93.33}, {"mes": "2026-02", "resultado": 99.19, "meta": 99.51, "cumplieron": 42.22}, {"mes": "2026-03", "resultado": 99.66, "meta": 99.55, "cumplieron": 46.67}, {"mes": "2026-04", "resultado": 99.61, "meta": 99.59, "cumplieron": 47.62}, {"mes": "2026-05", "resultado": 99.68, "meta": 99.6, "cumplieron": 48.78}, {"mes": "2026-06", "resultado": 99.73, "meta": 99.62, "cumplieron": 56.1}, {"mes": "2026-07", "resultado": 99.77, "meta": 99.62, "cumplieron": 57.14}, {"mes": "2026-08", "resultado": 99.79, "meta": 99.61, "cumplieron": 64.29}]};
+
+if (window.Chart) {
+  prepararChart();
+  graficaFactores("grafica-1", DATOS.variacion);
+  graficaEntornos("grafica-2", DATOS.entornos);
+  graficaSeguimiento("grafica-3", DATOS.seguimiento);
+} else {
+  sinConexion();
+}
+</script>
+</html>

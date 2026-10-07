@@ -1,0 +1,6 @@
+.venv/
+~$*
+.ipynb_checkpoints/
+__pycache__/
+*.docx
+0_datos/ejecucion.log

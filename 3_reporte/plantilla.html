@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- fragmento -->
+<title>Hallazgos KPI Estrategia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Una lámina por hallazgo: mensaje y acción a la izquierda, una sola gráfica a la derecha; fondo blanco por decisión */
+:root {
+  --fondo: #ffffff;
+  --panel: #f6f5f3;
+  --texto: #1f1b1a;
+  --suave: #5c5654;
+  --linea: #e7e4e2;
+  --amarillo: #fdda24;
+  --verde: #00a676;
+  --naranja: #e8692b;
+  --azul: #2b9fc4;
+  --gris: #bdb8b6;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --cuerpo: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fondo); color: var(--texto); font: 400 1.05rem/1.55 var(--cuerpo); }
+.contenedor { max-width: 1160px; margin: 0 auto; padding-inline: 24px; }
+h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--azul); outline-offset: 3px; }
+
+.etiqueta { font: 700 0.74rem/1.2 var(--cuerpo); letter-spacing: 0.09em; text-transform: uppercase; color: var(--suave); }
+
+.portada { padding-block: 56px 40px; display: grid; gap: 32px; }
+.portada h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 800; font-stretch: 82%; line-height: 1.02; max-width: 16ch; }
+.portada h1 span { background: linear-gradient(transparent 60%, var(--amarillo) 60%); }
+.fuente { color: var(--suave); font-variant-numeric: tabular-nums; }
+
+.mensajes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 2px solid var(--texto); }
+.mensajes a { display: grid; gap: 6px; padding: 20px 20px 4px 0; text-decoration: none; color: inherit; }
+.mensajes a + a { padding-left: 20px; border-left: 1px solid var(--linea); }
+.mensajes b { font: 800 clamp(2.4rem, 4vw, 3.2rem)/1 var(--display); font-stretch: 78%; font-variant-numeric: tabular-nums; }
+.mensajes a:hover b { text-decoration: underline 4px var(--amarillo); text-underline-offset: 6px; }
+
+.glosario { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; background: var(--panel); border-radius: 14px; padding: 20px 22px; margin: 0; }
+.glosario dt { font-weight: 700; }
+.glosario dd { margin: 4px 0 0; color: var(--suave); font-size: 0.95rem; }
+
+.lamina { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; padding-block: 56px; border-top: 1px solid var(--linea); align-items: start; }
+.mensaje { display: grid; gap: 22px; }
+.numero { display: inline-flex; align-items: center; gap: 10px; }
+.numero b { background: var(--amarillo); font: 800 0.8rem/1 var(--display); padding: 6px 10px; border-radius: 999px; }
+.mensaje h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 800; font-stretch: 85%; line-height: 1.08; }
+.bloque { display: grid; gap: 4px; }
+.accion { background: var(--panel); border-radius: 12px; padding: 14px 16px; }
+.accion p { font-weight: 600; }
+.certeza { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; color: var(--suave); font-size: 0.95rem; }
+.certeza b { display: inline-flex; align-items: center; gap: 6px; color: var(--texto); }
+.certeza b::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--color, var(--verde)); }
+
+.evidencia { margin: 0; display: grid; gap: 14px; min-width: 0; }
+.evidencia h3 { margin: 0; font: 700 1.1rem/1.3 var(--cuerpo); }
+.lienzo { position: relative; height: 340px; }
+.lienzo.alto { height: 430px; }
+.evidencia figcaption { display: grid; gap: 4px; border-left: 3px solid var(--texto); padding-left: 12px; }
+.cifras { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.cifras span { font: 800 2rem/1 var(--display); font-stretch: 80%; font-variant-numeric: tabular-nums; }
+.cifras small { display: block; font: 600 0.78rem/1.2 var(--cuerpo); color: var(--suave); letter-spacing: 0.04em; text-transform: uppercase; }
+.flecha { color: var(--naranja); font-size: 1.6rem; }
+
+.cierre { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; padding-block: 48px; border-top: 2px solid var(--texto); }
+.cierre h2 { font-size: 1.5rem; font-stretch: 85%; margin-bottom: 14px; }
+.cierre ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 10px; }
+footer { padding-block: 20px 48px; color: var(--suave); font-size: 0.85rem; border-top: 1px solid var(--linea); }
+footer code { font-size: 0.9em; }
+
+@media (max-width: 900px) {
+  .lamina, .cierre { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .mensajes, .glosario { grid-template-columns: minmax(0, 1fr); }
+  .mensajes a + a { padding-left: 0; border-left: 0; border-top: 1px solid var(--linea); }
+}
+@media (max-width: 520px) {
+  .contenedor { padding-inline: 16px; }
+  .lienzo, .lienzo.alto { height: 320px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="contenedor">
+  <header class="portada">
+    <span class="etiqueta">Actividad 3 · Primeros hallazgos</span>
+    <h1>Comparar de forma justa <span>cambia a quién acompañar</span></h1>
+    <p class="fuente">{{mediciones}} mediciones · {{equipos}} equipos · {{periodo}}</p>
+
+    <nav class="mensajes" aria-label="Los tres hallazgos">
+      <a href="#hallazgo-1"><b>{{veces}}×</b><span>pesa más <strong>qué</strong> se mide que <strong>quién</strong> lo mide</span></a>
+      <a href="#hallazgo-2"><b>Puesto {{ejemplo_puesto_antes}} → {{ejemplo_puesto_despues}}</b><span>{{ejemplo_entorno}} al compararlo de forma justa</span></a>
+      <a href="#hallazgo-3"><b>{{cumplieron_antes}}% → {{cumplieron_despues}}%</b><span>cayó {{seguido}} en 2026 sin que bajara el resultado</span></a>
+    </nav>
+
+    <dl class="glosario">
+      <div><dt>Meta cumplida</dt><dd>Un mes en que el equipo alcanzó la meta de un indicador (o quedó por debajo, si menos es mejor).</dd></div>
+      <div><dt>% de metas cumplidas</dt><dd>De todas las mediciones de un equipo o entorno, cuántas alcanzaron su meta.</dd></div>
+      <div><dt>Comparación justa</dt><dd>Cada resultado frente al de los equipos que miden el mismo indicador en el mismo mes.</dd></div>
+    </dl>
+  </header>
+
+  <section class="lamina" id="hallazgo-1">
+    <div class="mensaje">
+      <span class="numero"><b>Hallazgo 1</b><span class="etiqueta">Equipos</span></span>
+      <h2>Lo que se mide pesa {{veces}} veces más que quién lo mide</h2>
+      <div class="bloque"><span class="etiqueta">Interpretación</span><p>Un equipo puede verse mal solo porque le tocaron metas difíciles: hay indicadores que se cumplen el {{tasa_min}}% de las veces y otros el {{tasa_max}}%.</p></div>
+      <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Calibrar las metas antes de comparar equipos.</p></div>
+      <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>{{mediciones}} mediciones, al menos {{min_equipos}} equipos por indicador y mes.</p>
+    </div>
+    <figure class="evidencia">
+      <h3>¿Qué explica que una meta se cumpla o no?</h3>
+      <div class="lienzo"><canvas id="grafica-1" role="img" aria-label="Porcentaje de las diferencias en metas cumplidas que explica cada factor"></canvas></div>
+      <figcaption><span class="etiqueta">Evidencia</span><span>Saber qué indicador y en qué mes explica el {{pct_indicador_mes}}% de las diferencias; saber qué equipo, solo el {{pct_equipo}}%.</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="lamina" id="hallazgo-2">
+    <div class="mensaje">
+      <span class="numero"><b>Hallazgo 2</b><span class="etiqueta">Entornos</span></span>
+      <h2>La comparación justa cambia a quién acompañar</h2>
+      <div class="bloque"><span class="etiqueta">Interpretación</span><p>{{ejemplo_entorno}} cumple solo el {{ejemplo_cumplimiento}}% de sus metas, pero supera en {{ejemplo_pares}} puntos a los equipos que miden lo mismo: sus metas son difíciles, no su desempeño. Al revés, {{ocultos}} {{ocultos_verbo}} bien y está {{ocultos_pares}} puntos bajo sus pares.</p></div>
+      <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Priorizar el acompañamiento con la comparación justa, no con el % de metas cumplidas.</p></div>
+      <p class="certeza" style="--color: var(--naranja)"><span class="etiqueta">Certeza</span><b>Media</b>Hay entornos de 1 a 4 equipos: un equipo mueve el resultado.</p>
+    </div>
+    <figure class="evidencia">
+      <h3>Entornos según su % de metas cumplidas y la comparación justa</h3>
+      <div class="lienzo alto"><canvas id="grafica-2" role="img" aria-label="Mapa de entornos: porcentaje de metas cumplidas frente a puntos sobre o bajo sus pares"></canvas></div>
+      <figcaption><span class="etiqueta">Evidencia · {{ventana}}</span><span>En color, los {{n_cambian}} de {{n_entornos}} entornos cuyo % de metas cumplidas cuenta otra historia: se alejan {{margen}} puntos o más de sus pares. Pase el cursor para ver cada entorno.</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="lamina" id="hallazgo-3">
+    <div class="mensaje">
+      <span class="numero"><b>Hallazgo 3</b><span class="etiqueta">Tendencia</span></span>
+      <h2>En 2026 no bajó el desempeño: subió la meta</h2>
+      <div class="bloque"><span class="etiqueta">Interpretación</span><p>Una caída en el tablero puede venir de una meta más exigente o de un indicador nuevo, no de los equipos. En {{frente_seguido}} la caída la trae {{indicadores_nuevos}}, nuevo en 2026.</p></div>
+      <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Registrar cada cambio de meta y mostrarlo junto a la tendencia.</p></div>
+      <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>en los datos; la razón del cambio de meta no está en el archivo.</p>
+    </div>
+    <figure class="evidencia">
+      <h3>{{seguido}}: resultado y meta de los equipos, mes a mes</h3>
+      <div class="cifras">
+        <div><small>Cumplieron 2025</small><span>{{cumplieron_antes}}%</span></div>
+        <span class="flecha" aria-hidden="true">→</span>
+        <div><small>Cumplieron 2026</small><span>{{cumplieron_despues}}%</span></div>
+      </div>
+      <div class="lienzo"><canvas id="grafica-3" role="img" aria-label="Resultado y meta medianos de Disponibilidad por mes"></canvas></div>
+      <figcaption><span class="etiqueta">Evidencia</span><span>El resultado sigue cerca de {{resultado_despues}}%, pero la meta pasó de {{meta_antes}}% a {{meta_despues}}%.</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="cierre">
+    <div>
+      <h2>Qué no podemos concluir</h2>
+      <ul>
+        <li>Si las metas están bien calibradas.</li>
+        <li>Si acompañar a un equipo mejora su cumplimiento.</li>
+        <li>Qué tan lejos de la meta quedó cada equipo: solo sabemos si la cumplió.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Qué información necesitamos</h2>
+      <ul>
+        <li>Histórico de metas y el criterio con que se fijan.</li>
+        <li>Entorno de cada equipo mes a mes, no solo el de hoy.</li>
+        <li>Registro de acompañamientos: equipo, fecha y tipo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Fuente: <code>0_datos/3_score/KPIS_historico_score.xlsx</code> · Se regenera con <code>uv run python 3_reporte/generar_reporte.py</code></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+__GRAFICAS__
+
+const DATOS = __DATOS__;
+
+if (window.Chart) {
+  prepararChart();
+  graficaFactores("grafica-1", DATOS.variacion);
+  graficaEntornos("grafica-2", DATOS.entornos);
+  graficaSeguimiento("grafica-3", DATOS.seguimiento);
+} else {
+  sinConexion();
+}
+</script>
+</html>
