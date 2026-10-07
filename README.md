@@ -19,6 +19,7 @@ Prueba técnica – Ingeniero de Datos N2, Estrategia Corporativa. Se presenta l
 0_datos/3_score/        # score por equipo, frente y entorno (_score.xlsx)
 1_experimentacion/      # notebooks de exploración y calidad
 2_transformacion/src/   # proceso recurrente: main.py, etl/ y score/
+3_reporte/              # reporte HTML de hallazgos (actividad 3)
 4_aplicacion/           # bitácora de uso de IA
 .github/                # reglas, skills y prompts para la IA
 ```
@@ -158,7 +159,21 @@ De 15.188 filas quedan **11.466 mediciones** (mes × equipo × indicador).
 
 ## 4. Hallazgos (actividad 3)
 
-Pendiente.
+```bash
+uv run python 3_reporte/generar_reporte.py
+```
+
+Genera `3_reporte/reporte.html`, un reporte interactivo calculado desde el archivo de score; las cifras de abajo salen de él.
+
+| # | Hallazgo | Evidencia | Interpretación | Certeza |
+|---|---|---|---|---|
+| 1 · Equipo e indicador | El cumplimiento depende más de qué se mide que de quién lo mide | El indicador y el mes explican el **47,8%** de la variación de la meta cumplida; el equipo, el 4,6%; el entorno, el 1,8% | Un ranking bruto premia a quien tiene indicadores fáciles; hay que comparar con pares | Alta |
+| 2 · Entorno | El ranking de entornos cambia al compararlos con sus pares | **11 de 22** entornos se mueven 5 puestos o más; Entorno 8 pasa del 20 al 5 | La comparación con pares es la que sirve para enfocar acompañamiento | Media: entornos de 1 a 4 equipos |
+| 3 · Frente y tiempo | La caída de 2026 no es peor desempeño | Disponibilidad: resultado 99,82% → 99,71%, pero meta 99,17% → 99,60%; cumplimiento 98,4% → 57,0%. Excelencia operativa sube de 87,0% a 89,0% en los indicadores que se mantienen | Antes de leer una caída, revisar cambios de meta y de indicadores | Alta en datos; la causa del cambio de meta no está en el archivo |
+
+**Qué no se puede concluir:** por qué cambian las metas, el efecto del acompañamiento, el entorno de los equipos fuera del catálogo y la magnitud del cumplimiento.
+
+**Información que haría falta:** el histórico de metas y cómo se fijan, el catálogo de entornos con fechas, la definición de los indicadores pendientes y el registro de acompañamientos.
 
 ## 5. Solución técnica y decisiones tecnológicas (actividad 4)
 
