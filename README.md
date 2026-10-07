@@ -1,6 +1,6 @@
-# Base confiable de KPIs por equipo
+# Entrevista Técnica DE Game
 
-Prueba técnica – Ingeniero de Datos N2, Estrategia Corporativa. El equipo de estrategia decide dónde enfocar acompañamiento con el histórico `KPIS_historico.xlsx`, pero duda de que los números reflejen la realidad. Aquí se construye una base confiable, se analiza y se propone cómo volverla un proceso recurrente.
+Prueba técnica – Ingeniero de Datos N2, Estrategia Corporativa. Se presenta la construcción de una base confiable, junto con su análisis y propuesta de automatización.
 
 ## Estructura
 
@@ -17,51 +17,60 @@ Cada módulo tiene su README con cómo ejecutarlo y el detalle de sus resultados
 
 ### 1. Experimentación
 
-Los datos dejan ver un modelo de cuatro tablas (mediciones, equipos, entornos e indicadores), pero no se pueden usar tal como vienen: **más de la mitad de las filas usan indicadores que el catálogo no conoce**, **un mismo equipo aparece escrito de varias formas** (146 escrituras para 89 equipos, 26 de ellos fuera del catálogo) y **más de un tercio de las filas reporta el cumplimiento en otra escala**. Se registran 16 problemas de calidad con su tratamiento.
+En esta sección se entienden los datos, desde su forma hasta el contenido que yace en el archivo. Empíricamente se evidencia una arquitectura de cuatro tablas (mediciones, equipos, entornos e indicadores), pero con problemas estructurales grandes como:
+- Más de la mitad de las filas usan indicadores que el catálogo no conoce
+- Un mismo equipo aparece escrito de varias formas
+- Más de un tercio de las filas reporta el cumplimiento en otra escala
 
-Para evitar que se repitan, se propone un modelo donde cada dato vive una sola vez, identificado por un código estable, y las mediciones solo apuntan a esos códigos:
+Como conclusión, se registran 16 problemas de calidad con su tratamiento, sin embargo, para evitar que se repitan se propone un modelo donde cada dato vive una sola vez, identificado por un código estable, y las mediciones solo apuntan a esos códigos:
 
 ```mermaid
 erDiagram
-    FRENTES ||--o{ INDICADORES : agrupa
+    FRENTES ||--o{ INDICADORES : "agrupa"
     INDICADORES ||--o{ MEDICIONES : "se mide en"
-    EQUIPOS ||--o{ MEDICIONES : reporta
-    ENTORNOS ||--o{ EQUIPOS : contiene
+    EQUIPOS ||--o{ MEDICIONES : "reporta"
+    ENTORNOS ||--o{ EQUIPOS : "contiene"
     MEDICIONES {
-        date corte PK
-        string codigo_equipo PK, FK
-        string codigo_indicador PK, FK
-        float resultado
-        float meta
-        float cumplimiento
+        fecha corte PK "primer día del mes"
+        texto codigo_equipo PK, FK "EQU00000"
+        texto codigo_indicador PK, FK "IND000"
+        decimal resultado
+        decimal meta
+        decimal cumplimiento "resultado frente a la meta: 1 = meta cumplida"
     }
     EQUIPOS {
-        string codigo_equipo PK
-        string nombre
-        string tipo "EQU o CEX"
-        string codigo_entorno FK
-        string estado "vigente o histórico"
+        texto codigo_equipo PK "EQU00000 o CEX00000"
+        texto nombre
+        enum tipo "[EQU, CEX]"
+        texto codigo_entorno FK
+        enum estado "[vigente, histórico]"
     }
     ENTORNOS {
-        string codigo_entorno PK
-        string nombre
-        string nivel "entorno, vicepresidencia o sin entorno"
+        texto codigo_entorno PK "ENX0000 o VPX0000"
+        texto nombre
+        enum nivel "[entorno, vicepresidencia, sin entorno]"
     }
     INDICADORES {
-        string codigo_indicador PK
-        string nombre
-        string codigo_frente FK
-        string definicion
-        string unidad
-        string sentido "mayor o menor es mejor"
+        texto codigo_indicador PK "IND000"
+        texto nombre
+        texto codigo_frente FK
+        texto definicion
+        enum unidad "[porcentaje, escala, cantidad]"
+        enum sentido "[mayor es mejor, menor es mejor]"
     }
     FRENTES {
-        string codigo_frente PK
-        string nombre
+        texto codigo_frente PK "FRE00"
+        texto nombre
     }
 ```
 
-Así cada indicador, equipo, entorno y frente se segmenta de forma única, y lo que no exista en los catálogos se detiene antes de llegar al análisis. Detalle, evidencia y decisiones en [`1_experimentacion/`](1_experimentacion/README.md).
+| Notación | Significado |
+|---|---|
+| `PK` | Llave primaria: identifica cada fila y no se repite. En Mediciones son tres columnas juntas: un mes, un equipo y un indicador |
+| `FK` | Llave foránea: apunta a la llave primaria de otra tabla y solo acepta valores que existan allí |
+| `enum "[a, b]"` | Lista cerrada: la columna solo admite los valores entre corchetes |
+| `texto` · `fecha` · `decimal` | Tipo de dato de la columna; el texto entre comillas es el formato o una aclaración |
+| Línea `\|\|──o{` | Relación uno a muchos: el extremo con doble raya es el "uno" y el de tres patas el "muchos". Un frente agrupa muchos indicadores; cada indicador pertenece a un solo frente |
 
 ### 2. Transformación
 

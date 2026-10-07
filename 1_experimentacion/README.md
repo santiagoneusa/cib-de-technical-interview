@@ -2,7 +2,7 @@
 
 Exploración y calidad del archivo original (actividad 1). Cada notebook responde un numeral; las gráficas y el paso a paso están dentro de él, con el código contraído para leer solo resultados.
 
-## Ejecutar
+## Ejecución
 
 Desde la raíz del repositorio (Python 3.12+ y [uv](https://docs.astral.sh/uv/)):
 
@@ -13,7 +13,7 @@ uv run jupyter lab
 
 Abrir `1_experimentacion/notebooks/` y ejecutar cada notebook de arriba a abajo, en orden. Los notebooks solo leen `0_datos/KPIS_historico.xlsx`; no escriben archivos.
 
-| # | Notebook | Responde |
+| # | Notebook | Contenido |
 |---|---|---|
 | 1.1 | [`1_1_exploracion_datos.ipynb`](notebooks/1_1_exploracion_datos.ipynb) | Qué representa cada fila, cómo separar en tablas y si el dataset y los catálogos coinciden |
 | 1.2 | [`1_2_validacion_catalogos.ipynb`](notebooks/1_2_validacion_catalogos.ipynb) | Contraste con el catálogo de indicadores y el de entornos; diferencias documentadas |
@@ -21,33 +21,53 @@ Abrir `1_experimentacion/notebooks/` y ejecutar cada notebook de arriba a abajo,
 
 ## Conclusiones
 
-### 1.1 ¿Qué es cada fila? → un modelo empírico
+### 1.1 Arquitectura empírica de datos
 
-El resultado de **un indicador, para un equipo, en un mes**. La identifican `Corte` + `Codigo_EQU` + `Indicador`: el frente depende del indicador y el nombre depende del código del equipo. Tal como viene en el Excel, la información se puede leer como cuatro tablas. Este es el **modelo empírico**: lo que los datos dejan ver sin intervenirlos.
+El resultado de **un indicador, para un equipo, en un mes**. La identifican `Corte` + `Codigo_EQU` + `Indicador`: el frente depende del indicador y el nombre depende del código del equipo. Tal como viene en el Excel, la información se puede leer como cuatro tablas: es la **arquitectura empírica**, lo que los datos dejan ver sin intervenirlos. La notación se explica en la arquitectura propuesta.
 
 ```mermaid
 erDiagram
-    MEDICIONES }o--|| EQUIPOS : "Codigo_EQU"
-    MEDICIONES }o--|| INDICADORES : "Indicador"
-    EQUIPOS }o--|| ENTORNOS : "Codigo_Padre"
-    MEDICIONES { string Corte string Codigo_EQU string Indicador float Resultado float Meta float Cumplimiento }
-    EQUIPOS { string Codigo_EQU string EQU string Tipo string Codigo_Padre }
-    ENTORNOS { string Codigo_Padre string Nombre_Padre string tipo }
-    INDICADORES { string Indicador string Frente string Definicion string Unidad }
+    INDICADORES ||--o{ MEDICIONES : "Indicador"
+    EQUIPOS ||--o{ MEDICIONES : "Codigo_EQU"
+    ENTORNOS ||--o{ EQUIPOS : "Codigo_Padre"
+    MEDICIONES {
+        texto Corte PK "AAAAMM"
+        texto Codigo_EQU PK, FK
+        texto Indicador PK, FK "el nombre hace de llave"
+        decimal Resultado
+        decimal Meta
+        decimal Cumplimiento
+    }
+    EQUIPOS {
+        texto Codigo_EQU PK
+        texto EQU
+        enum Tipo "[EQU, CEX]"
+        texto Codigo_Padre FK
+    }
+    ENTORNOS {
+        texto Codigo_Padre PK
+        texto Nombre_Padre
+    }
+    INDICADORES {
+        texto Indicador PK
+        texto Frente
+        texto Definicion
+        enum Unidad "[Porcentaje, Escala, Cantidad]"
+    }
 ```
 
-### 1.2 ¿La base y los catálogos coinciden?
+### 1.2 Coincidencia del dataset con los catálogos
 
-| Pregunta | Respuesta |
+| Validación | Resultado |
 |---|---|
-| ¿Los indicadores medidos están en el catálogo? | **Solo 10 de 25 indicadores están registrados en el catálogo (40%)**. Los otros 15 (14 que no aparecen y 1 escrito distinto) representan el **57% de las filas** |
-| ¿Los indicadores registrados en el catálogo se miden? | **No: 2 de 13 nunca se miden** y tienen la misma definición (un índice consolidado de agilidad) |
-| ¿Los frentes tienen un solo nombre? | **No**: el frente de agilidad tiene 3 nombres en el tiempo, y el error "Modeos…" viene del propio catálogo |
-| ¿Los códigos de equipo son confiables? | **146 formas de escribir 89 equipos** (minúsculas, dígitos de menos) |
-| ¿Los equipos medidos existen en el catálogo? | **63 de 89 (71%)**. 26 son equipos fantasma: 18 históricos y **8 activos en 2026** que faltan en el catálogo |
-| ¿Cada equipo tiene un entorno? | **Solo 56% (50 de 89)**. 11 cuelgan de una vicepresidencia y 2 están marcados "sin entorno" |
+| Indicadores del dataset registrados en el catálogo | **Solo 10 de 25 (40%)**. Los otros 15 (14 que no aparecen y 1 escrito distinto) representan el **57% de las filas** |
+| Indicadores del catálogo con mediciones | **11 de 13**: 2 nunca se miden y tienen la misma definición (un índice consolidado de agilidad) |
+| Nombres de frente | El frente de agilidad tiene **3 nombres** en el tiempo; el error "Modeos…" viene del propio catálogo |
+| Escritura de los códigos de equipo | **146 formas de escribir 89 equipos** (minúsculas, dígitos de menos) |
+| Equipos del dataset registrados en el catálogo | **63 de 89 (71%)**. 26 son equipos fantasma: 18 históricos y **8 activos en 2026** que faltan en el catálogo |
+| Equipos con entorno asignado | **Solo 56% (50 de 89)**. 11 cuelgan de una vicepresidencia y 2 están marcados "sin entorno" |
 
-### 1.3 Problemas de calidad
+### 1.3 Registro de problemas de calidad
 
 | Tipo | Problema | Evidencia | Tratamiento |
 |---|---|---|---|
@@ -70,51 +90,59 @@ erDiagram
 
 Impacto y detalle: [`notebooks/1_3_evaluacion_calidad.ipynb`](notebooks/1_3_evaluacion_calidad.ipynb).
 
-### Del modelo empírico al modelo propuesto
+### Arquitectura de datos propuesta
 
-El modelo empírico funciona como punto de partida, pero 1.2 y 1.3 muestran que no protege la información: los nombres cambian, un mismo código se escribe de varias formas y los catálogos no reconocen buena parte de lo que se mide. Por eso se propone un modelo donde **cada dato vive una sola vez, en su tabla, identificado por un código que no cambia**, y las mediciones solo apuntan a esos códigos:
+La arquitectura empírica funciona como punto de partida, pero 1.2 y 1.3 muestran que no protege la información: los nombres cambian, un mismo código se escribe de varias formas y los catálogos no reconocen buena parte de lo que se mide. Por eso se propone un modelo donde **cada dato vive una sola vez, en su tabla, identificado por un código que no cambia**, y las mediciones solo apuntan a esos códigos:
 
 ```mermaid
 erDiagram
-    FRENTES ||--o{ INDICADORES : agrupa
+    FRENTES ||--o{ INDICADORES : "agrupa"
     INDICADORES ||--o{ MEDICIONES : "se mide en"
-    EQUIPOS ||--o{ MEDICIONES : reporta
-    ENTORNOS ||--o{ EQUIPOS : contiene
+    EQUIPOS ||--o{ MEDICIONES : "reporta"
+    ENTORNOS ||--o{ EQUIPOS : "contiene"
     MEDICIONES {
-        date corte PK
-        string codigo_equipo PK, FK
-        string codigo_indicador PK, FK
-        float resultado
-        float meta
-        float cumplimiento
+        fecha corte PK "primer día del mes"
+        texto codigo_equipo PK, FK "EQU00000"
+        texto codigo_indicador PK, FK "IND000"
+        decimal resultado
+        decimal meta
+        decimal cumplimiento "resultado frente a la meta: 1 = meta cumplida"
     }
     EQUIPOS {
-        string codigo_equipo PK
-        string nombre
-        string tipo "EQU o CEX"
-        string codigo_entorno FK
-        string estado "vigente o histórico"
+        texto codigo_equipo PK "EQU00000 o CEX00000"
+        texto nombre
+        enum tipo "[EQU, CEX]"
+        texto codigo_entorno FK
+        enum estado "[vigente, histórico]"
     }
     ENTORNOS {
-        string codigo_entorno PK
-        string nombre
-        string nivel "entorno, vicepresidencia o sin entorno"
+        texto codigo_entorno PK "ENX0000 o VPX0000"
+        texto nombre
+        enum nivel "[entorno, vicepresidencia, sin entorno]"
     }
     INDICADORES {
-        string codigo_indicador PK
-        string nombre
-        string codigo_frente FK
-        string definicion
-        string unidad
-        string sentido "mayor o menor es mejor"
+        texto codigo_indicador PK "IND000"
+        texto nombre
+        texto codigo_frente FK
+        texto definicion
+        enum unidad "[porcentaje, escala, cantidad]"
+        enum sentido "[mayor es mejor, menor es mejor]"
     }
     FRENTES {
-        string codigo_frente PK
-        string nombre
+        texto codigo_frente PK "FRE00"
+        texto nombre
     }
 ```
 
-| Lo que encontramos | Decisión de diseño | Dónde verlo |
+| Notación | Significado |
+|---|---|
+| `PK` | Llave primaria: identifica cada fila y no se repite. En Mediciones son tres columnas juntas: un mes, un equipo y un indicador |
+| `FK` | Llave foránea: apunta a la llave primaria de otra tabla y solo acepta valores que existan allí |
+| `enum "[a, b]"` | Lista cerrada: la columna solo admite los valores entre corchetes |
+| `texto` · `fecha` · `decimal` | Tipo de dato de la columna; el texto entre comillas es el formato o una aclaración |
+| Línea `\|\|──o{` | Relación uno a muchos: el extremo con doble raya es el "uno" y el de tres patas el "muchos". Un frente agrupa muchos indicadores; cada indicador pertenece a un solo frente |
+
+| Hallazgo | Decisión de diseño | Evidencia |
 |---|---|---|
 | 146 escrituras para 89 equipos y nombre vacío en 41% de las filas | Mediciones guarda solo el `codigo_equipo` normalizado; el nombre vive una vez en Equipos | 1.2.d · 1.3.a |
 | El mismo indicador se escribe distinto entre hojas | Cada indicador tiene un `codigo_indicador` propio (hoy no existe: se crea al homologar); el nombre es solo una etiqueta | 1.2.a |
