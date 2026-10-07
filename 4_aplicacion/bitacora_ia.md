@@ -167,3 +167,17 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
   - **Primer borrador del texto:** decía que la caída de Excelencia operativa la traían "los indicadores nuevos". Impactos a clientes cumple el 81,7%, así que el texto se corrigió para nombrar solo Pérdida esperada por fraude (25,4%).
   - **Disponibilidad:** se comprobó que el resultado no cambió y que la meta subió.
   - **Navegador:** se revisó en escritorio y móvil, en tema claro y oscuro, sin desbordes.
+
+### 2026-10-07 · Actividad 3 · Reporte más simple y estratégico
+- **Pedido humano:**
+  - **Formato:** fondo blanco y letra oscura, menos texto y cifras.
+  - **Claridad:** que se entienda qué se calcula ("bruto vs pares" no se entendía), con insights explicativos.
+  - **Uso:** que sirva para una presentación estratégica, no un tablero cargado.
+- **Propuesta de la IA:**
+  - **Láminas:** cada hallazgo es una lámina con un mensaje, una sola gráfica y un "qué hacer". Los cuatro pasos de la prueba quedan como etiquetas.
+  - **Glosario:** define meta cumplida, % de metas cumplidas y comparación justa.
+  - **Hallazgo 2:** se cambió el gráfico de 22 líneas por un mapa de cuadrantes.
+- **Validación contra datos:**
+  - **Primer mapa:** dividía en 0 puntos y coloreaba entornos en el borde (Vicepresidencia 3 con 0,0; Entorno 4 con −1,6) como si engañaran.
+  - **Corrección:** solo se marcan los que se alejan 5 puntos o más de sus pares (3 de 22).
+  - **Ejemplo de la portada:** el entorno con mayor salto de puesto, Entorno 8 (20 → 5).

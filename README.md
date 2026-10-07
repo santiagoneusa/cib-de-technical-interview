@@ -15,7 +15,7 @@ Prueba técnica – Ingeniero de Datos N2, Estrategia Corporativa. Se presenta l
 
 ```text
 0_datos/1_crudos/       # KPIS_historico.xlsx tal como se entregó (nunca se modifica)
-0_datos/2_procesados/   # modelo normalizado (_procesado.xlsx) y calidad del proceso (_calidad.xlsx)
+0_datos/2_procesados/   # datos normalizados (_procesado.xlsx) y calidad del proceso (_calidad.xlsx)
 0_datos/3_score/        # score por equipo, frente y entorno (_score.xlsx)
 1_experimentacion/      # notebooks de exploración y calidad
 2_transformacion/src/   # proceso recurrente: main.py, etl/ y score/
@@ -167,9 +167,11 @@ Genera `3_reporte/reporte.html`, un reporte interactivo calculado desde el archi
 
 | # | Hallazgo | Evidencia | Interpretación | Certeza |
 |---|---|---|---|---|
-| 1 · Equipo e indicador | El cumplimiento depende más de qué se mide que de quién lo mide | El indicador y el mes explican el **47,8%** de la variación de la meta cumplida; el equipo, el 4,6%; el entorno, el 1,8% | Un ranking bruto premia a quien tiene indicadores fáciles; hay que comparar con pares | Alta |
-| 2 · Entorno | El ranking de entornos cambia al compararlos con sus pares | **11 de 22** entornos se mueven 5 puestos o más; Entorno 8 pasa del 20 al 5 | La comparación con pares es la que sirve para enfocar acompañamiento | Media: entornos de 1 a 4 equipos |
-| 3 · Frente y tiempo | La caída de 2026 no es peor desempeño | Disponibilidad: resultado 99,82% → 99,71%, pero meta 99,17% → 99,60%; cumplimiento 98,4% → 57,0%. Excelencia operativa sube de 87,0% a 89,0% en los indicadores que se mantienen | Antes de leer una caída, revisar cambios de meta y de indicadores | Alta en datos; la causa del cambio de meta no está en el archivo |
+| 1 · Equipos | Lo que se mide pesa 10 veces más que quién lo mide | Qué indicador y en qué mes explica el **48%** de las diferencias en metas cumplidas; qué equipo, el 5% | Un equipo puede verse mal solo por tener metas difíciles: calibrar metas antes de comparar | Alta |
+| 2 · Entornos | La comparación justa cambia a quién acompañar | Entorno 8 cumple el 33% de sus metas (puesto 20), pero supera a sus pares en 9,5 puntos (puesto 5); Entorno 13 parece bien y está 6,6 puntos bajo sus pares | Priorizar el acompañamiento comparando con quienes miden lo mismo | Media: entornos de 1 a 4 equipos |
+| 3 · Tendencia | En 2026 no bajó el desempeño: subió la meta | Disponibilidad: el resultado sigue cerca de 99,7%, la meta pasa de 99,2% a 99,6% y los equipos que cumplen bajan de 98% a 57% | Registrar los cambios de meta junto a la tendencia | Alta en datos |
+
+*Comparación justa: cada resultado frente al de los equipos que miden el mismo indicador en el mismo mes.*
 
 **Qué no se puede concluir:** por qué cambian las metas, el efecto del acompañamiento, el entorno de los equipos fuera del catálogo y la magnitud del cumplimiento.
 
