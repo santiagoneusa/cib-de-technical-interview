@@ -73,31 +73,15 @@ erDiagram
 | `texto` · `fecha` · `decimal` | Tipo de dato de la columna; el texto entre comillas es el formato o una aclaración |
 | Línea `\|\|──o{` | Relación uno a muchos: el extremo con doble raya es el "uno" y el de tres patas el "muchos". Un frente agrupa muchos indicadores; cada indicador pertenece a un solo frente |
 
-**Qué representa cada entidad**
+Cada dato vive **una sola vez, con un código estable**, y las mediciones solo apuntan a esos códigos. Los problemas que motivan cada decisión están en [1.2](#12-coincidencia-del-dataset-con-los-catálogos).
 
-| Entidad | Qué guarda | Una fila por | Llave |
-|---|---|---|---|
-| Mediciones | El resultado mensual de un indicador para un equipo: lo único que cambia cada mes | mes × equipo × indicador | `corte` + `cod_equipo` + `cod_indicador` |
-| Equipos | Los equipos (EQU) y células (CEX), vigentes e históricos, y el entorno al que pertenecen | equipo | `cod_equipo` |
-| Entornos | La unidad que agrupa equipos: un entorno, una vicepresidencia o "sin entorno" | entorno | `cod_entorno` |
-| Indicadores | Qué se mide, en qué unidad y si más alto es mejor | indicador | `cod_indicador` |
-| Frentes | La agrupación estratégica de los indicadores | frente | `cod_frente` |
-
-**Por qué es una buena estructura**
-
-Cada dato se guarda **una sola vez, en su tabla, con un código que no cambia**, y las mediciones solo apuntan a esos códigos. Así un cambio de nombre se corrige en un solo lugar, un mismo equipo no puede aparecer como dos, y una medición solo entra si su equipo y su indicador existen en los catálogos. Cada decisión responde a un problema encontrado en 1.2 y 1.3:
-
-| Hallazgo | Decisión de diseño | Evidencia |
+| Entidad | Qué representa | Por qué es una entidad propia |
 |---|---|---|
-| 146 escrituras para 89 equipos y nombre vacío en 41% de las filas | Mediciones guarda solo el `cod_equipo` normalizado; el nombre vive una vez en Equipos | 1.2.d · 1.3.a |
-| El mismo indicador se escribe distinto entre hojas | Cada indicador tiene un `cod_indicador` propio (hoy no existe: se crea al homologar); el nombre es solo una etiqueta | 1.2.a |
-| El frente de agilidad tuvo tres nombres | Mediciones no repite el frente: lo hereda de su indicador, y cada frente existe una vez en Frentes | 1.2.c |
-| Encuestas en otra escala; no se sabe si más alto es mejor | Indicadores declara unidad y sentido, para calcular el cumplimiento igual en todos | 1.3.e |
-| La columna "padre" mezcla entornos, vicepresidencias y "sin entorno" | Entornos tiene un `nivel` explícito | 1.2.f |
-| 26 equipos fantasma, 18 de ellos históricos | Equipos tiene un `estado`: la historia se conserva sin confundirse con lo vigente | 1.2.e |
-| Mediciones repetidas o en conflicto | Corte + equipo + indicador es la llave: una sola medición por mes | 1.3.b |
-
-Con esta estructura los problemas de catálogo se detienen en la carga en vez de descubrirse en el análisis. Es el punto de partida de la transformación (actividad 2).
+| Mediciones | El resultado de un indicador, para un equipo, en un mes | Es lo único que cambia cada mes; guarda solo códigos, así una medición no puede repetirse ni apuntar a algo inexistente |
+| Equipos | Equipos (EQU) y células (CEX), vigentes e históricos | Un mismo equipo aparece escrito de muchas formas; con un solo registro por código el nombre se corrige en un lugar |
+| Entornos | La unidad que agrupa equipos: entorno, vicepresidencia o "sin entorno" | Hoy la columna "padre" mezcla niveles; separarlo permite declarar el nivel y analizar por entorno sin ambigüedad |
+| Indicadores | Qué se mide, en qué unidad y si más alto es mejor | El mismo indicador se escribe distinto entre hojas; un código propio y su unidad permiten comparar cumplimientos |
+| Frentes | La agrupación estratégica de los indicadores | El frente de agilidad tuvo tres nombres; existiendo una vez, los indicadores lo heredan sin repetirlo |
 
 ### 1.2 Coincidencia del dataset con los catálogos
 
