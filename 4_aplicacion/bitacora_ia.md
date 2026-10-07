@@ -155,3 +155,15 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
   - **Primera versión de la regla:** también atrapaba topes legítimos (1,2 y 1,0 cuando el resultado supera ese valor), así que se excluyen los topes.
   - **Qué atrapa ahora:** 334 mediciones (155,42; 1,014683; 1,104972 y 1,176471, que son el Resultado / Meta de un equipo con Resultado 1 copiado a otros).
   - **Sin regla segura:** Vulnerabilidades 202408 tiene cumplimientos que no corresponden a su propio Resultado / Meta, pero no siguen un patrón detectable y se conservan.
+
+### 2026-10-07 · Actividad 3 · Tres hallazgos en un reporte HTML interactivo
+- **Pedido humano:** exactamente 3 hallazgos (al menos 1 de entorno) con Hallazgo → Evidencia → Interpretación → Certeza, en un reporte HTML muy visual e interactivo como base de la presentación. La carpeta se renombra a `3_reporte` y la bitácora pasa a `4_aplicacion`.
+- **Propuesta de la IA:**
+  - **Generador:** `3_reporte/generar_reporte.py` calcula los hallazgos desde el score y llena `plantilla.html`, con Chart.js y un gráfico de pendiente en SVG.
+  - **Contenido:** los tres hallazgos son indicador vs equipo, el ranking de entornos frente a sus pares y la caída de 2026 explicada por metas y mezcla de indicadores.
+  - **Cifras:** todas se calculan, ninguna está escrita a mano.
+- **Validación contra datos:**
+  - **Hallazgo 1:** la descomposición se mantiene porque cada indicador y mes tiene al menos 5 equipos.
+  - **Primer borrador del texto:** decía que la caída de Excelencia operativa la traían "los indicadores nuevos". Impactos a clientes cumple el 81,7%, así que el texto se corrigió para nombrar solo Pérdida esperada por fraude (25,4%).
+  - **Disponibilidad:** se comprobó que el resultado no cambió y que la meta subió.
+  - **Navegador:** se revisó en escritorio y móvil, en tema claro y oscuro, sin desbordes.

@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- fragmento -->
+<title>Hallazgos KPI Estrategia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Fichas de hallazgo: cada una sigue los cuatro pasos de la prueba (hallazgo, evidencia, interpretación, certeza) junto a su gráfica */
+:root {
+  --bg: #f5f5f3;
+  --superficie: #ffffff;
+  --texto: #2a2625;
+  --suave: #625c5a;
+  --linea: #e2dfdc;
+  --amarillo: #fdda24;
+  --verde: #00a676;
+  --naranja: #e8692b;
+  --azul: #2b9fc4;
+  --morado: #9063cd;
+  --gris: #a39e9c;
+  --sobre-amarillo: #2a2625;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --cuerpo: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --datos: "IBM Plex Mono", ui-monospace, "Consolas", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1c1918; --superficie: #262221; --texto: #f3f1ef; --suave: #b7b0ad; --linea: #3b3634;
+    --verde: #2fd39f; --naranja: #ff8a52; --azul: #63cfee; --morado: #b08ee6; --gris: #7d7775;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1c1918; --superficie: #262221; --texto: #f3f1ef; --suave: #b7b0ad; --linea: #3b3634;
+  --verde: #2fd39f; --naranja: #ff8a52; --azul: #63cfee; --morado: #b08ee6; --gris: #7d7775;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--texto);
+  font: 400 1rem/1.55 var(--cuerpo);
+}
+.contenedor { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+
+.portada { padding-block: 48px 32px; display: grid; gap: 28px; }
+.etiqueta {
+  font: 600 0.78rem/1 var(--datos);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--suave);
+}
+.portada h1 { font-size: clamp(2rem, 4.6vw, 3.4rem); font-weight: 800; font-stretch: 85%; line-height: 1.05; max-width: 18ch; }
+.portada h1 mark { background: linear-gradient(transparent 62%, var(--amarillo) 62%); color: inherit; padding-inline: 2px; }
+.contexto { color: var(--suave); max-width: 70ch; }
+.contexto b { color: var(--texto); font-variant-numeric: tabular-nums; }
+
+.resumen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.resumen a {
+  display: grid; gap: 8px; padding: 20px;
+  background: var(--superficie); border: 1px solid var(--linea); border-radius: 14px;
+  text-decoration: none; transition: transform .15s ease, border-color .15s ease;
+}
+.resumen a:hover { transform: translateY(-2px); border-color: var(--texto); }
+.resumen .cifra { font: 800 2.6rem/1 var(--display); font-stretch: 80%; font-variant-numeric: tabular-nums; }
+.resumen .cifra small { font-size: 1.1rem; font-weight: 600; color: var(--suave); }
+.resumen p { color: var(--suave); font-size: 0.95rem; }
+
+.hallazgo {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 28px;
+  padding-block: 40px; border-top: 1px solid var(--linea);
+}
+.ficha { display: grid; gap: 18px; align-content: start; }
+.ficha h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 750; font-stretch: 88%; line-height: 1.12; }
+.nivel { display: inline-flex; gap: 8px; align-items: center; }
+.nivel .marca { background: var(--amarillo); color: var(--sobre-amarillo); font: 700 0.78rem/1 var(--datos); padding: 6px 9px; border-radius: 999px; }
+.pasos { margin: 0; display: grid; gap: 14px; }
+.pasos > div { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; }
+.pasos dt { font: 600 0.74rem/1.6 var(--datos); letter-spacing: 0.06em; text-transform: uppercase; color: var(--suave); }
+.pasos dd { margin: 0; }
+.pasos b { font-variant-numeric: tabular-nums; }
+.certeza { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; margin-right: 6px; }
+.certeza::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
+.certeza.alta { color: var(--verde); }
+.certeza.media { color: var(--naranja); }
+
+.grafica {
+  margin: 0; background: var(--superficie); border: 1px solid var(--linea); border-radius: 16px;
+  padding: 20px; display: grid; gap: 14px; min-width: 0; align-content: start;
+}
+.grafica figcaption { color: var(--suave); font-size: 0.9rem; }
+.controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.controles button, .controles select {
+  font: 600 0.88rem/1 var(--cuerpo); color: var(--texto); background: transparent;
+  border: 1px solid var(--linea); border-radius: 999px; padding: 9px 14px; cursor: pointer;
+}
+.controles button[aria-pressed="true"] { background: var(--texto); color: var(--superficie); border-color: var(--texto); }
+.controles select { border-radius: 10px; background: var(--superficie); }
+.lienzo { position: relative; height: 380px; }
+.lienzo.alto { height: 620px; }
+
+.pendiente { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.pendiente svg { width: 100%; height: auto; display: block; }
+.pendiente svg text { font: 500 11px var(--datos); fill: var(--suave); }
+.pendiente svg .titulo-eje { font: 600 11px var(--datos); fill: var(--texto); letter-spacing: .06em; }
+.pendiente svg g.fila { cursor: pointer; }
+.pendiente svg g.fila:hover text, .pendiente svg g.fila.activa text { fill: var(--texto); font-weight: 600; }
+.detalle { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.pendiente > svg { min-width: 0; }
+.hallazgo.ancho { grid-template-columns: minmax(0, 1fr); }
+.hallazgo.ancho .ficha { grid-template-columns: minmax(0, 1fr); }
+.hallazgo.ancho .pasos { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+.datos-entorno { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.datos-entorno div { border: 1px solid var(--linea); border-radius: 10px; padding: 10px; }
+.datos-entorno span { display: block; font: 500 0.72rem/1.3 var(--datos); color: var(--suave); text-transform: uppercase; letter-spacing: .05em; }
+.datos-entorno b { font: 700 1.3rem/1.2 var(--display); font-variant-numeric: tabular-nums; }
+.lienzo.mini { height: 240px; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; color: var(--suave); }
+.leyenda i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+
+.limites { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; padding-block: 40px; border-top: 1px solid var(--linea); }
+.limites h2 { font-size: 1.4rem; font-stretch: 88%; margin-bottom: 12px; }
+.limites ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 8px; }
+footer { padding-block: 24px 48px; color: var(--suave); font-size: 0.88rem; border-top: 1px solid var(--linea); }
+footer code { font-family: var(--datos); font-size: 0.85em; }
+
+@media (max-width: 900px) {
+  .hallazgo, .limites, .pendiente, .hallazgo.ancho .pasos { grid-template-columns: minmax(0, 1fr); }
+  .resumen { grid-template-columns: minmax(0, 1fr); }
+  .lienzo.alto { height: 560px; }
+}
+@media (max-width: 520px) {
+  .contenedor { padding-inline: 16px; }
+  .pasos > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .lienzo { height: 320px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="contenedor">
+  <header class="portada">
+    <span class="etiqueta">Actividad 3 · Primeros hallazgos</span>
+    <h1>Qué dicen los KPIs cuando se comparan <mark>de forma justa</mark></h1>
+    <p class="contexto"><b>11.466</b> mediciones de <b>2023-01 a 2026-08</b>. Cada medición vale 1 si el resultado alcanzó la meta según el sentido del indicador y 0 si no. Pase el cursor sobre las gráficas para ver el detalle.</p>
+    <nav class="resumen" aria-label="Resumen de los tres hallazgos">
+      <a href="#hallazgo-1">
+        <span class="etiqueta">1 · Equipos</span>
+        <span class="cifra">47,8<small>% vs 4,6%</small></span>
+        <p>de la variación del cumplimiento la explica el indicador y el mes, no el equipo</p>
+      </a>
+      <a href="#hallazgo-2">
+        <span class="etiqueta">2 · Entornos</span>
+        <span class="cifra">11<small> de 22</small></span>
+        <p>entornos cambian 5 puestos o más al compararlos con sus pares</p>
+      </a>
+      <a href="#hallazgo-3">
+        <span class="etiqueta">3 · Tendencia</span>
+        <span class="cifra">98,4<small>% → 57,0%</small></span>
+        <p>cae el cumplimiento de Disponibilidad en 2026, con el mismo resultado y una meta más alta</p>
+      </a>
+    </nav>
+  </header>
+
+  <section class="hallazgo" id="hallazgo-1">
+    <div class="ficha">
+      <span class="nivel"><span class="marca">Hallazgo 1</span><span class="etiqueta">Nivel equipo e indicador</span></span>
+      <h2>El cumplimiento depende más de qué se mide que de quién lo mide</h2>
+      <dl class="pasos">
+        <div><dt>Hallazgo</dt><dd>Saber qué indicador se midió y en qué mes predice el cumplimiento mucho mejor que saber qué equipo lo reportó.</dd></div>
+        <div><dt>Evidencia</dt><dd>El indicador y el mes explican el <b>47,8%</b> de la variación de la meta cumplida; el equipo, el <b>4,6%</b>, y el entorno, el <b>1,8%</b>. La tasa de cumplimiento va de <b>0,0%</b> en Talento + Agilidad a <b>86,0%</b> en Adopción controles ciberseguridad.</dd></div>
+        <div><dt>Interpretación</dt><dd>Un ranking bruto premia a quien tiene indicadores fáciles de cumplir. Para decidir dónde acompañar, cada equipo debe compararse con quienes miden lo mismo en el mismo mes, y las metas que casi nadie o casi todos cumplen deben revisarse.</dd></div>
+        <div><dt>Certeza</dt><dd><span class="certeza alta">Alta</span>11.466 mediciones; cada indicador y mes tiene al menos 5 equipos.</dd></div>
+      </dl>
+    </div>
+    <figure class="grafica">
+      <div class="controles" role="group" aria-label="Vista de la gráfica del hallazgo 1">
+        <button type="button" id="vista-variacion" aria-pressed="true">Qué explica el cumplimiento</button>
+        <button type="button" id="vista-indicadores" aria-pressed="false">Cumplimiento por indicador</button>
+      </div>
+      <div class="lienzo" id="lienzo-1"><canvas id="grafica-1" aria-label="Gráfica del hallazgo 1"></canvas></div>
+      <figcaption id="nota-1">Porcentaje de la variación de la meta cumplida que explica cada agrupación.</figcaption>
+    </figure>
+  </section>
+
+  <section class="hallazgo ancho" id="hallazgo-2">
+    <div class="ficha">
+      <span class="nivel"><span class="marca">Hallazgo 2</span><span class="etiqueta">Nivel entorno</span></span>
+      <h2>El ranking de entornos cambia cuando se comparan con sus pares</h2>
+      <dl class="pasos">
+        <div><dt>Hallazgo</dt><dd><b>11 de 22</b> entornos se mueven 5 puestos o más cuando cada medición se compara con el promedio de los equipos que miden el mismo indicador en el mismo mes.</dd></div>
+        <div><dt>Evidencia</dt><dd>En los últimos 12 meses (2025-09 a 2026-08), Entorno 8 pasa del puesto <b>20</b> al <b>5</b> y Entorno 7 del <b>7</b> al <b>16</b>. Entorno 15, Vicepresidencia 4 y Vicepresidencia 6 cumplen por encima de sus pares en todos los semestres desde 2024-S1.</dd></div>
+        <div><dt>Interpretación</dt><dd>El cumplimiento bruto de un entorno mezcla su desempeño con la dificultad de sus indicadores. La comparación con pares separa ambas cosas y es la que sirve para elegir dónde enfocar el acompañamiento.</dd></div>
+        <div><dt>Certeza</dt><dd><span class="certeza media">Media</span>Muchos entornos tienen de 1 a 4 equipos, así que un solo equipo mueve la mediana. Los 16 equipos sin entorno no entran en la comparación.</dd></div>
+      </dl>
+    </div>
+    <figure class="grafica">
+      <div class="pendiente">
+        <svg id="pendiente" role="img" aria-label="Puesto de cada entorno en el ranking bruto y en la comparación con pares"></svg>
+        <div class="detalle">
+          <div class="controles">
+            <label class="etiqueta" for="entorno">Entorno</label>
+            <select id="entorno"></select>
+          </div>
+          <div class="datos-entorno" id="datos-entorno"></div>
+          <div class="lienzo mini"><canvas id="grafica-2" aria-label="Cumplimiento frente a pares por semestre"></canvas></div>
+          <p class="etiqueta">Puntos sobre o bajo sus pares, por semestre</p>
+        </div>
+      </div>
+      <div class="leyenda"><span><i style="background: var(--verde)"></i>Sube 5 puestos o más</span><span><i style="background: var(--naranja)"></i>Baja 5 puestos o más</span><span><i style="background: var(--gris)"></i>Se mueve menos</span></div>
+      <figcaption>Izquierda: puesto por cumplimiento bruto. Derecha: puesto comparado con pares. Seleccione un entorno para ver su historia.</figcaption>
+    </figure>
+  </section>
+
+  <section class="hallazgo" id="hallazgo-3">
+    <div class="ficha">
+      <span class="nivel"><span class="marca">Hallazgo 3</span><span class="etiqueta">Nivel frente y tiempo</span></span>
+      <h2>La caída de 2026 no es peor desempeño: cambió qué se mide y cuánto se exige</h2>
+      <dl class="pasos">
+        <div><dt>Hallazgo</dt><dd>TI y Excelencia operativa bajan su cumplimiento en 2026, pero en los indicadores que se mantienen los resultados no empeoran.</dd></div>
+        <div><dt>Evidencia</dt><dd>En Disponibilidad el resultado mediano pasa de <b>99,82%</b> a <b>99,71%</b>, la meta sube de <b>99,17%</b> a <b>99,60%</b> y la meta cumplida cae de <b>98,4%</b> a <b>57,0%</b>. Excelencia operativa baja de <b>77,7%</b> a <b>57,6%</b> con todos sus indicadores, pero sube de <b>87,0%</b> a <b>89,0%</b> en los que se mantienen; la caída la trae un indicador nuevo en 2026: Perdida esperada por fraude (25,4%).</dd></div>
+        <div><dt>Interpretación</dt><dd>Antes de leer una caída como pérdida de desempeño hay que revisar si cambió la meta o la mezcla de indicadores. Sin esa revisión se acompañaría a equipos que no empeoraron.</dd></div>
+        <div><dt>Certeza</dt><dd><span class="certeza alta">Alta</span>en los datos (45 equipos miden Disponibilidad en 2026). La causa de que subiera la meta no está en el archivo.</dd></div>
+      </dl>
+    </div>
+    <figure class="grafica">
+      <div class="controles" role="group" aria-label="Vista de la gráfica del hallazgo 3">
+        <button type="button" id="vista-disponibilidad" aria-pressed="true">Disponibilidad (TI)</button>
+        <button type="button" id="vista-mezcla" aria-pressed="false">Excelencia operativa</button>
+      </div>
+      <div class="lienzo" id="lienzo-3"><canvas id="grafica-3" aria-label="Gráfica del hallazgo 3"></canvas></div>
+      <figcaption id="nota-3">Resultado y meta medianos (eje izquierdo) y porcentaje de equipos que cumplieron (barras, eje derecho), por mes.</figcaption>
+    </figure>
+  </section>
+
+  <section class="limites">
+    <div>
+      <h2>Qué no se puede concluir</h2>
+      <ul>
+        <li>Por qué cambian las metas ni si están bien calibradas: el archivo no trae cómo se fijan.</li>
+        <li>Que el acompañamiento cause mejoras: no hay registro de qué equipos se acompañaron ni cuándo.</li>
+        <li>El desempeño por entorno de los 16 equipos sin entorno, porque el catálogo solo trae los equipos vigentes y su entorno de hoy.</li>
+        <li>Qué tan lejos o cerca de la meta quedó cada equipo: la meta cumplida no mide magnitud.</li>
+        <li>Qué miden exactamente 17 indicadores sin definición en el catálogo; en 3 de ellos no se pudo verificar si más es mejor.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Información adicional que se necesitaría</h2>
+      <ul>
+        <li>Histórico de metas por indicador y el criterio con el que se fijan.</li>
+        <li>Catálogo de entornos con fechas: a qué entorno pertenecía cada equipo cada mes.</li>
+        <li>Definición, unidad y sentido de los indicadores pendientes, validados con sus dueños.</li>
+        <li>Registro de acompañamientos (equipo, fecha, tipo) para medir su efecto.</li>
+        <li>Número de respuestas de cada encuesta por equipo, para saber cuánto pesa cada promedio.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Fuente: <code>0_datos/3_score/KPIS_historico_score.xlsx</code>. Se regenera con <code>uv run python 3_reporte/generar_reporte.py</code> después de correr el proceso de transformación.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const DATOS = {"variacion": [{"grupo": "Indicador y mes", "pct": 47.8}, {"grupo": "Indicador", "pct": 27.7}, {"grupo": "Frente", "pct": 14.5}, {"grupo": "Equipo", "pct": 4.6}, {"grupo": "Entorno", "pct": 1.8}], "indicadores": [{"indicador": "Talento + Agilidad", "etiqueta": "Talento + Agilidad (Talento + Agilidad)", "frente": "Talento + Agilidad", "tasa": 0.0, "equipos": 52, "periodo": "2024-12 a 2024-12"}, {"indicador": "Talento + Agilidad", "etiqueta": "Talento + Agilidad (Modelos de trabajo y Agilidad)", "frente": "Modelos de trabajo y Agilidad", "tasa": 0.0, "equipos": 68, "periodo": "2025-03 a 2025-09"}, {"indicador": "Madurez de las aplicaciones", "etiqueta": "Madurez de las aplicaciones", "frente": "TI", "tasa": 11.2, "equipos": 40, "periodo": "2026-06 a 2026-08"}, {"indicador": "Ejecución Presupuestal", "etiqueta": "Ejecución Presupuestal", "frente": "Financiero", "tasa": 14.7, "equipos": 38, "periodo": "2024-01 a 2024-09"}, {"indicador": "Gestión del Gasto", "etiqueta": "Gestión del Gasto", "frente": "Financiero", "tasa": 25.0, "equipos": 20, "periodo": "2023-08 a 2023-08"}, {"indicador": "Perdida esperada por fraude", "etiqueta": "Perdida esperada por fraude", "frente": "Excelencia operativa", "tasa": 25.4, "equipos": 54, "periodo": "2026-01 a 2026-08"}, {"indicador": "Percepción", "etiqueta": "Percepción (Talento + Agilidad)", "frente": "Talento + Agilidad", "tasa": 26.1, "equipos": 72, "periodo": "2023-01 a 2024-11"}, {"indicador": "Adopción", "etiqueta": "Adopción (Talento + Agilidad)", "frente": "Talento + Agilidad", "tasa": 28.8, "equipos": 66, "periodo": "2023-01 a 2024-11"}, {"indicador": "Adopción", "etiqueta": "Adopción (Modelos de trabajo y Agilidad)", "frente": "Modelos de trabajo y Agilidad", "tasa": 30.0, "equipos": 60, "periodo": "2025-01 a 2025-02"}, {"indicador": "Percepción", "etiqueta": "Percepción (Modelos de trabajo y Agilidad)", "frente": "Modelos de trabajo y Agilidad", "tasa": 30.1, "equipos": 63, "periodo": "2025-01 a 2025-02"}, {"indicador": "Jaws de Ciclo", "etiqueta": "Jaws de Ciclo", "frente": "Financiero", "tasa": 36.4, "equipos": 11, "periodo": "2023-08 a 2023-08"}, {"indicador": "Cumplimiento presupuestal", "etiqueta": "Cumplimiento presupuestal", "frente": "Financiero", "tasa": 42.3, "equipos": 36, "periodo": "2025-01 a 2025-09"}, {"indicador": "Índice AQR's", "etiqueta": "Índice AQR's", "frente": "Excelencia operativa", "tasa": 43.7, "equipos": 18, "periodo": "2024-07 a 2025-12"}, {"indicador": "Vulnerabilidades", "etiqueta": "Vulnerabilidades", "frente": "TI", "tasa": 49.2, "equipos": 44, "periodo": "2023-09 a 2024-12"}, {"indicador": "ICX", "etiqueta": "ICX", "frente": "Experiencia", "tasa": 53.7, "equipos": 26, "periodo": "2026-01 a 2026-07"}, {"indicador": "Apps modernizadas", "etiqueta": "Apps modernizadas", "frente": "TI", "tasa": 55.3, "equipos": 12, "periodo": "2025-01 a 2025-09"}, {"indicador": "Frente Macro", "etiqueta": "Frente Macro", "frente": "Financiero", "tasa": 55.4, "equipos": 33, "periodo": "2023-12 a 2025-12"}, {"indicador": "Frente Micro", "etiqueta": "Frente Micro", "frente": "Financiero", "tasa": 59.9, "equipos": 52, "periodo": "2023-12 a 2026-06"}, {"indicador": "Neon", "etiqueta": "Neon", "frente": "TI", "tasa": 60.2, "equipos": 35, "periodo": "2023-09 a 2023-12"}, {"indicador": "Brecha Ingresos Gastos", "etiqueta": "Brecha Ingresos Gastos", "frente": "Financiero", "tasa": 61.4, "equipos": 20, "periodo": "2024-01 a 2025-09"}, {"indicador": "Calidad estructura funcional", "etiqueta": "Calidad estructura funcional", "frente": "Modelos de trabajo y Agilidad", "tasa": 63.8, "equipos": 57, "periodo": "2026-01 a 2026-08"}, {"indicador": "Obsolescencia", "etiqueta": "Obsolescencia", "frente": "TI", "tasa": 68.1, "equipos": 39, "periodo": "2025-01 a 2025-09"}, {"indicador": "Regulatorio", "etiqueta": "Regulatorio", "frente": "Regulatorio", "tasa": 75.6, "equipos": 49, "periodo": "2023-10 a 2026-06"}, {"indicador": "Impactos a clientes activos por fricciones, quejas y requerimientos", "etiqueta": "Impactos a clientes activos por fricciones, quejas y requerimientos", "frente": "Excelencia operativa", "tasa": 81.7, "equipos": 18, "periodo": "2026-01 a 2026-08"}, {"indicador": "Incidentes", "etiqueta": "Incidentes", "frente": "TI", "tasa": 82.4, "equipos": 40, "periodo": "2023-09 a 2024-12"}, {"indicador": "Cierre de vulnerabilidades", "etiqueta": "Cierre de vulnerabilidades", "frente": "Excelencia operativa", "tasa": 83.2, "equipos": 49, "periodo": "2025-01 a 2026-08"}, {"indicador": "Disponibilidad", "etiqueta": "Disponibilidad", "frente": "TI", "tasa": 83.8, "equipos": 51, "periodo": "2023-09 a 2026-08"}, {"indicador": "Adopción controles ciberseguridad", "etiqueta": "Adopción controles ciberseguridad", "frente": "Excelencia operativa", "tasa": 86.0, "equipos": 55, "periodo": "2023-09 a 2026-08"}], "entornos": [{"entorno": "Entorno 15", "equipos": 2, "mediciones": 44, "bruto": 59.5, "relativo": 21.8, "puesto_bruto": 10, "puesto_pares": 1}, {"entorno": "Entorno 10", "equipos": 3, "mediciones": 125, "bruto": 68.3, "relativo": 12.4, "puesto_bruto": 3, "puesto_pares": 2}, {"entorno": "Entorno 2", "equipos": 2, "mediciones": 83, "bruto": 66.9, "relativo": 10.7, "puesto_bruto": 4, "puesto_pares": 3}, {"entorno": "Vicepresidencia 4", "equipos": 1, "mediciones": 20, "bruto": 55.0, "relativo": 9.8, "puesto_bruto": 16, "puesto_pares": 4}, {"entorno": "Entorno 8", "equipos": 2, "mediciones": 25, "bruto": 33.3, "relativo": 9.5, "puesto_bruto": 20, "puesto_pares": 5}, {"entorno": "Entorno 3", "equipos": 1, "mediciones": 47, "bruto": 61.7, "relativo": 8.4, "puesto_bruto": 6, "puesto_pares": 6}, {"entorno": "Vicepresidencia 6", "equipos": 1, "mediciones": 62, "bruto": 69.4, "relativo": 7.0, "puesto_bruto": 2, "puesto_pares": 7}, {"entorno": "Entorno 1", "equipos": 4, "mediciones": 144, "bruto": 56.9, "relativo": 2.1, "puesto_bruto": 12, "puesto_pares": 8}, {"entorno": "Entorno 9", "equipos": 3, "mediciones": 111, "bruto": 69.4, "relativo": 1.8, "puesto_bruto": 1, "puesto_pares": 9}, {"entorno": "Entorno 16", "equipos": 2, "mediciones": 61, "bruto": 32.5, "relativo": 1.8, "puesto_bruto": 21, "puesto_pares": 10}, {"entorno": "Entorno 14", "equipos": 3, "mediciones": 201, "bruto": 64.1, "relativo": 0.1, "puesto_bruto": 5, "puesto_pares": 11}, {"entorno": "Vicepresidencia 2", "equipos": 1, "mediciones": 47, "bruto": 59.6, "relativo": 0.1, "puesto_bruto": 9, "puesto_pares": 12}, {"entorno": "Vicepresidencia 3", "equipos": 3, "mediciones": 75, "bruto": 55.1, "relativo": 0.0, "puesto_bruto": 15, "puesto_pares": 13}, {"entorno": "Entorno 6", "equipos": 3, "mediciones": 40, "bruto": 53.6, "relativo": -0.4, "puesto_bruto": 18, "puesto_pares": 14}, {"entorno": "Entorno 4", "equipos": 10, "mediciones": 579, "bruto": 59.6, "relativo": -1.6, "puesto_bruto": 8, "puesto_pares": 15}, {"entorno": "Entorno 7", "equipos": 1, "mediciones": 64, "bruto": 60.9, "relativo": -2.3, "puesto_bruto": 7, "puesto_pares": 16}, {"entorno": "Entorno 12", "equipos": 4, "mediciones": 98, "bruto": 56.8, "relativo": -2.4, "puesto_bruto": 13, "puesto_pares": 17}, {"entorno": "Vicepresidencia 5", "equipos": 3, "mediciones": 113, "bruto": 55.8, "relativo": -4.8, "puesto_bruto": 14, "puesto_pares": 18}, {"entorno": "Entorno 13", "equipos": 3, "mediciones": 202, "bruto": 58.8, "relativo": -6.6, "puesto_bruto": 11, "puesto_pares": 19}, {"entorno": "Entorno 11", "equipos": 3, "mediciones": 49, "bruto": 0.0, "relativo": -7.1, "puesto_bruto": 22, "puesto_pares": 20}, {"entorno": "Vicepresidencia 7", "equipos": 1, "mediciones": 58, "bruto": 51.7, "relativo": -7.9, "puesto_bruto": 19, "puesto_pares": 21}, {"entorno": "Entorno 5", "equipos": 4, "mediciones": 226, "bruto": 53.8, "relativo": -8.9, "puesto_bruto": 17, "puesto_pares": 22}], "tendencia": {"semestres": ["2023-S1", "2023-S2", "2024-S1", "2024-S2", "2025-S1", "2025-S2", "2026-S1", "2026-S2"], "series": {"Entorno 1": {"2023-S1": 0.0, "2023-S2": 1.0, "2024-S1": -18.7, "2024-S2": -17.0, "2025-S1": 12.3, "2025-S2": 3.1, "2026-S1": 0.1, "2026-S2": 16.6}, "Entorno 10": {"2023-S1": 0.0, "2023-S2": 1.8, "2024-S1": 11.2, "2024-S2": 6.9, "2025-S1": 7.4, "2025-S2": -2.2, "2026-S1": 19.4, "2026-S2": 2.7}, "Entorno 11": {"2023-S1": 0.0, "2023-S2": 9.1, "2024-S1": -8.5, "2024-S2": 0.5, "2025-S1": 0.0, "2025-S2": 0.0, "2026-S1": -0.4, "2026-S2": -27.3}, "Entorno 12": {"2023-S1": 0.0, "2023-S2": 0.0, "2024-S1": 7.4, "2024-S2": -0.4, "2025-S1": -14.1, "2025-S2": -3.3, "2026-S1": 0.0, "2026-S2": -6.6}, "Entorno 13": {"2023-S1": 0.0, "2023-S2": -5.4, "2024-S1": -6.6, "2024-S2": 2.6, "2025-S1": -0.4, "2025-S2": 1.5, "2026-S1": -8.0, "2026-S2": -16.1}, "Entorno 14": {"2023-S1": 0.0, "2023-S2": -11.9, "2024-S1": 1.8, "2024-S2": 1.0, "2025-S1": 0.9, "2025-S2": -0.9, "2026-S1": 4.8, "2026-S2": -0.7}, "Entorno 15": {"2023-S1": 0.0, "2023-S2": 0.0, "2024-S1": 37.5, "2024-S2": 32.2, "2025-S1": 26.8, "2025-S2": 23.7, "2026-S1": 14.4, "2026-S2": 13.6}, "Entorno 16": {"2023-S1": 0.0, "2023-S2": -4.4, "2024-S1": -2.1, "2024-S2": -31.8, "2025-S1": -7.3, "2025-S2": 0.6, "2026-S1": 1.2, "2026-S2": 6.1}, "Entorno 2": {"2023-S1": 0.0, "2023-S2": -2.3, "2024-S1": 4.0, "2024-S2": -7.7, "2025-S1": 9.5, "2025-S2": 8.0, "2026-S1": 12.8, "2026-S2": 6.0}, "Entorno 3": {"2024-S1": -55.7, "2024-S2": -30.9, "2025-S1": -41.4, "2025-S2": 11.9, "2026-S1": 9.4, "2026-S2": 7.6}, "Entorno 4": {"2023-S1": 0.0, "2023-S2": 1.8, "2024-S1": -6.7, "2024-S2": -8.1, "2025-S1": -0.4, "2025-S2": 3.6, "2026-S1": -3.6, "2026-S2": -1.6}, "Entorno 5": {"2023-S1": 0.0, "2023-S2": 3.2, "2024-S1": 0.5, "2024-S2": -3.4, "2025-S1": 0.6, "2025-S2": -2.9, "2026-S1": -14.0, "2026-S2": -8.4}, "Entorno 6": {"2023-S1": 0.0, "2023-S2": 0.0, "2024-S1": -7.9, "2024-S2": 27.2, "2025-S1": -7.8, "2025-S2": 13.1, "2026-S1": -14.3, "2026-S2": -1.0}, "Entorno 7": {"2023-S1": 0.0, "2023-S2": -0.3, "2024-S1": 1.5, "2024-S2": 11.4, "2025-S1": 5.2, "2025-S2": -7.7, "2026-S1": -2.9, "2026-S2": 12.7}, "Entorno 8": {"2023-S1": 0.0, "2023-S2": -2.0, "2024-S1": -18.0, "2024-S2": -7.1, "2025-S1": 9.6, "2025-S2": 16.2, "2026-S1": 14.4, "2026-S2": 14.4}, "Entorno 9": {"2023-S1": 0.0, "2023-S2": -4.2, "2024-S1": -1.7, "2024-S2": -0.5, "2025-S1": 8.2, "2025-S2": -5.6, "2026-S1": 10.2, "2026-S2": 2.5}, "Vicepresidencia 1": {"2024-S1": 44.3, "2024-S2": 44.3, "2025-S1": 44.3}, "Vicepresidencia 2": {"2023-S1": 0.0, "2023-S2": -13.6, "2024-S1": -8.2, "2024-S2": -1.4, "2025-S1": -8.2, "2025-S2": -2.0, "2026-S1": -1.1, "2026-S2": 2.2}, "Vicepresidencia 3": {"2023-S1": 0.0, "2023-S2": -4.3, "2024-S1": 1.9, "2024-S2": 5.6, "2025-S1": 0.0, "2025-S2": 4.3, "2026-S1": -17.8, "2026-S2": -0.3}, "Vicepresidencia 4": {"2024-S1": 44.3, "2024-S2": 36.9, "2025-S1": 26.1, "2025-S2": 16.4, "2026-S1": 10.4, "2026-S2": 14.4}, "Vicepresidencia 5": {"2023-S1": 0.0, "2023-S2": -4.2, "2024-S1": 5.8, "2024-S2": -10.4, "2025-S1": -24.4, "2025-S2": -9.9, "2026-S1": -8.0, "2026-S2": 7.1}, "Vicepresidencia 6": {"2023-S1": 0.0, "2023-S2": -0.3, "2024-S1": 19.7, "2024-S2": 10.1, "2025-S1": 5.8, "2025-S2": 1.1, "2026-S1": 6.6, "2026-S2": 6.6}, "Vicepresidencia 7": {"2023-S1": 0.0, "2023-S2": -5.4, "2024-S1": 11.2, "2024-S2": -2.5, "2025-S1": -0.2, "2025-S2": -10.1, "2026-S1": -3.3, "2026-S2": -17.4}}}, "disponibilidad": [{"mes": "2023-09", "resultado": 99.56, "meta": 99.29, "tasa": 85.71, "equipos": 35}, {"mes": "2023-11", "resultado": 99.59, "meta": 99.33, "tasa": 77.14, "equipos": 35}, {"mes": "2023-12", "resultado": 99.45, "meta": 99.23, "tasa": 77.42, "equipos": 31}, {"mes": "2024-01", "resultado": 99.73, "meta": 98.88, "tasa": 100.0, "equipos": 32}, {"mes": "2024-02", "resultado": 99.84, "meta": 99.01, "tasa": 97.06, "equipos": 34}, {"mes": "2024-03", "resultado": 99.69, "meta": 98.92, "tasa": 97.06, "equipos": 34}, {"mes": "2024-04", "resultado": 99.73, "meta": 98.9, "tasa": 96.97, "equipos": 33}, {"mes": "2024-05", "resultado": 99.78, "meta": 99.01, "tasa": 96.97, "equipos": 33}, {"mes": "2024-06", "resultado": 99.75, "meta": 99.01, "tasa": 90.24, "equipos": 41}, {"mes": "2024-07", "resultado": 99.7, "meta": 99.01, "tasa": 82.93, "equipos": 41}, {"mes": "2024-08", "resultado": 99.71, "meta": 99.12, "tasa": 90.24, "equipos": 41}, {"mes": "2024-10", "resultado": 99.71, "meta": 99.11, "tasa": 95.24, "equipos": 42}, {"mes": "2024-11", "resultado": 99.72, "meta": 99.06, "tasa": 90.24, "equipos": 41}, {"mes": "2024-12", "resultado": 99.74, "meta": 99.09, "tasa": 92.86, "equipos": 42}, {"mes": "2025-01", "resultado": 99.81, "meta": 99.2, "tasa": 95.24, "equipos": 42}, {"mes": "2025-02", "resultado": 99.84, "meta": 99.15, "tasa": 97.62, "equipos": 42}, {"mes": "2025-03", "resultado": 99.74, "meta": 99.15, "tasa": 97.62, "equipos": 42}, {"mes": "2025-04", "resultado": 99.77, "meta": 99.16, "tasa": 97.67, "equipos": 43}, {"mes": "2025-05", "resultado": 99.82, "meta": 99.18, "tasa": 97.67, "equipos": 43}, {"mes": "2025-06", "resultado": 99.85, "meta": 99.17, "tasa": 100.0, "equipos": 43}, {"mes": "2025-07", "resultado": 99.82, "meta": 99.17, "tasa": 100.0, "equipos": 43}, {"mes": "2025-08", "resultado": 99.82, "meta": 99.18, "tasa": 100.0, "equipos": 43}, {"mes": "2025-09", "resultado": 99.84, "meta": 99.15, "tasa": 100.0, "equipos": 43}, {"mes": "2026-01", "resultado": 99.94, "meta": 99.55, "tasa": 93.33, "equipos": 45}, {"mes": "2026-02", "resultado": 99.19, "meta": 99.51, "tasa": 42.22, "equipos": 45}, {"mes": "2026-03", "resultado": 99.66, "meta": 99.55, "tasa": 46.67, "equipos": 45}, {"mes": "2026-04", "resultado": 99.61, "meta": 99.59, "tasa": 47.62, "equipos": 42}, {"mes": "2026-05", "resultado": 99.68, "meta": 99.6, "tasa": 48.78, "equipos": 41}, {"mes": "2026-06", "resultado": 99.73, "meta": 99.62, "tasa": 56.1, "equipos": 41}, {"mes": "2026-07", "resultado": 99.77, "meta": 99.62, "tasa": 57.14, "equipos": 42}, {"mes": "2026-08", "resultado": 99.79, "meta": 99.61, "tasa": 64.29, "equipos": 42}], "mezcla": {"frente": "Excelencia operativa", "anios": [2025, 2026], "todos": [77.7, 57.6], "mantenidos": [87.0, 89.0], "indicadores": [{"indicador": "Adopción controles ciberseguridad", "antes": 92.0, "despues": 98.0}, {"indicador": "Cierre de vulnerabilidades", "antes": 84.2, "despues": 80.7}, {"indicador": "Impactos a clientes activos por fricciones, quejas y requerimientos", "antes": null, "despues": 81.7}, {"indicador": "Perdida esperada por fraude", "antes": null, "despues": 25.4}, {"indicador": "Índice AQR's", "antes": 38.5, "despues": null}]}};
+
+const css = nombre => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+const pct = valor => `${valor.toFixed(1).replace(".", ",")}%`;
+const graficas = {};
+let vista1 = "variacion";
+let vista3 = "disponibilidad";
+let entornoActivo = DATOS.entornos.reduce((a, b) => (b.puesto_bruto - b.puesto_pares > a.puesto_bruto - a.puesto_pares ? b : a)).entorno;
+
+function estiloBase() {
+  Chart.defaults.font.family = css("--cuerpo");
+  Chart.defaults.color = css("--suave");
+  Chart.defaults.borderColor = css("--linea");
+  Chart.defaults.plugins.legend.labels.boxWidth = 12;
+}
+
+function reemplazar(id, configuracion) {
+  graficas[id]?.destroy();
+  graficas[id] = new Chart(document.getElementById(id), configuracion);
+}
+
+function colorPorTasa(tasa) {
+  if (tasa >= 70) return css("--verde");
+  if (tasa < 30) return css("--naranja");
+  return css("--azul");
+}
+
+function dibujarHallazgo1() {
+  const lienzo = document.getElementById("lienzo-1");
+  if (vista1 === "variacion") {
+    lienzo.classList.remove("alto");
+    document.getElementById("nota-1").textContent = "Porcentaje de la variación de la meta cumplida que explica cada agrupación.";
+    reemplazar("grafica-1", {
+      type: "bar",
+      data: {
+        labels: DATOS.variacion.map(f => f.grupo),
+        datasets: [{
+          data: DATOS.variacion.map(f => f.pct),
+          backgroundColor: DATOS.variacion.map(f => (f.grupo.startsWith("Indicador") ? css("--azul") : f.grupo === "Frente" ? css("--morado") : css("--gris"))),
+          borderRadius: 6,
+        }],
+      },
+      options: {
+        indexAxis: "y", maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${pct(c.raw)} de la variación` } } },
+        scales: { x: { min: 0, max: 60, ticks: { callback: v => `${v}%` } }, y: { grid: { display: false } } },
+      },
+    });
+  } else {
+    lienzo.classList.add("alto");
+    document.getElementById("nota-1").textContent = "Porcentaje de mediciones que cumplieron la meta. Verde: 70% o más; naranja: menos de 30%.";
+    const filas = DATOS.indicadores;
+    reemplazar("grafica-1", {
+      type: "bar",
+      data: {
+        labels: filas.map(f => (f.etiqueta.length > 34 ? `${f.etiqueta.slice(0, 32)}…` : f.etiqueta)),
+        datasets: [{ data: filas.map(f => f.tasa), backgroundColor: filas.map(f => colorPorTasa(f.tasa)), borderRadius: 4 }],
+      },
+      options: {
+        indexAxis: "y", maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            title: c => filas[c[0].dataIndex].etiqueta,
+            label: c => { const f = filas[c.dataIndex]; return [`${pct(f.tasa)} cumplió`, `${f.frente}`, `${f.equipos} equipos · ${f.periodo}`]; },
+          } },
+        },
+        scales: { x: { min: 0, max: 100, ticks: { callback: v => `${v}%` } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } },
+      },
+    });
+  }
+}
+
+function dibujarPendiente() {
+  const svg = document.getElementById("pendiente");
+  const filas = DATOS.entornos;
+  const alto = 36 + filas.length * 22;
+  const izquierda = 150, derecha = 290, ancho = 440;
+  const y = puesto => 30 + (puesto - 1) * 22;
+  svg.setAttribute("viewBox", `0 0 ${ancho} ${alto}`);
+
+  let contenido = `<text class="titulo-eje" x="${izquierda}" y="14" text-anchor="middle">BRUTO</text>`
+    + `<text class="titulo-eje" x="${derecha}" y="14" text-anchor="middle">VS PARES</text>`;
+  for (const f of filas) {
+    const cambio = f.puesto_bruto - f.puesto_pares;
+    const color = cambio >= 5 ? css("--verde") : cambio <= -5 ? css("--naranja") : css("--gris");
+    const activo = f.entorno === entornoActivo;
+    contenido += `<g class="fila${activo ? " activa" : ""}" data-entorno="${f.entorno}" tabindex="0" role="button" aria-label="${f.entorno}: puesto ${f.puesto_bruto} bruto, ${f.puesto_pares} frente a pares">
+      <line x1="${izquierda}" y1="${y(f.puesto_bruto)}" x2="${derecha}" y2="${y(f.puesto_pares)}" stroke="${activo ? css("--texto") : color}" stroke-width="${activo ? 3.5 : 2}" stroke-linecap="round"/>
+      <circle cx="${izquierda}" cy="${y(f.puesto_bruto)}" r="4" fill="${activo ? css("--texto") : color}"/>
+      <circle cx="${derecha}" cy="${y(f.puesto_pares)}" r="4" fill="${activo ? css("--texto") : color}"/>
+      <text x="${izquierda - 10}" y="${y(f.puesto_bruto) + 4}" text-anchor="end">${f.puesto_bruto}. ${f.entorno}</text>
+      <text x="${derecha + 10}" y="${y(f.puesto_pares) + 4}">${f.puesto_pares}. ${f.entorno}</text>
+    </g>`;
+  }
+  svg.innerHTML = contenido;
+  svg.querySelectorAll("g.fila").forEach(g => {
+    const elegir = () => seleccionarEntorno(g.dataset.entorno);
+    g.addEventListener("click", elegir);
+    g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(); } });
+  });
+}
+
+function dibujarDetalleEntorno() {
+  const f = DATOS.entornos.find(e => e.entorno === entornoActivo);
+  const signo = f.relativo > 0 ? "+" : "";
+  document.getElementById("datos-entorno").innerHTML = `
+    <div><span>Puesto bruto → pares</span><b>${f.puesto_bruto} → ${f.puesto_pares}</b></div>
+    <div><span>Frente a sus pares</span><b>${signo}${f.relativo.toFixed(1).replace(".", ",")} pts</b></div>
+    <div><span>Cumplimiento bruto</span><b>${pct(f.bruto)}</b></div>
+    <div><span>Equipos · mediciones</span><b>${f.equipos} · ${f.mediciones}</b></div>`;
+
+  const serie = DATOS.tendencia.series[entornoActivo] || {};
+  const valores = DATOS.tendencia.semestres.map(s => serie[s] ?? null);
+  reemplazar("grafica-2", {
+    type: "bar",
+    data: {
+      labels: DATOS.tendencia.semestres,
+      datasets: [{ data: valores, backgroundColor: valores.map(v => (v === null ? css("--gris") : v >= 0 ? css("--verde") : css("--naranja"))), borderRadius: 4 }],
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => (c.raw === null ? "Sin datos" : `${c.raw > 0 ? "+" : ""}${c.raw} pts frente a pares`) } } },
+      scales: { y: { suggestedMin: -30, suggestedMax: 30, ticks: { callback: v => `${v > 0 ? "+" : ""}${v}` } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } },
+    },
+  });
+}
+
+function seleccionarEntorno(entorno) {
+  entornoActivo = entorno;
+  document.getElementById("entorno").value = entorno;
+  dibujarPendiente();
+  dibujarDetalleEntorno();
+}
+
+function dibujarHallazgo3() {
+  if (vista3 === "disponibilidad") {
+    const filas = DATOS.disponibilidad;
+    document.getElementById("nota-3").textContent = "Resultado y meta medianos (eje izquierdo) y porcentaje de equipos que cumplieron (barras, eje derecho), por mes.";
+    reemplazar("grafica-3", {
+      data: {
+        labels: filas.map(f => f.mes),
+        datasets: [
+          { type: "line", label: "Resultado mediano", data: filas.map(f => f.resultado), borderColor: css("--azul"), backgroundColor: css("--azul"), borderWidth: 3, tension: .25, pointRadius: 2, yAxisID: "valor" },
+          { type: "line", label: "Meta mediana", data: filas.map(f => f.meta), borderColor: css("--texto"), backgroundColor: css("--texto"), borderDash: [6, 4], tension: .25, pointRadius: 2, yAxisID: "valor" },
+          { type: "bar", label: "Equipos que cumplieron", data: filas.map(f => f.tasa), backgroundColor: filas.map(f => `${f.mes.startsWith("2026") ? css("--naranja") : css("--verde")}80`), borderRadius: 3, yAxisID: "tasa", order: 3 },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+        plugins: { tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toFixed(2).replace(".", ",")}%`, afterBody: c => `${filas[c[0].dataIndex].equipos} equipos` } } },
+        scales: {
+          valor: { position: "left", min: 98.6, max: 100, ticks: { callback: v => `${v.toFixed(1)}%` }, title: { display: true, text: "Disponibilidad" } },
+          tasa: { position: "right", min: 0, max: 100, grid: { display: false }, ticks: { callback: v => `${v}%` }, title: { display: true, text: "Cumplieron" } },
+          x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 9 } },
+        },
+      },
+    });
+  } else {
+    const m = DATOS.mezcla;
+    document.getElementById("nota-3").textContent = `Porcentaje de mediciones de ${m.frente} que cumplieron la meta, con todos los indicadores y solo con los que se miden en ambos años.`;
+    reemplazar("grafica-3", {
+      type: "bar",
+      data: {
+        labels: m.anios.map(String),
+        datasets: [
+          { label: "Todos los indicadores", data: m.todos, backgroundColor: css("--gris"), borderRadius: 6 },
+          { label: "Solo los que se mantienen", data: m.mantenidos, backgroundColor: css("--verde"), borderRadius: 6 },
+          ...m.indicadores.filter(i => i.antes === null).map(i => ({ label: `Nuevo: ${i.indicador}`, data: [null, i.despues], backgroundColor: css("--naranja"), borderRadius: 6 })),
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { tooltip: { callbacks: { label: c => (c.raw === null ? `${c.dataset.label}: no se medía` : `${c.dataset.label}: ${pct(c.raw)}`) } } },
+        scales: { y: { min: 0, max: 100, ticks: { callback: v => `${v}%` } }, x: { grid: { display: false } } },
+      },
+    });
+  }
+}
+
+function alternar(prefijo, valor, ids) {
+  ids.forEach(id => document.getElementById(id).setAttribute("aria-pressed", String(id === `${prefijo}-${valor}`)));
+}
+
+function dibujarTodo() {
+  estiloBase();
+  dibujarHallazgo1();
+  dibujarPendiente();
+  dibujarDetalleEntorno();
+  dibujarHallazgo3();
+}
+
+function iniciar() {
+  const selector = document.getElementById("entorno");
+  selector.innerHTML = [...DATOS.entornos].sort((a, b) => a.entorno.localeCompare(b.entorno, "es", { numeric: true }))
+    .map(e => `<option value="${e.entorno}">${e.entorno}</option>`).join("");
+  selector.value = entornoActivo;
+  selector.addEventListener("change", e => seleccionarEntorno(e.target.value));
+
+  document.getElementById("vista-variacion").addEventListener("click", () => { vista1 = "variacion"; alternar("vista", "variacion", ["vista-variacion", "vista-indicadores"]); dibujarHallazgo1(); });
+  document.getElementById("vista-indicadores").addEventListener("click", () => { vista1 = "indicadores"; alternar("vista", "indicadores", ["vista-variacion", "vista-indicadores"]); dibujarHallazgo1(); });
+  document.getElementById("vista-disponibilidad").addEventListener("click", () => { vista3 = "disponibilidad"; alternar("vista", "disponibilidad", ["vista-disponibilidad", "vista-mezcla"]); dibujarHallazgo3(); });
+  document.getElementById("vista-mezcla").addEventListener("click", () => { vista3 = "mezcla"; alternar("vista", "mezcla", ["vista-disponibilidad", "vista-mezcla"]); dibujarHallazgo3(); });
+
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", dibujarTodo);
+  new MutationObserver(dibujarTodo).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  dibujarTodo();
+}
+
+if (window.Chart) {
+  iniciar();
+} else {
+  dibujarPendiente();
+  document.querySelectorAll(".lienzo").forEach(l => { l.innerHTML = '<p class="etiqueta">La gráfica necesita conexión a internet para cargar Chart.js.</p>'; l.style.height = "auto"; });
+}
+</script>
+</html>

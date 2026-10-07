@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- fragmento -->
+<title>Hallazgos KPI Estrategia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Fichas de hallazgo: cada una sigue los cuatro pasos de la prueba (hallazgo, evidencia, interpretación, certeza) junto a su gráfica */
+:root {
+  --bg: #f5f5f3;
+  --superficie: #ffffff;
+  --texto: #2a2625;
+  --suave: #625c5a;
+  --linea: #e2dfdc;
+  --amarillo: #fdda24;
+  --verde: #00a676;
+  --naranja: #e8692b;
+  --azul: #2b9fc4;
+  --morado: #9063cd;
+  --gris: #a39e9c;
+  --sobre-amarillo: #2a2625;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --cuerpo: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --datos: "IBM Plex Mono", ui-monospace, "Consolas", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1c1918; --superficie: #262221; --texto: #f3f1ef; --suave: #b7b0ad; --linea: #3b3634;
+    --verde: #2fd39f; --naranja: #ff8a52; --azul: #63cfee; --morado: #b08ee6; --gris: #7d7775;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1c1918; --superficie: #262221; --texto: #f3f1ef; --suave: #b7b0ad; --linea: #3b3634;
+  --verde: #2fd39f; --naranja: #ff8a52; --azul: #63cfee; --morado: #b08ee6; --gris: #7d7775;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--texto);
+  font: 400 1rem/1.55 var(--cuerpo);
+}
+.contenedor { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+
+.portada { padding-block: 48px 32px; display: grid; gap: 28px; }
+.etiqueta {
+  font: 600 0.78rem/1 var(--datos);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--suave);
+}
+.portada h1 { font-size: clamp(2rem, 4.6vw, 3.4rem); font-weight: 800; font-stretch: 85%; line-height: 1.05; max-width: 18ch; }
+.portada h1 mark { background: linear-gradient(transparent 62%, var(--amarillo) 62%); color: inherit; padding-inline: 2px; }
+.contexto { color: var(--suave); max-width: 70ch; }
+.contexto b { color: var(--texto); font-variant-numeric: tabular-nums; }
+
+.resumen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.resumen a {
+  display: grid; gap: 8px; padding: 20px;
+  background: var(--superficie); border: 1px solid var(--linea); border-radius: 14px;
+  text-decoration: none; transition: transform .15s ease, border-color .15s ease;
+}
+.resumen a:hover { transform: translateY(-2px); border-color: var(--texto); }
+.resumen .cifra { font: 800 2.6rem/1 var(--display); font-stretch: 80%; font-variant-numeric: tabular-nums; }
+.resumen .cifra small { font-size: 1.1rem; font-weight: 600; color: var(--suave); }
+.resumen p { color: var(--suave); font-size: 0.95rem; }
+
+.hallazgo {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 28px;
+  padding-block: 40px; border-top: 1px solid var(--linea);
+}
+.ficha { display: grid; gap: 18px; align-content: start; }
+.ficha h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 750; font-stretch: 88%; line-height: 1.12; }
+.nivel { display: inline-flex; gap: 8px; align-items: center; }
+.nivel .marca { background: var(--amarillo); color: var(--sobre-amarillo); font: 700 0.78rem/1 var(--datos); padding: 6px 9px; border-radius: 999px; }
+.pasos { margin: 0; display: grid; gap: 14px; }
+.pasos > div { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; }
+.pasos dt { font: 600 0.74rem/1.6 var(--datos); letter-spacing: 0.06em; text-transform: uppercase; color: var(--suave); }
+.pasos dd { margin: 0; }
+.pasos b { font-variant-numeric: tabular-nums; }
+.certeza { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; margin-right: 6px; }
+.certeza::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
+.certeza.alta { color: var(--verde); }
+.certeza.media { color: var(--naranja); }
+
+.grafica {
+  margin: 0; background: var(--superficie); border: 1px solid var(--linea); border-radius: 16px;
+  padding: 20px; display: grid; gap: 14px; min-width: 0; align-content: start;
+}
+.grafica figcaption { color: var(--suave); font-size: 0.9rem; }
+.controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.controles button, .controles select {
+  font: 600 0.88rem/1 var(--cuerpo); color: var(--texto); background: transparent;
+  border: 1px solid var(--linea); border-radius: 999px; padding: 9px 14px; cursor: pointer;
+}
+.controles button[aria-pressed="true"] { background: var(--texto); color: var(--superficie); border-color: var(--texto); }
+.controles select { border-radius: 10px; background: var(--superficie); }
+.lienzo { position: relative; height: 380px; }
+.lienzo.alto { height: 620px; }
+
+.pendiente { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.pendiente svg { width: 100%; height: auto; display: block; }
+.pendiente svg text { font: 500 11px var(--datos); fill: var(--suave); }
+.pendiente svg .titulo-eje { font: 600 11px var(--datos); fill: var(--texto); letter-spacing: .06em; }
+.pendiente svg g.fila { cursor: pointer; }
+.pendiente svg g.fila:hover text, .pendiente svg g.fila.activa text { fill: var(--texto); font-weight: 600; }
+.detalle { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.pendiente > svg { min-width: 0; }
+.hallazgo.ancho { grid-template-columns: minmax(0, 1fr); }
+.hallazgo.ancho .ficha { grid-template-columns: minmax(0, 1fr); }
+.hallazgo.ancho .pasos { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+.datos-entorno { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.datos-entorno div { border: 1px solid var(--linea); border-radius: 10px; padding: 10px; }
+.datos-entorno span { display: block; font: 500 0.72rem/1.3 var(--datos); color: var(--suave); text-transform: uppercase; letter-spacing: .05em; }
+.datos-entorno b { font: 700 1.3rem/1.2 var(--display); font-variant-numeric: tabular-nums; }
+.lienzo.mini { height: 240px; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; color: var(--suave); }
+.leyenda i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+
+.limites { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; padding-block: 40px; border-top: 1px solid var(--linea); }
+.limites h2 { font-size: 1.4rem; font-stretch: 88%; margin-bottom: 12px; }
+.limites ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 8px; }
+footer { padding-block: 24px 48px; color: var(--suave); font-size: 0.88rem; border-top: 1px solid var(--linea); }
+footer code { font-family: var(--datos); font-size: 0.85em; }
+
+@media (max-width: 900px) {
+  .hallazgo, .limites, .pendiente, .hallazgo.ancho .pasos { grid-template-columns: minmax(0, 1fr); }
+  .resumen { grid-template-columns: minmax(0, 1fr); }
+  .lienzo.alto { height: 560px; }
+}
+@media (max-width: 520px) {
+  .contenedor { padding-inline: 16px; }
+  .pasos > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .lienzo { height: 320px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="contenedor">
+  <header class="portada">
+    <span class="etiqueta">Actividad 3 · Primeros hallazgos</span>
+    <h1>Qué dicen los KPIs cuando se comparan <mark>de forma justa</mark></h1>
+    <p class="contexto"><b>{{mediciones}}</b> mediciones de <b>{{periodo}}</b>. Cada medición vale 1 si el resultado alcanzó la meta según el sentido del indicador y 0 si no. Pase el cursor sobre las gráficas para ver el detalle.</p>
+    <nav class="resumen" aria-label="Resumen de los tres hallazgos">
+      <a href="#hallazgo-1">
+        <span class="etiqueta">1 · Equipos</span>
+        <span class="cifra">{{pct_indicador_mes}}<small>% vs {{pct_equipo}}%</small></span>
+        <p>de la variación del cumplimiento la explica el indicador y el mes, no el equipo</p>
+      </a>
+      <a href="#hallazgo-2">
+        <span class="etiqueta">2 · Entornos</span>
+        <span class="cifra">{{n_movidos}}<small> de {{n_entornos}}</small></span>
+        <p>entornos cambian 5 puestos o más al compararlos con sus pares</p>
+      </a>
+      <a href="#hallazgo-3">
+        <span class="etiqueta">3 · Tendencia</span>
+        <span class="cifra">{{disp_tasa_antes}}<small>% → {{disp_tasa_despues}}%</small></span>
+        <p>cae el cumplimiento de Disponibilidad en 2026, con el mismo resultado y una meta más alta</p>
+      </a>
+    </nav>
+  </header>
+
+  <section class="hallazgo" id="hallazgo-1">
+    <div class="ficha">
+      <span class="nivel"><span class="marca">Hallazgo 1</span><span class="etiqueta">Nivel equipo e indicador</span></span>
+      <h2>El cumplimiento depende más de qué se mide que de quién lo mide</h2>
+      <dl class="pasos">
+        <div><dt>Hallazgo</dt><dd>Saber qué indicador se midió y en qué mes predice el cumplimiento mucho mejor que saber qué equipo lo reportó.</dd></div>
+        <div><dt>Evidencia</dt><dd>El indicador y el mes explican el <b>{{pct_indicador_mes}}%</b> de la variación de la meta cumplida; el equipo, el <b>{{pct_equipo}}%</b>, y el entorno, el <b>{{pct_entorno}}%</b>. La tasa de cumplimiento va de <b>{{tasa_min}}%</b> en {{indicador_min}} a <b>{{tasa_max}}%</b> en {{indicador_max}}.</dd></div>
+        <div><dt>Interpretación</dt><dd>Un ranking bruto premia a quien tiene indicadores fáciles de cumplir. Para decidir dónde acompañar, cada equipo debe compararse con quienes miden lo mismo en el mismo mes, y las metas que casi nadie o casi todos cumplen deben revisarse.</dd></div>
+        <div><dt>Certeza</dt><dd><span class="certeza alta">Alta</span>{{mediciones}} mediciones; cada indicador y mes tiene al menos {{min_equipos_por_indicador_mes}} equipos.</dd></div>
+      </dl>
+    </div>
+    <figure class="grafica">
+      <div class="controles" role="group" aria-label="Vista de la gráfica del hallazgo 1">
+        <button type="button" id="vista-variacion" aria-pressed="true">Qué explica el cumplimiento</button>
+        <button type="button" id="vista-indicadores" aria-pressed="false">Cumplimiento por indicador</button>
+      </div>
+      <div class="lienzo" id="lienzo-1"><canvas id="grafica-1" aria-label="Gráfica del hallazgo 1"></canvas></div>
+      <figcaption id="nota-1">Porcentaje de la variación de la meta cumplida que explica cada agrupación.</figcaption>
+    </figure>
+  </section>
+
+  <section class="hallazgo ancho" id="hallazgo-2">
+    <div class="ficha">
+      <span class="nivel"><span class="marca">Hallazgo 2</span><span class="etiqueta">Nivel entorno</span></span>
+      <h2>El ranking de entornos cambia cuando se comparan con sus pares</h2>
+      <dl class="pasos">
+        <div><dt>Hallazgo</dt><dd><b>{{n_movidos}} de {{n_entornos}}</b> entornos se mueven 5 puestos o más cuando cada medición se compara con el promedio de los equipos que miden el mismo indicador en el mismo mes.</dd></div>
+        <div><dt>Evidencia</dt><dd>En los últimos 12 meses ({{ventana}}), {{salto_entorno}} pasa del puesto <b>{{salto_de}}</b> al <b>{{salto_a}}</b> y {{caida_entorno}} del <b>{{caida_de}}</b> al <b>{{caida_a}}</b>. {{constantes}} cumplen por encima de sus pares en todos los semestres desde {{semestre_inicial}}.</dd></div>
+        <div><dt>Interpretación</dt><dd>El cumplimiento bruto de un entorno mezcla su desempeño con la dificultad de sus indicadores. La comparación con pares separa ambas cosas y es la que sirve para elegir dónde enfocar el acompañamiento.</dd></div>
+        <div><dt>Certeza</dt><dd><span class="certeza media">Media</span>Muchos entornos tienen de 1 a 4 equipos, así que un solo equipo mueve la mediana. Los {{equipos_sin_entorno}} equipos sin entorno no entran en la comparación.</dd></div>
+      </dl>
+    </div>
+    <figure class="grafica">
+      <div class="pendiente">
+        <svg id="pendiente" role="img" aria-label="Puesto de cada entorno en el ranking bruto y en la comparación con pares"></svg>
+        <div class="detalle">
+          <div class="controles">
+            <label class="etiqueta" for="entorno">Entorno</label>
+            <select id="entorno"></select>
+          </div>
+          <div class="datos-entorno" id="datos-entorno"></div>
+          <div class="lienzo mini"><canvas id="grafica-2" aria-label="Cumplimiento frente a pares por semestre"></canvas></div>
+          <p class="etiqueta">Puntos sobre o bajo sus pares, por semestre</p>
+        </div>
+      </div>
+      <div class="leyenda"><span><i style="background: var(--verde)"></i>Sube 5 puestos o más</span><span><i style="background: var(--naranja)"></i>Baja 5 puestos o más</span><span><i style="background: var(--gris)"></i>Se mueve menos</span></div>
+      <figcaption>Izquierda: puesto por cumplimiento bruto. Derecha: puesto comparado con pares. Seleccione un entorno para ver su historia.</figcaption>
+    </figure>
+  </section>
+
+  <section class="hallazgo" id="hallazgo-3">
+    <div class="ficha">
+      <span class="nivel"><span class="marca">Hallazgo 3</span><span class="etiqueta">Nivel frente y tiempo</span></span>
+      <h2>La caída de 2026 no es peor desempeño: cambió qué se mide y cuánto se exige</h2>
+      <dl class="pasos">
+        <div><dt>Hallazgo</dt><dd>TI y Excelencia operativa bajan su cumplimiento en 2026, pero en los indicadores que se mantienen los resultados no empeoran.</dd></div>
+        <div><dt>Evidencia</dt><dd>En Disponibilidad el resultado mediano pasa de <b>{{disp_res_antes}}%</b> a <b>{{disp_res_despues}}%</b>, la meta sube de <b>{{disp_meta_antes}}%</b> a <b>{{disp_meta_despues}}%</b> y la meta cumplida cae de <b>{{disp_tasa_antes}}%</b> a <b>{{disp_tasa_despues}}%</b>. Excelencia operativa baja de <b>{{mezcla_todos_antes}}%</b> a <b>{{mezcla_todos_despues}}%</b> con todos sus indicadores, pero sube de <b>{{mezcla_mant_antes}}%</b> a <b>{{mezcla_mant_despues}}%</b> en los que se mantienen; la caída la trae un indicador nuevo en 2026: {{indicadores_nuevos}}.</dd></div>
+        <div><dt>Interpretación</dt><dd>Antes de leer una caída como pérdida de desempeño hay que revisar si cambió la meta o la mezcla de indicadores. Sin esa revisión se acompañaría a equipos que no empeoraron.</dd></div>
+        <div><dt>Certeza</dt><dd><span class="certeza alta">Alta</span>en los datos ({{disp_equipos}} equipos miden Disponibilidad en 2026). La causa de que subiera la meta no está en el archivo.</dd></div>
+      </dl>
+    </div>
+    <figure class="grafica">
+      <div class="controles" role="group" aria-label="Vista de la gráfica del hallazgo 3">
+        <button type="button" id="vista-disponibilidad" aria-pressed="true">Disponibilidad (TI)</button>
+        <button type="button" id="vista-mezcla" aria-pressed="false">Excelencia operativa</button>
+      </div>
+      <div class="lienzo" id="lienzo-3"><canvas id="grafica-3" aria-label="Gráfica del hallazgo 3"></canvas></div>
+      <figcaption id="nota-3">Resultado y meta medianos (eje izquierdo) y porcentaje de equipos que cumplieron (barras, eje derecho), por mes.</figcaption>
+    </figure>
+  </section>
+
+  <section class="limites">
+    <div>
+      <h2>Qué no se puede concluir</h2>
+      <ul>
+        <li>Por qué cambian las metas ni si están bien calibradas: el archivo no trae cómo se fijan.</li>
+        <li>Que el acompañamiento cause mejoras: no hay registro de qué equipos se acompañaron ni cuándo.</li>
+        <li>El desempeño por entorno de los {{equipos_sin_entorno}} equipos sin entorno, porque el catálogo solo trae los equipos vigentes y su entorno de hoy.</li>
+        <li>Qué tan lejos o cerca de la meta quedó cada equipo: la meta cumplida no mide magnitud.</li>
+        <li>Qué miden exactamente {{indicadores_pendientes}} indicadores sin definición en el catálogo; en {{sentido_no_verificado}} de ellos no se pudo verificar si más es mejor.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Información adicional que se necesitaría</h2>
+      <ul>
+        <li>Histórico de metas por indicador y el criterio con el que se fijan.</li>
+        <li>Catálogo de entornos con fechas: a qué entorno pertenecía cada equipo cada mes.</li>
+        <li>Definición, unidad y sentido de los indicadores pendientes, validados con sus dueños.</li>
+        <li>Registro de acompañamientos (equipo, fecha, tipo) para medir su efecto.</li>
+        <li>Número de respuestas de cada encuesta por equipo, para saber cuánto pesa cada promedio.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Fuente: <code>0_datos/3_score/KPIS_historico_score.xlsx</code>. Se regenera con <code>uv run python 3_reporte/generar_reporte.py</code> después de correr el proceso de transformación.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const DATOS = __DATOS__;
+
+const css = nombre => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+const pct = valor => `${valor.toFixed(1).replace(".", ",")}%`;
+const graficas = {};
+let vista1 = "variacion";
+let vista3 = "disponibilidad";
+let entornoActivo = DATOS.entornos.reduce((a, b) => (b.puesto_bruto - b.puesto_pares > a.puesto_bruto - a.puesto_pares ? b : a)).entorno;
+
+function estiloBase() {
+  Chart.defaults.font.family = css("--cuerpo");
+  Chart.defaults.color = css("--suave");
+  Chart.defaults.borderColor = css("--linea");
+  Chart.defaults.plugins.legend.labels.boxWidth = 12;
+}
+
+function reemplazar(id, configuracion) {
+  graficas[id]?.destroy();
+  graficas[id] = new Chart(document.getElementById(id), configuracion);
+}
+
+function colorPorTasa(tasa) {
+  if (tasa >= 70) return css("--verde");
+  if (tasa < 30) return css("--naranja");
+  return css("--azul");
+}
+
+function dibujarHallazgo1() {
+  const lienzo = document.getElementById("lienzo-1");
+  if (vista1 === "variacion") {
+    lienzo.classList.remove("alto");
+    document.getElementById("nota-1").textContent = "Porcentaje de la variación de la meta cumplida que explica cada agrupación.";
+    reemplazar("grafica-1", {
+      type: "bar",
+      data: {
+        labels: DATOS.variacion.map(f => f.grupo),
+        datasets: [{
+          data: DATOS.variacion.map(f => f.pct),
+          backgroundColor: DATOS.variacion.map(f => (f.grupo.startsWith("Indicador") ? css("--azul") : f.grupo === "Frente" ? css("--morado") : css("--gris"))),
+          borderRadius: 6,
+        }],
+      },
+      options: {
+        indexAxis: "y", maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${pct(c.raw)} de la variación` } } },
+        scales: { x: { min: 0, max: 60, ticks: { callback: v => `${v}%` } }, y: { grid: { display: false } } },
+      },
+    });
+  } else {
+    lienzo.classList.add("alto");
+    document.getElementById("nota-1").textContent = "Porcentaje de mediciones que cumplieron la meta. Verde: 70% o más; naranja: menos de 30%.";
+    const filas = DATOS.indicadores;
+    reemplazar("grafica-1", {
+      type: "bar",
+      data: {
+        labels: filas.map(f => (f.etiqueta.length > 34 ? `${f.etiqueta.slice(0, 32)}…` : f.etiqueta)),
+        datasets: [{ data: filas.map(f => f.tasa), backgroundColor: filas.map(f => colorPorTasa(f.tasa)), borderRadius: 4 }],
+      },
+      options: {
+        indexAxis: "y", maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            title: c => filas[c[0].dataIndex].etiqueta,
+            label: c => { const f = filas[c.dataIndex]; return [`${pct(f.tasa)} cumplió`, `${f.frente}`, `${f.equipos} equipos · ${f.periodo}`]; },
+          } },
+        },
+        scales: { x: { min: 0, max: 100, ticks: { callback: v => `${v}%` } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } },
+      },
+    });
+  }
+}
+
+function dibujarPendiente() {
+  const svg = document.getElementById("pendiente");
+  const filas = DATOS.entornos;
+  const alto = 36 + filas.length * 22;
+  const izquierda = 150, derecha = 290, ancho = 440;
+  const y = puesto => 30 + (puesto - 1) * 22;
+  svg.setAttribute("viewBox", `0 0 ${ancho} ${alto}`);
+
+  let contenido = `<text class="titulo-eje" x="${izquierda}" y="14" text-anchor="middle">BRUTO</text>`
+    + `<text class="titulo-eje" x="${derecha}" y="14" text-anchor="middle">VS PARES</text>`;
+  for (const f of filas) {
+    const cambio = f.puesto_bruto - f.puesto_pares;
+    const color = cambio >= 5 ? css("--verde") : cambio <= -5 ? css("--naranja") : css("--gris");
+    const activo = f.entorno === entornoActivo;
+    contenido += `<g class="fila${activo ? " activa" : ""}" data-entorno="${f.entorno}" tabindex="0" role="button" aria-label="${f.entorno}: puesto ${f.puesto_bruto} bruto, ${f.puesto_pares} frente a pares">
+      <line x1="${izquierda}" y1="${y(f.puesto_bruto)}" x2="${derecha}" y2="${y(f.puesto_pares)}" stroke="${activo ? css("--texto") : color}" stroke-width="${activo ? 3.5 : 2}" stroke-linecap="round"/>
+      <circle cx="${izquierda}" cy="${y(f.puesto_bruto)}" r="4" fill="${activo ? css("--texto") : color}"/>
+      <circle cx="${derecha}" cy="${y(f.puesto_pares)}" r="4" fill="${activo ? css("--texto") : color}"/>
+      <text x="${izquierda - 10}" y="${y(f.puesto_bruto) + 4}" text-anchor="end">${f.puesto_bruto}. ${f.entorno}</text>
+      <text x="${derecha + 10}" y="${y(f.puesto_pares) + 4}">${f.puesto_pares}. ${f.entorno}</text>
+    </g>`;
+  }
+  svg.innerHTML = contenido;
+  svg.querySelectorAll("g.fila").forEach(g => {
+    const elegir = () => seleccionarEntorno(g.dataset.entorno);
+    g.addEventListener("click", elegir);
+    g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(); } });
+  });
+}
+
+function dibujarDetalleEntorno() {
+  const f = DATOS.entornos.find(e => e.entorno === entornoActivo);
+  const signo = f.relativo > 0 ? "+" : "";
+  document.getElementById("datos-entorno").innerHTML = `
+    <div><span>Puesto bruto → pares</span><b>${f.puesto_bruto} → ${f.puesto_pares}</b></div>
+    <div><span>Frente a sus pares</span><b>${signo}${f.relativo.toFixed(1).replace(".", ",")} pts</b></div>
+    <div><span>Cumplimiento bruto</span><b>${pct(f.bruto)}</b></div>
+    <div><span>Equipos · mediciones</span><b>${f.equipos} · ${f.mediciones}</b></div>`;
+
+  const serie = DATOS.tendencia.series[entornoActivo] || {};
+  const valores = DATOS.tendencia.semestres.map(s => serie[s] ?? null);
+  reemplazar("grafica-2", {
+    type: "bar",
+    data: {
+      labels: DATOS.tendencia.semestres,
+      datasets: [{ data: valores, backgroundColor: valores.map(v => (v === null ? css("--gris") : v >= 0 ? css("--verde") : css("--naranja"))), borderRadius: 4 }],
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => (c.raw === null ? "Sin datos" : `${c.raw > 0 ? "+" : ""}${c.raw} pts frente a pares`) } } },
+      scales: { y: { suggestedMin: -30, suggestedMax: 30, ticks: { callback: v => `${v > 0 ? "+" : ""}${v}` } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } },
+    },
+  });
+}
+
+function seleccionarEntorno(entorno) {
+  entornoActivo = entorno;
+  document.getElementById("entorno").value = entorno;
+  dibujarPendiente();
+  dibujarDetalleEntorno();
+}
+
+function dibujarHallazgo3() {
+  if (vista3 === "disponibilidad") {
+    const filas = DATOS.disponibilidad;
+    document.getElementById("nota-3").textContent = "Resultado y meta medianos (eje izquierdo) y porcentaje de equipos que cumplieron (barras, eje derecho), por mes.";
+    reemplazar("grafica-3", {
+      data: {
+        labels: filas.map(f => f.mes),
+        datasets: [
+          { type: "line", label: "Resultado mediano", data: filas.map(f => f.resultado), borderColor: css("--azul"), backgroundColor: css("--azul"), borderWidth: 3, tension: .25, pointRadius: 2, yAxisID: "valor" },
+          { type: "line", label: "Meta mediana", data: filas.map(f => f.meta), borderColor: css("--texto"), backgroundColor: css("--texto"), borderDash: [6, 4], tension: .25, pointRadius: 2, yAxisID: "valor" },
+          { type: "bar", label: "Equipos que cumplieron", data: filas.map(f => f.tasa), backgroundColor: filas.map(f => `${f.mes.startsWith("2026") ? css("--naranja") : css("--verde")}80`), borderRadius: 3, yAxisID: "tasa", order: 3 },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+        plugins: { tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toFixed(2).replace(".", ",")}%`, afterBody: c => `${filas[c[0].dataIndex].equipos} equipos` } } },
+        scales: {
+          valor: { position: "left", min: 98.6, max: 100, ticks: { callback: v => `${v.toFixed(1)}%` }, title: { display: true, text: "Disponibilidad" } },
+          tasa: { position: "right", min: 0, max: 100, grid: { display: false }, ticks: { callback: v => `${v}%` }, title: { display: true, text: "Cumplieron" } },
+          x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 9 } },
+        },
+      },
+    });
+  } else {
+    const m = DATOS.mezcla;
+    document.getElementById("nota-3").textContent = `Porcentaje de mediciones de ${m.frente} que cumplieron la meta, con todos los indicadores y solo con los que se miden en ambos años.`;
+    reemplazar("grafica-3", {
+      type: "bar",
+      data: {
+        labels: m.anios.map(String),
+        datasets: [
+          { label: "Todos los indicadores", data: m.todos, backgroundColor: css("--gris"), borderRadius: 6 },
+          { label: "Solo los que se mantienen", data: m.mantenidos, backgroundColor: css("--verde"), borderRadius: 6 },
+          ...m.indicadores.filter(i => i.antes === null).map(i => ({ label: `Nuevo: ${i.indicador}`, data: [null, i.despues], backgroundColor: css("--naranja"), borderRadius: 6 })),
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { tooltip: { callbacks: { label: c => (c.raw === null ? `${c.dataset.label}: no se medía` : `${c.dataset.label}: ${pct(c.raw)}`) } } },
+        scales: { y: { min: 0, max: 100, ticks: { callback: v => `${v}%` } }, x: { grid: { display: false } } },
+      },
+    });
+  }
+}
+
+function alternar(prefijo, valor, ids) {
+  ids.forEach(id => document.getElementById(id).setAttribute("aria-pressed", String(id === `${prefijo}-${valor}`)));
+}
+
+function dibujarTodo() {
+  estiloBase();
+  dibujarHallazgo1();
+  dibujarPendiente();
+  dibujarDetalleEntorno();
+  dibujarHallazgo3();
+}
+
+function iniciar() {
+  const selector = document.getElementById("entorno");
+  selector.innerHTML = [...DATOS.entornos].sort((a, b) => a.entorno.localeCompare(b.entorno, "es", { numeric: true }))
+    .map(e => `<option value="${e.entorno}">${e.entorno}</option>`).join("");
+  selector.value = entornoActivo;
+  selector.addEventListener("change", e => seleccionarEntorno(e.target.value));
+
+  document.getElementById("vista-variacion").addEventListener("click", () => { vista1 = "variacion"; alternar("vista", "variacion", ["vista-variacion", "vista-indicadores"]); dibujarHallazgo1(); });
+  document.getElementById("vista-indicadores").addEventListener("click", () => { vista1 = "indicadores"; alternar("vista", "indicadores", ["vista-variacion", "vista-indicadores"]); dibujarHallazgo1(); });
+  document.getElementById("vista-disponibilidad").addEventListener("click", () => { vista3 = "disponibilidad"; alternar("vista", "disponibilidad", ["vista-disponibilidad", "vista-mezcla"]); dibujarHallazgo3(); });
+  document.getElementById("vista-mezcla").addEventListener("click", () => { vista3 = "mezcla"; alternar("vista", "mezcla", ["vista-disponibilidad", "vista-mezcla"]); dibujarHallazgo3(); });
+
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", dibujarTodo);
+  new MutationObserver(dibujarTodo).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  dibujarTodo();
+}
+
+if (window.Chart) {
+  iniciar();
+} else {
+  dibujarPendiente();
+  document.querySelectorAll(".lienzo").forEach(l => { l.innerHTML = '<p class="etiqueta">La gráfica necesita conexión a internet para cargar Chart.js.</p>'; l.style.height = "auto"; });
+}
+</script>
+</html>

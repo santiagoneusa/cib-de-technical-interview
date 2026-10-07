@@ -1,6 +1,6 @@
 ---
 name: bitacora-ia
-description: Registrar la colaboración humano–IA en 3_aplicacion/bitacora_ia.md cada vez que se toma una decisión, se corrige o descarta una propuesta de la IA o se valida una afirmación contra los datos.
+description: Registrar la colaboración humano–IA en 4_aplicacion/bitacora_ia.md cada vez que se toma una decisión, se corrige o descarta una propuesta de la IA o se valida una afirmación contra los datos.
 ---
 
 # Bitácora de uso de IA

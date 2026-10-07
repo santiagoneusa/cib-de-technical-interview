@@ -19,7 +19,7 @@ Prueba técnica – Ingeniero de Datos N2, Estrategia Corporativa. Se presenta l
 0_datos/3_score/        # score por equipo, frente y entorno (_score.xlsx)
 1_experimentacion/      # notebooks de exploración y calidad
 2_transformacion/src/   # proceso recurrente: main.py, etl/ y score/
-3_aplicacion/           # bitácora de uso de IA
+4_aplicacion/           # bitácora de uso de IA
 .github/                # reglas, skills y prompts para la IA
 ```
 
@@ -173,7 +173,7 @@ La IA (Claude Code y GitHub Copilot) es fundamental para agilizar el trabajo: ex
 
 Así cualquier persona del equipo obtiene el mismo estándar y las buenas prácticas quedan escritas, no en la memoria de alguien.
 
-Las decisiones de criterio fueron humanas y cada propuesta de la IA se validó contra los datos. La [bitácora](3_aplicacion/bitacora_ia.md) registra los prompts, lo aceptado, lo corregido y lo descartado. Tres ejemplos:
+Las decisiones de criterio fueron humanas y cada propuesta de la IA se validó contra los datos. La [bitácora](4_aplicacion/bitacora_ia.md) registra los prompts, lo aceptado, lo corregido y lo descartado. Tres ejemplos:
 - **Frente "Talento + Agilidad":** la IA lo había homologado a "Modelos de trabajo y Agilidad". El humano lo corrigió porque sus indicadores no coinciden con el catálogo.
 - **Recálculo de Cumplimiento:** la IA propuso recalcular todo como Resultado / Meta. Una prueba por indicador mostró que eso inventaba valores (Regulatorio topa en 1, Índice AQR's está en otra unidad), así que solo se recalculan dos casos con evidencia: la escala de las encuestas y los valores copiados.
 - **Filas sin código:** se iban a excluir. Al validarlas, las 36 resultaron recuperables desde el nombre del equipo.
