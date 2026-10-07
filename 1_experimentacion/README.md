@@ -27,37 +27,34 @@ Cada fila del Excel es **el resultado de un indicador, para un equipo, en un mes
 
 ```mermaid
 erDiagram
-    FRENTES ||--o{ INDICADORES : "agrupa"
-    INDICADORES ||--o{ MEDICIONES : "se mide en"
-    EQUIPOS ||--o{ MEDICIONES : "reporta"
     ENTORNOS ||--o{ EQUIPOS : "contiene"
+    EQUIPOS ||--o{ MEDICIONES : "reporta"
+    INDICADORES ||--o{ MEDICIONES : "se mide en"
+    FRENTES ||--o{ MEDICIONES : "agrupa"
     MEDICIONES {
         corte fecha PK "primer día del mes"
         cod_equipo texto PK, FK "EQU00000"
         cod_indicador texto PK, FK "IND000"
+        cod_frente texto FK "FRE00"
         resultado decimal
         meta decimal
-        cumplimiento decimal "1 = meta cumplida"
+        cumplimiento decimal
     }
     EQUIPOS {
         cod_equipo texto PK "EQU00000 o CEX00000"
         nombre texto
-        tipo enum "[EQU, CEX]"
         cod_entorno texto FK
-        estado enum "[vigente, histórico]"
     }
     ENTORNOS {
-        cod_entorno texto PK "ENX0000 o VPX0000"
+        cod_entorno texto PK "ENX0000, VPX0000 o SIN0000"
         nombre texto
-        nivel enum "[entorno, vicepresidencia, sin entorno]"
     }
     INDICADORES {
         cod_indicador texto PK "IND000"
         nombre texto
-        cod_frente texto FK
         definicion texto
         unidad enum "[porcentaje, escala, cantidad]"
-        sentido enum "[mayor es mejor, menor es mejor]"
+        sentido enum "[mayor, menor, no verificado]"
     }
     FRENTES {
         cod_frente texto PK "FRE00"
@@ -71,17 +68,17 @@ erDiagram
 | `FK` | Llave foránea: apunta a la llave primaria de otra tabla y solo acepta valores que existan allí |
 | `enum "[a, b]"` | Lista cerrada: la columna solo admite los valores entre corchetes |
 | `texto` · `fecha` · `decimal` | Tipo de dato de la columna; el texto entre comillas es el formato o una aclaración |
-| Línea `\|\|──o{` | Relación uno a muchos: el extremo con doble raya es el "uno" y el de tres patas el "muchos". Un frente agrupa muchos indicadores; cada indicador pertenece a un solo frente |
+| Línea `\|\|──o{` | Relación uno a muchos: el extremo con doble raya es el "uno" y el de tres patas el "muchos". Un equipo reporta muchas mediciones; cada medición es de un solo equipo |
 
 Cada dato vive **una sola vez, con un código estable**, y las mediciones solo apuntan a esos códigos. Los problemas que motivan cada decisión están en [1.2](#12-coincidencia-del-dataset-con-los-catálogos).
 
 | Entidad | Qué representa | Por qué es una entidad propia |
 |---|---|---|
-| Mediciones | El resultado de un indicador, para un equipo, en un mes | Es lo único que cambia cada mes; guarda solo códigos, así una medición no puede repetirse ni apuntar a algo inexistente |
-| Equipos | Equipos (EQU) y células (CEX), vigentes e históricos | Un mismo equipo aparece escrito de muchas formas; con un solo registro por código el nombre se corrige en un lugar |
-| Entornos | La unidad que agrupa equipos: entorno, vicepresidencia o "sin entorno" | Hoy la columna "padre" mezcla niveles; separarlo permite declarar el nivel y analizar por entorno sin ambigüedad |
-| Indicadores | Qué se mide, en qué unidad y si más alto es mejor | El mismo indicador se escribe distinto entre hojas; un código propio y su unidad permiten comparar cumplimientos |
-| Frentes | La agrupación estratégica de los indicadores | Hay frentes mal escritos y frentes que no están en el catálogo; existiendo una vez, los indicadores lo heredan sin repetirlo |
+| Mediciones | El resultado de un indicador, para un equipo, en un mes, con el frente con el que se reportó | Es lo único que cambia cada mes; guarda solo códigos, así una medición no puede repetirse ni apuntar a algo inexistente |
+| Equipos | Equipos (EQU) y células (CEX) y el entorno al que pertenecen | Un mismo equipo aparece escrito de muchas formas; con un solo registro por código el nombre se corrige en un lugar |
+| Entornos | La unidad que agrupa equipos: un entorno, una vicepresidencia o "Sin entorno" | Hay equipos sin entorno en el catálogo o fuera de él; un registro explícito "Sin entorno" evita equipos sin grupo |
+| Indicadores | Qué se mide, en qué unidad y si más alto es mejor | El mismo indicador se escribe distinto entre hojas y más de la mitad no está en el catálogo; un código propio y su sentido permiten compararlos |
+| Frentes | La agrupación estratégica de las mediciones | Hay frentes mal escritos y frentes fuera del catálogo, y un mismo indicador cambió de frente; cada medición guarda el frente con el que se reportó |
 
 ### 1.2 Coincidencia del dataset con los catálogos
 
@@ -100,7 +97,7 @@ Cada dato vive **una sola vez, con un código estable**, y las mediciones solo a
 |---|---|---|---|
 | ![Faltantes](https://img.shields.io/badge/Faltantes-9063cd) | Filas sin código de equipo | 36 filas (0,2%); todas tienen un nombre que corresponde a un solo código | corregir (tomar el código del nombre) |
 | ![Faltantes](https://img.shields.io/badge/Faltantes-9063cd) | Nombre de equipo vacío | 6.185 filas (40,7%) | corregir desde el catálogo |
-| ![Faltantes](https://img.shields.io/badge/Faltantes-9063cd) | Cumplimiento vacío | 265 filas; 59 recalculables | corregir / excluir |
+| ![Faltantes](https://img.shields.io/badge/Faltantes-9063cd) | Cumplimiento vacío | 265 filas (1,7%) | excluir |
 | ![Faltantes](https://img.shields.io/badge/Faltantes-9063cd) | Meses con pocos equipos | 202510: 20 equipos vs 64 normal | marcar |
 | ![Duplicados](https://img.shields.io/badge/Duplicados-59cbe8) | Filas repetidas exactamente | 2.182 filas (14,4%) | excluir (se deja una) |
 | ![Duplicados](https://img.shields.io/badge/Duplicados-59cbe8) | Mismo equipo, indicador y mes con valores distintos | 1.265 filas; 962 son respuestas de encuesta | corregir (promedio) |
@@ -112,7 +109,7 @@ Cada dato vive **una sola vez, con un código estable**, y las mediciones solo a
 | ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Indicadores sin definición | 14 de 25; 8.267 filas (54,4%) | agregar al catálogo como pendiente y documentar |
 | ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Indicadores del catálogo que nadie mide | 2 de 13 | aceptar y reportar |
 | ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento en escalas distintas | 5.498 filas (36,2%): mediana 4,6 en encuestas vs 1,0 en el resto | corregir (Resultado / Meta) |
-| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimientos imposibles (155 y −1873) | 22 filas | corregir (Resultado / Meta); si no se puede, dejar vacío |
-| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento copiado (1.014683) | 530 filas (3,5%), casi todas en Disponibilidad e Incidentes | corregir (Resultado / Meta) |
+| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimientos imposibles (155 y −1873) | 22 filas | aceptar: el score compara Resultado con Meta |
+| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento copiado (1.014683) | 530 filas (3,5%), casi todas en Disponibilidad e Incidentes | aceptar: el score compara Resultado con Meta |
 
 Impacto y detalle: [`notebooks/1_3_evaluacion_calidad.ipynb`](notebooks/1_3_evaluacion_calidad.ipynb).

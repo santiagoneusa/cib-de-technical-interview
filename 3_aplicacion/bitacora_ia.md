@@ -106,3 +106,19 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
   - **Valores imposibles:** son Incidentes 202408, todos con 155,42 aunque los resultados son distintos (se recalculan), y Gestión del Gasto 202308, donde el origen calculó Meta − Resultado (se dejan vacíos).
   - **Columnas vacías:** ninguna fila trae Frente, Indicador o Corte vacíos. Solo faltan Codigo_EQU, EQU, Resultado, Meta y Cumplimiento.
   - **Actividad 1:** 1.2 y 1.3 se corrigieron para no tratar "Talento + Agilidad" como un nombre anterior del mismo frente. El registro de 1.3 queda con 16 problemas, porque se agrega "Frente que no está en el catálogo".
+
+### 2026-10-07 · Actividad 2 · Modelo normalizado, sin recalcular Cumplimiento y código más limpio
+- **Pedido humano:**
+  - **Cumplimiento:** quitar el recálculo de Cumplimiento y el umbral de "cumplimiento imposible". Un 9,43 de Percepción es un cumplimiento real en otra escala, no un error. Excluir las filas sin Cumplimiento (por ejemplo Regulatorio con Resultado 0 y Meta 0).
+  - **Modelo:** que los datos procesados respeten el modelo de la actividad 1, separados en mediciones, equipos, entornos, indicadores y frentes, con catálogos completados (los indicadores sin uso se conservan y los medidos sin catálogo se agregan). Mediciones guarda `cod_frente`. Se quitan `estado`, `nivel` y `tipo` para mantener el modelo simple.
+  - **Código:** menos comentarios, sin docstrings de módulo y con espacio entre bloques, también en los notebooks.
+- **Propuesta de la IA:**
+  - **Módulos:** `etl/modelo.py` construye las cinco tablas con códigos `IND000`, `FRE00` y `SIN0000` para "Sin entorno". El score une las tablas antes de calcular la meta cumplida.
+  - **Notebooks:** se reformatearon con una regla mecánica: sin comentarios ni docstrings, y una línea en blanco al abrir la figura, al salir de un bucle y antes de `plt.tight_layout()`.
+- **Validación contra datos:** la prueba de recálculo pedida por el humano muestra, por indicador, cuándo Resultado / Meta explica el Cumplimiento de origen:
+  - En las encuestas (Percepción, Adopción, Talento + Agilidad) el Cumplimiento es siempre el Resultado: problema de escala.
+  - En Regulatorio el origen topa en 1.
+  - En Índice AQR's el Resultado está en otra unidad (494 sobre una meta de 1,2).
+  - En Disponibilidad e Incidentes hay valores copiados.
+  - Recalcular de forma general habría inventado valores.
+- **Pendiente de decisión humana:** si se corrige solo la escala de las encuestas.

@@ -26,37 +26,34 @@ Como conclusión, se registran 16 problemas de calidad con su tratamiento, sin e
 
 ```mermaid
 erDiagram
-    FRENTES ||--o{ INDICADORES : "agrupa"
-    INDICADORES ||--o{ MEDICIONES : "se mide en"
-    EQUIPOS ||--o{ MEDICIONES : "reporta"
     ENTORNOS ||--o{ EQUIPOS : "contiene"
+    EQUIPOS ||--o{ MEDICIONES : "reporta"
+    INDICADORES ||--o{ MEDICIONES : "se mide en"
+    FRENTES ||--o{ MEDICIONES : "agrupa"
     MEDICIONES {
         corte fecha PK "primer día del mes"
         cod_equipo texto PK, FK "EQU00000"
         cod_indicador texto PK, FK "IND000"
+        cod_frente texto FK "FRE00"
         resultado decimal
         meta decimal
-        cumplimiento decimal "1 = meta cumplida"
+        cumplimiento decimal
     }
     EQUIPOS {
         cod_equipo texto PK "EQU00000 o CEX00000"
         nombre texto
-        tipo enum "[EQU, CEX]"
         cod_entorno texto FK
-        estado enum "[vigente, histórico]"
     }
     ENTORNOS {
-        cod_entorno texto PK "ENX0000 o VPX0000"
+        cod_entorno texto PK "ENX0000, VPX0000 o SIN0000"
         nombre texto
-        nivel enum "[entorno, vicepresidencia, sin entorno]"
     }
     INDICADORES {
         cod_indicador texto PK "IND000"
         nombre texto
-        cod_frente texto FK
         definicion texto
         unidad enum "[porcentaje, escala, cantidad]"
-        sentido enum "[mayor es mejor, menor es mejor]"
+        sentido enum "[mayor, menor, no verificado]"
     }
     FRENTES {
         cod_frente texto PK "FRE00"
@@ -66,7 +63,7 @@ erDiagram
 
 ### 2. Transformación
 
-Un solo comando (`uv run python 2_transformacion/src/main.py`) limpia el archivo original y publica dos Excel: los **datos procesados** (una fila por mes × equipo × indicador, con el catálogo de indicadores actualizado y la trazabilidad de cada fila tocada) y el **score** por equipo, frente y entorno. La métrica es la **meta cumplida** según el sentido de cada indicador; los entornos se comparan con la **mediana de sus equipos**, y los equipos sin entorno no se mezclan en un grupo artificial.
+Un solo comando (`uv run python 2_transformacion/src/main.py`) limpia el archivo original y publica dos Excel: los **datos procesados**, separados en el modelo propuesto (mediciones, equipos, entornos, indicadores y frentes, con los catálogos completados y la trazabilidad de cada fila tocada), y el **score** por equipo, frente y entorno. La métrica es la **meta cumplida** según el sentido de cada indicador; los entornos se comparan con la **mediana de sus equipos**, y los equipos sin entorno no se mezclan en un grupo artificial.
 
 ### 3. Aplicación
 
