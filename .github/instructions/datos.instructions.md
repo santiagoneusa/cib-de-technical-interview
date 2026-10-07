@@ -10,16 +10,19 @@ description: Reglas de datos, calidad y trazabilidad
 - **Frente:** se corrigen solo los errores de digitación demostrables ("Modeos…"). Un frente fuera del catálogo se conserva y se reporta.
 - **Resultado, Meta o Cumplimiento vacíos:** se excluye la fila. Nunca se imputa ni se recalcula un valor faltante.
 - **Filas repetidas:** se deja una. Varias filas del mismo mes, equipo e indicador con valores distintos se promedian en una.
-- **Cumplimiento:** se conservan `cumplimiento_original` y `cumplimiento_procesado`. El procesado es Resultado / Meta solo cuando el original es igual al Resultado y la meta es positiva (escala de las encuestas). No se agregan condiciones como "solo si el valor cambia": Resultado 1 con meta 1 y Resultado 0 con meta 0 son válidos.
+- **Cumplimiento:** se conservan `cumplimiento_original` y `cumplimiento_procesado`. El procesado es Resultado / Meta, con meta positiva, solo con evidencia:
+  - **Escala:** el original es igual al Resultado (encuestas).
+  - **Valor copiado:** el mismo valor aparece en 5 o más equipos del mismo indicador y mes con resultados distintos, en indicadores donde más es mejor, salvo que sea un tope que el resultado supera.
+  - **Sin condiciones extra:** no se agrega "solo si el valor cambia". Resultado 1 con meta 1 y Resultado 0 con meta 0 son válidos.
 - **Indicadores** se cruzan con el catálogo en minúsculas y sin tildes.
 
 ## Modelo normalizado
 - **Cinco tablas** con códigos estables:
   - `frentes` (`FRE00`)
-  - `indicadores` (`IND000`, con `definicion`, `unidad` y `sentido`)
+  - `indicadores` (`IND000`, con `cod_frente`, `definicion`, `unidad` y `sentido`; un mismo nombre en dos frentes son dos indicadores)
   - `entornos` (`ENX`/`VPX` del catálogo y `SIN0000` "Sin entorno")
   - `equipos` (`cod_equipo`, `nombre`, `cod_entorno`)
-  - `mediciones` (`corte`, `cod_equipo`, `cod_indicador`, `cod_frente`, `resultado`, `meta`, `cumplimiento_original`, `cumplimiento_procesado`)
+  - `mediciones` (`corte`, `cod_equipo`, `cod_indicador`, `resultado`, `meta`, `cumplimiento_original`, `cumplimiento_procesado`), sin columnas que se puedan obtener de otra tabla
 - **Catálogos completos:** no se borran los indicadores que nadie mide; los que se miden sin estar en el catálogo se agregan como "Pendiente".
 - **Modelo simple:** sin columnas derivables ni poco dicientes (`estado`, `nivel`, `tipo`).
 

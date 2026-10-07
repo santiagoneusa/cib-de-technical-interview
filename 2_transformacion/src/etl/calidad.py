@@ -33,7 +33,7 @@ def validar(kpis, tablas, traza):
     sin_referencia = (
         (~mediciones["cod_equipo"].isin(equipos["cod_equipo"])).sum()
         + (~mediciones["cod_indicador"].isin(tablas["indicadores"]["cod_indicador"])).sum()
-        + (~mediciones["cod_frente"].isin(tablas["frentes"]["cod_frente"])).sum()
+        + (~tablas["indicadores"]["cod_frente"].isin(tablas["frentes"]["cod_frente"])).sum()
         + (~equipos["cod_entorno"].isin(tablas["entornos"]["cod_entorno"])).sum()
     )
     salientes = traza["accion"].isin(["excluida", "agrupada"]).sum()
@@ -70,9 +70,10 @@ def _filas_fuera_de_catalogo(tablas, cat_indicadores, cat_entornos):
     indicadores_nuevos = indicadores.loc[indicadores["definicion"] == reglas.PENDIENTE, "cod_indicador"]
     frentes_catalogados = cat_indicadores["Frente"].replace(reglas.FRENTES_MAL_ESCRITOS)
     frentes_nuevos = frentes.loc[~frentes["nombre"].isin(frentes_catalogados), "cod_frente"]
+    indicadores_de_frentes_nuevos = indicadores.loc[indicadores["cod_frente"].isin(frentes_nuevos), "cod_indicador"]
 
     return {
         "equipo_fuera_de_catalogo": (~mediciones["cod_equipo"].isin(cat_entornos["Codigo_EQU"].str.upper())).sum(),
         "indicador_fuera_de_catalogo": mediciones["cod_indicador"].isin(indicadores_nuevos).sum(),
-        "frente_fuera_de_catalogo": mediciones["cod_frente"].isin(frentes_nuevos).sum(),
+        "frente_fuera_de_catalogo": mediciones["cod_indicador"].isin(indicadores_de_frentes_nuevos).sum(),
     }

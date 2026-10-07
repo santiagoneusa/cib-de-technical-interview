@@ -7,13 +7,13 @@ def unir_tablas(tablas):
     equipos = tablas["equipos"].rename(columns={"nombre": "equipo"})
     entornos = tablas["entornos"].rename(columns={"nombre": "entorno"})
     frentes = tablas["frentes"].rename(columns={"nombre": "frente"})
-    indicadores = tablas["indicadores"][["cod_indicador", "nombre", "sentido"]].rename(columns={"nombre": "indicador"})
+    indicadores = tablas["indicadores"][["cod_indicador", "nombre", "cod_frente", "sentido"]].rename(columns={"nombre": "indicador"})
 
     mediciones = (tablas["mediciones"]
                   .merge(equipos, on="cod_equipo")
                   .merge(entornos, on="cod_entorno")
-                  .merge(frentes, on="cod_frente")
-                  .merge(indicadores, on="cod_indicador"))
+                  .merge(indicadores, on="cod_indicador")
+                  .merge(frentes, on="cod_frente"))
     columnas = [
         "corte", "cod_equipo", "equipo", "entorno", "frente", "indicador", "sentido",
         "resultado", "meta", "cumplimiento_original", "cumplimiento_procesado",

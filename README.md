@@ -37,23 +37,22 @@ En `1_experimentacion/notebooks/` se ejecutan en orden `1_1_exploracion_datos`, 
 
 Cada fila es **el resultado de un indicador, para un equipo, en un mes**, identificada por `Corte` + `Codigo_EQU` + `Indicador`. Hoy todo vive en una hoja que repite nombres y frentes en cada fila y usa nombres como llave.
 
-**Supuesto de diseño:** el archivo sugiere cuatro tablas (mediciones, equipos, entornos e indicadores). Se corrige a cinco: cada dato vive una sola vez con un código estable, y las mediciones solo guardan códigos. Las mediciones guardan el frente porque un mismo indicador se reportó en frentes distintos.
+**Supuesto de diseño:** el archivo sugiere cuatro tablas (mediciones, equipos, entornos e indicadores). Se corrige a cinco: cada dato vive una sola vez con un código estable, y las mediciones solo guardan códigos. Un frente agrupa muchos indicadores. Si un mismo nombre se reportó en dos frentes (Percepción, Adopción y Talento + Agilidad), son indicadores distintos, porque no se puede asumir que midan lo mismo.
 
 ```mermaid
 erDiagram
     ENTORNOS ||--o{ EQUIPOS : "contiene"
     EQUIPOS ||--o{ MEDICIONES : "reporta"
     INDICADORES ||--o{ MEDICIONES : "se mide en"
-    FRENTES ||--o{ MEDICIONES : "agrupa"
+    FRENTES ||--o{ INDICADORES : "agrupa"
     MEDICIONES {
         corte fecha PK "primer día del mes"
         cod_equipo texto PK, FK "EQU00000"
         cod_indicador texto PK, FK "IND000"
-        cod_frente texto FK "FRE00"
         resultado decimal
         meta decimal
         cumplimiento_original decimal "como llega en el archivo"
-        cumplimiento_procesado decimal "encuestas llevadas a Resultado / Meta"
+        cumplimiento_procesado decimal "corregido a Resultado / Meta"
     }
     EQUIPOS {
         cod_equipo texto PK "EQU00000 o CEX00000"
@@ -67,6 +66,7 @@ erDiagram
     INDICADORES {
         cod_indicador texto PK "IND000"
         nombre texto
+        cod_frente texto FK "FRE00"
         definicion texto
         unidad enum "[porcentaje, escala, cantidad]"
         sentido enum "[mayor, menor, no verificado]"
@@ -108,8 +108,8 @@ erDiagram
 | ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Indicadores sin definición | 14 de 25; 54% de las filas | agregar como pendientes |
 | ![Catálogo](https://img.shields.io/badge/Cat%C3%A1logo-ff7f41) | Indicadores del catálogo que nadie mide | 2 de 13 | aceptar y reportar |
 | ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento de encuestas en la escala del puntaje | 9,43 sobre una meta de 10 | corregir (Resultado / Meta) |
-| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimientos imposibles (155 y −1873) | 22 filas | aceptar: el score compara Resultado con Meta |
-| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento copiado (1.014683) | 530 filas | aceptar: el score compara Resultado con Meta |
+| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento copiado en varios equipos (155,42; 1.014683; 1,2) | 334 mediciones | corregir (Resultado / Meta) |
+| ![Valores](https://img.shields.io/badge/Valores-f5b6cd) | Cumplimiento negativo en Gestión del Gasto (−1873) | 3 filas | aceptar: el score compara Resultado con Meta |
 
 ## 3. Transformación (actividad 2)
 
@@ -130,9 +130,11 @@ Si el archivo no trae las hojas o columnas esperadas, o falla una validación, n
 3. **Vacíos:** se excluyen las filas sin Resultado, Meta o Cumplimiento. Imputarlas inventaría una medición que el equipo no reportó.
 4. **Repetidos:** se excluyen las filas repetidas y se deja una.
 5. **Promedio por indicador:** varias filas del mismo mes, equipo e indicador (sobre todo respuestas individuales de encuesta) se promedian en una sola medición.
-6. **Cumplimiento procesado:** se conserva el original y se agrega `cumplimiento_procesado`. Cuando el original es igual al Resultado y la meta es positiva, el procesado es Resultado / Meta, lo que corrige la escala de Percepción, Adopción y Talento + Agilidad. Con meta 0 o negativa no hay contra qué calcular.
+6. **Cumplimiento procesado:** se conserva el original y se agrega `cumplimiento_procesado`, que vale Resultado / Meta (con meta positiva) en dos casos. Con meta 0 o negativa no hay contra qué calcular.
+   - **Escala:** el original es igual al Resultado; corrige la escala de las encuestas.
+   - **Valor copiado:** el mismo valor aparece en 5 o más equipos del mismo indicador y mes con resultados distintos, como el 155,42 de Incidentes 202408. Se exceptúa el valor que es un tope y que el resultado supera.
 
-**Normalización al modelo propuesto** (`etl/modelo.py`): se separan las cinco tablas con códigos estables (`IND000`, `FRE00`, `SIN0000` para "Sin entorno") y se completan los catálogos.
+**Normalización al modelo propuesto** (`etl/modelo.py`): se separan las cinco tablas con códigos estables (`IND000`, `FRE00`, `SIN0000` para "Sin entorno"). Cada indicador apunta a su frente y se completan los catálogos.
 - **Indicadores:** se conservan los que nadie mide y se agregan los medidos sin catálogo, con definición y unidad "Pendiente".
 - **Equipos:** se agregan los que no están en el catálogo, con entorno "Sin entorno".
 - **Frentes:** se incluye "Talento + Agilidad".
@@ -173,5 +175,5 @@ Así cualquier persona del equipo obtiene el mismo estándar y las buenas práct
 
 Las decisiones de criterio fueron humanas y cada propuesta de la IA se validó contra los datos. La [bitácora](3_aplicacion/bitacora_ia.md) registra los prompts, lo aceptado, lo corregido y lo descartado. Tres ejemplos:
 - **Frente "Talento + Agilidad":** la IA lo había homologado a "Modelos de trabajo y Agilidad". El humano lo corrigió porque sus indicadores no coinciden con el catálogo.
-- **Recálculo de Cumplimiento:** la IA propuso recalcular todo como Resultado / Meta. Una prueba por indicador mostró que eso inventaba valores (Regulatorio topa en 1, Índice AQR's está en otra unidad), así que solo se recalculan las encuestas.
+- **Recálculo de Cumplimiento:** la IA propuso recalcular todo como Resultado / Meta. Una prueba por indicador mostró que eso inventaba valores (Regulatorio topa en 1, Índice AQR's está en otra unidad), así que solo se recalculan dos casos con evidencia: la escala de las encuestas y los valores copiados.
 - **Filas sin código:** se iban a excluir. Al validarlas, las 36 resultaron recuperables desde el nombre del equipo.

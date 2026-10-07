@@ -145,3 +145,13 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
   - nombres homogéneos;
   - funciones con una responsabilidad;
   - un solo README.
+
+### 2026-10-07 · Actividad 2 · Indicador → frente y cumplimiento copiado
+- **Pedido humano:** `indicadores` debe tener `cod_frente` (un frente agrupa muchos indicadores) y `mediciones` no debe apuntar al frente. Recalcular también cumplimientos que no son de encuestas, como el 155,42 de Incidentes 202408.
+- **Propuesta de la IA:**
+  - **Indicadores:** Percepción, Adopción y Talento + Agilidad se reportaron en dos frentes. Se modelan como dos indicadores cada uno, decisión que el humano eligió para no asumir que miden lo mismo.
+  - **Cumplimiento copiado:** se recalcula como Resultado / Meta cuando el mismo valor aparece en 5 o más equipos del mismo indicador y mes con resultados distintos.
+- **Validación contra datos:**
+  - **Primera versión de la regla:** también atrapaba topes legítimos (1,2 y 1,0 cuando el resultado supera ese valor), así que se excluyen los topes.
+  - **Qué atrapa ahora:** 334 mediciones (155,42; 1,014683; 1,104972 y 1,176471, que son el Resultado / Meta de un equipo con Resultado 1 copiado a otros).
+  - **Sin regla segura:** Vulnerabilidades 202408 tiene cumplimientos que no corresponden a su propio Resultado / Meta, pero no siguen un patrón detectable y se conservan.

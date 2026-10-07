@@ -15,7 +15,8 @@ def limpiar(kpis, cat_entornos):
         excluir_cumplimiento_vacio,
         excluir_filas_repetidas,
         agrupar_valores_en_conflicto,
-        calcular_cumplimiento_procesado,
+        corregir_cumplimiento_en_otra_escala,
+        corregir_cumplimiento_copiado,
     ]
 
     datos, trazas = preparar(kpis), []
@@ -118,7 +119,7 @@ def agrupar_valores_en_conflicto(datos):
     return agrupados[datos.columns], traza
 
 
-def calcular_cumplimiento_procesado(datos):
+def corregir_cumplimiento_en_otra_escala(datos):
     en_otra_escala = np.isclose(datos["cumplimiento_original"], datos["resultado"]) & (datos["meta"] > 0)
     procesado = (datos["resultado"] / datos["meta"]).where(en_otra_escala, datos["cumplimiento_original"])
 
@@ -128,12 +129,38 @@ def calcular_cumplimiento_procesado(datos):
     return datos.assign(cumplimiento_procesado=procesado), traza
 
 
+def corregir_cumplimiento_copiado(datos):
+    calculado = datos["resultado"] / datos["meta"]
+    valor = datos["cumplimiento_original"].round(6)
+    repetido = datos.groupby(["indicador", "corte", valor])
+    equipos_con_el_valor = repetido["cod_equipo"].transform("size")
+    resultados_distintos = repetido["resultado"].transform("nunique")
+
+    es_tope = calculado >= datos["cumplimiento_original"]
+    copiado = (
+        (equipos_con_el_valor >= reglas.MINIMO_EQUIPOS_VALOR_COPIADO) & (resultados_distintos > 1)
+        & (_sentido(datos) == "mayor") & (datos["meta"] > 0)
+        & ~np.isclose(datos["cumplimiento_original"], calculado) & ~np.isclose(datos["cumplimiento_original"], datos["resultado"])
+        & ~es_tope
+    )
+
+    traza = _traza(datos[copiado], "cumplimiento_copiado", "corregida",
+                   "Cumplimiento: " + _texto(datos["cumplimiento_original"]) + " → " + _texto(calculado)
+                   + " (valor repetido en " + equipos_con_el_valor.astype(str) + " equipos; Resultado / Meta)")
+
+    return datos.assign(cumplimiento_procesado=calculado.where(copiado, datos["cumplimiento_procesado"])), traza
+
+
 def _codigo_por_nombre(datos, cat_entornos):
     catalogo = cat_entornos.rename(columns={"EQU": "equipo", "Codigo_EQU": "cod_equipo"})
     pares = pd.concat([datos[["equipo", "cod_equipo"]].dropna(), catalogo[["equipo", "cod_equipo"]]]).drop_duplicates()
     nombres_unicos = pares[~pares["equipo"].duplicated(keep=False)]
 
     return nombres_unicos.set_index("equipo")["cod_equipo"]
+
+
+def _sentido(datos):
+    return datos["indicador"].map(reglas.SENTIDO).fillna(reglas.SENTIDO_POR_DEFECTO)
 
 
 def _excluir(datos, excluir, regla, detalle):

@@ -21,6 +21,8 @@ SENTIDO = {
 }
 SENTIDO_POR_DEFECTO = "mayor"
 
+MINIMO_EQUIPOS_VALOR_COPIADO = 5
+
 PREFIJOS_ENTORNO = ("ENX", "VPX")
 COD_SIN_ENTORNO = "SIN0000"
 SIN_ENTORNO = "Sin entorno"
@@ -37,6 +39,7 @@ REGLAS = {
     "fila_repetida": ("La misma medición repetida en varias filas", "excluir (se deja una)"),
     "valores_en_conflicto": ("Mismo mes, equipo e indicador con valores distintos", "agrupar en una fila con el promedio"),
     "cumplimiento_en_otra_escala": ("Cumplimiento igual al Resultado con meta positiva: en las encuestas viene en la escala del puntaje", "cumplimiento_procesado = Resultado / Meta"),
+    "cumplimiento_copiado": ("El mismo Cumplimiento repetido en varios equipos del mismo indicador y mes con resultados distintos", "cumplimiento_procesado = Resultado / Meta, salvo que el valor sea un tope que el resultado supera"),
     "equipo_fuera_de_catalogo": ("Equipo que no está en catalogo_entornos", f"agregarlo a Equipos con entorno '{SIN_ENTORNO}'"),
     "indicador_fuera_de_catalogo": ("Indicador que no está en catalogo_indicadores", "agregarlo a Indicadores como pendiente de documentar"),
     "frente_fuera_de_catalogo": ("Frente que no está en catalogo_indicadores", "agregarlo a Frentes y reportarlo para actualizar el catálogo"),
