@@ -66,7 +66,7 @@ erDiagram
 
 ### 2. Transformación
 
-Pendiente.
+Un solo comando (`uv run python 2_transformacion/src/main.py`) limpia el archivo original, valida su calidad y publica un Excel con el dataset analítico (una fila por mes × equipo × indicador), la trazabilidad de cada fila tocada y el desempeño por equipo, frente y entorno. La métrica es la **meta cumplida**, según el sentido de cada indicador: no depende de la columna Cumplimiento, que usa fórmulas distintas según el indicador. Los entornos se comparan con la **mediana de sus equipos**, y los equipos sin entorno no se mezclan en un grupo artificial.
 
 ### 3. Aplicación
 

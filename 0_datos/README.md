@@ -1,6 +1,11 @@
 # 0. Datos
 
-`KPIS_historico.xlsx` es el archivo original entregado. **Nunca se modifica**: todo el proceso lo lee y deja sus resultados en las demás carpetas.
+| Carpeta | Contenido |
+|---|---|
+| `entrada/` | Archivos a procesar. `KPIS_historico.xlsx` es el original entregado y **nunca se modifica** |
+| `salida/` | Lo que publica el proceso de [transformación](../2_transformacion/README.md): `<archivo>_analitico.xlsx` y `ejecucion.log` |
+
+Hojas del archivo de entrada:
 
 | Hoja | Filas | Qué contiene |
 |---|---|---|

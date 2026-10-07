@@ -11,9 +11,9 @@ The readers are **business analysts of the strategy team**, not engineers. Prefe
 ## Structure (one folder per stage, each with its own README)
 | Folder | Content | Test activity |
 |---|---|---|
-| `0_datos/` | `KPIS_historico.xlsx` as delivered (never modified) | – |
+| `0_datos/` | `entrada/KPIS_historico.xlsx` as delivered (never modified); `salida/` pipeline output | – |
 | `1_experimentacion/` | `notebooks/1_1_exploracion_datos.ipynb`, `1_2_validacion_catalogos.ipynb`, `1_3_evaluacion_calidad.ipynb` (no output files) | 1 |
-| `2_transformacion/` | cleaning + analytical dataset | 2 and 3 |
+| `2_transformacion/` | `src/main.py` + `src/etl/` (cleaning, quality) + `src/score/` (metric, aggregation) | 2 and 3 |
 | `3_aplicacion/` | recurrent process, tech decisions, `bitacora_ia.md` | 4 |
 
 One notebook per test numeral: `<actividad>_<numeral>_<spanish_name>.ipynb` (e.g. `1_2_validacion_catalogos`), run in numeric order. Sections inside use the numeral plus a letter: `## 1.2.a …`. Everything (code, comments, markdown) in Spanish.

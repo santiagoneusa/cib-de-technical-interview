@@ -78,3 +78,14 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
 - **Pedido humano:** releyendo la prueba ("indica cómo separarías la información en tablas o catálogos"), la respuesta es la estructura propuesta y no el modelo empírico: quitar el diagrama del notebook 1.1.b y explicar en el README de experimentación qué es cada entidad y por qué es una buena estructura; el README principal solo muestra el diagrama.
 - **Propuesta de la IA:** 1.1.b del notebook enlaza al README; el README del módulo une en 1.1 el diagrama, la notación, el significado de cada entidad y la tabla hallazgo → decisión. Además, Mermaid no permite poner `PK`/`FK` antes del tipo (son palabras reservadas): el orden más cercano a lo pedido es nombre | tipo | llave.
 - **Validación:** el notebook 1.1 se ejecutó completo tras quitar el diagrama y las funciones que solo él usaba.
+
+### 2026-10-07 · Actividad 2 · Scripts en vez de notebooks y métrica de meta cumplida
+- **Pedido humano:** un proceso recurrente que el equipo de estrategia pueda administrar: un solo archivo de Python que lea la carpeta de entrada y publique un Excel con el registro de calidad, lo limpiado y las vistas por equipo, entorno y fecha. Carpetas separadas para la ETL y el "modelo" de score. Hipótesis humana: hay que recalcular Cumplimiento como Resultado/Meta porque no coincide. Idea de dar más peso a los indicadores que miden más equipos.
+- **Propuesta de la IA:** `2_transformacion/src/main.py` con `etl/` y `score/`, y las reglas de negocio en archivos `reglas.py` editables. Se descartó guardar la preparación como `.pkl`: son reglas deterministas, no un modelo entrenado; un pickle las esconde del analista, depende de versiones y es inseguro al cargarse. La métrica es la meta cumplida según el sentido del indicador; la mediana de equipos por entorno; los equipos sin entorno no se agrupan entre sí.
+- **Validación contra datos:**
+  - **Fórmula de Cumplimiento:** la hipótesis humana era correcta solo en parte. Cumplimiento = Resultado/Meta en ~15 de 25 indicadores. En las encuestas copia el puntaje, y en Obsolescencia, Pérdida por fraude y Gestión del Gasto coincide con "menos es mejor". Recalcular todo como Resultado/Meta habría castigado a esos indicadores, y eso llevó a la métrica de meta cumplida.
+  - **Ponderar por cobertura:** se descartó con el propio argumento humano (un indicador en pocos equipos puede ser un riesgo clave). La cobertura queda como contexto.
+  - **Corrección a la actividad 1:**
+    - Las 36 filas "sin código" sí tienen nombre, y cada nombre corresponde a un solo código. Se recuperan en vez de excluirse.
+    - Las 13 filas que 1.3 clasificó como "iguales salvo el nombre" eran equipos distintos sin código, no duplicados.
+  - **Verificación del proceso:** la salida es idéntica entre dos ejecuciones. Con un archivo sin la columna Meta, el proceso no publica nada y termina con código 1.
