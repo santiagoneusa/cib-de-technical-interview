@@ -44,8 +44,12 @@ def procesar(archivo):
             log.error("%s: falló '%s' (%s)", archivo.name, validacion.validacion, validacion.detalle)
         return False
 
-    escribir_excel(PROCESADOS / f"{archivo.stem}_procesado.xlsx", procesado)
-    escribir_excel(SCORE / f"{archivo.stem}_score.xlsx", score(procesado))
+    tablas = {nombre: procesado[nombre] for nombre in modelo.TABLAS}
+    calidad_del_proceso = {nombre: procesado[nombre] for nombre in ["registro_calidad", "trazabilidad", "validaciones"]}
+
+    escribir_excel(PROCESADOS / f"{archivo.stem}_procesado.xlsx", tablas)
+    escribir_excel(PROCESADOS / f"{archivo.stem}_calidad.xlsx", calidad_del_proceso)
+    escribir_excel(SCORE / f"{archivo.stem}_score.xlsx", score(tablas))
 
     log.info("%s: %s filas originales → %s mediciones; %s acciones en la trazabilidad", archivo.name,
              f"{len(hojas['query']):,}", f"{len(procesado['mediciones']):,}", f"{len(procesado['trazabilidad']):,}")

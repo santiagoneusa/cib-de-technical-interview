@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from etl import reglas
@@ -14,6 +15,7 @@ def limpiar(kpis, cat_entornos):
         excluir_cumplimiento_vacio,
         excluir_filas_repetidas,
         agrupar_valores_en_conflicto,
+        calcular_cumplimiento_procesado,
     ]
 
     datos, trazas = preparar(kpis), []
@@ -21,7 +23,7 @@ def limpiar(kpis, cat_entornos):
         datos, traza = paso(datos)
         trazas.append(traza)
 
-    traza = pd.concat(trazas, ignore_index=True).sort_values("fila_origen", kind="stable", ignore_index=True)
+    traza = pd.concat(trazas, ignore_index=True).sort_values("fila_excel", kind="stable", ignore_index=True)
 
     return datos.sort_values(reglas.LLAVE, ignore_index=True), traza
 
@@ -85,11 +87,11 @@ def excluir_meta_vacia(datos):
 
 
 def excluir_cumplimiento_vacio(datos):
-    return _excluir(datos, datos["cumplimiento"].isna(), "cumplimiento_vacio", "Cumplimiento: vacío")
+    return _excluir(datos, datos["cumplimiento_original"].isna(), "cumplimiento_vacio", "Cumplimiento: vacío")
 
 
 def excluir_filas_repetidas(datos):
-    medicion = ["corte", "cod_equipo", "frente", "indicador", "resultado", "meta", "cumplimiento"]
+    medicion = ["corte", "cod_equipo", "frente", "indicador", "resultado", "meta", "cumplimiento_original"]
     conservada = datos.groupby(medicion)["fila_origen"].transform("min")
     repetida = datos["fila_origen"] != conservada
 
@@ -110,10 +112,20 @@ def agrupar_valores_en_conflicto(datos):
 
     agrupados = datos.groupby(reglas.LLAVE, as_index=False).agg(
         equipo=("equipo", "first"), frente=("frente", "first"), resultado=("resultado", "mean"),
-        meta=("meta", "mean"), cumplimiento=("cumplimiento", "mean"), fila_origen=("fila_origen", "min"),
+        meta=("meta", "mean"), cumplimiento_original=("cumplimiento_original", "mean"), fila_origen=("fila_origen", "min"),
     )
 
     return agrupados[datos.columns], traza
+
+
+def calcular_cumplimiento_procesado(datos):
+    en_otra_escala = np.isclose(datos["cumplimiento_original"], datos["resultado"]) & (datos["meta"] > 0)
+    procesado = (datos["resultado"] / datos["meta"]).where(en_otra_escala, datos["cumplimiento_original"])
+
+    traza = _traza(datos[en_otra_escala], "cumplimiento_en_otra_escala", "corregida",
+                   "Cumplimiento: " + _texto(datos["cumplimiento_original"]) + " → " + _texto(procesado) + " (Resultado / Meta)")
+
+    return datos.assign(cumplimiento_procesado=procesado), traza
 
 
 def _codigo_por_nombre(datos, cat_entornos):
@@ -132,4 +144,8 @@ def _traza(filas, regla, accion, detalle):
     if isinstance(detalle, pd.Series):
         detalle = detalle.loc[filas.index].values
 
-    return pd.DataFrame({"fila_origen": filas["fila_origen"].values, "regla": regla, "accion": accion, "detalle": detalle})
+    return pd.DataFrame({"fila_excel": filas["fila_origen"].values, "regla": regla, "accion": accion, "detalle": detalle})
+
+
+def _texto(valores):
+    return valores.map(lambda valor: f"{valor:.3f}")

@@ -1,6 +1,6 @@
 COLUMNAS = {
     "Corte": "corte", "Codigo_EQU": "cod_equipo", "EQU": "equipo", "Frente": "frente",
-    "Indicador": "indicador", "Resultado": "resultado", "Meta": "meta", "Cumplimiento": "cumplimiento",
+    "Indicador": "indicador", "Resultado": "resultado", "Meta": "meta", "Cumplimiento": "cumplimiento_original",
 }
 
 LLAVE = ["corte", "cod_equipo", "indicador"]
@@ -36,6 +36,7 @@ REGLAS = {
     "cumplimiento_vacio": ("Cumplimiento vacío", "excluir"),
     "fila_repetida": ("La misma medición repetida en varias filas", "excluir (se deja una)"),
     "valores_en_conflicto": ("Mismo mes, equipo e indicador con valores distintos", "agrupar en una fila con el promedio"),
+    "cumplimiento_en_otra_escala": ("Cumplimiento igual al Resultado con meta positiva: en las encuestas viene en la escala del puntaje", "cumplimiento_procesado = Resultado / Meta"),
     "equipo_fuera_de_catalogo": ("Equipo que no está en catalogo_entornos", f"agregarlo a Equipos con entorno '{SIN_ENTORNO}'"),
     "indicador_fuera_de_catalogo": ("Indicador que no está en catalogo_indicadores", "agregarlo a Indicadores como pendiente de documentar"),
     "frente_fuera_de_catalogo": ("Frente que no está en catalogo_indicadores", "agregarlo a Frentes y reportarlo para actualizar el catálogo"),

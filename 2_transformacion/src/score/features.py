@@ -14,7 +14,10 @@ def unir_tablas(tablas):
                   .merge(entornos, on="cod_entorno")
                   .merge(frentes, on="cod_frente")
                   .merge(indicadores, on="cod_indicador"))
-    columnas = ["corte", "cod_equipo", "equipo", "entorno", "frente", "indicador", "sentido", "resultado", "meta", "cumplimiento"]
+    columnas = [
+        "corte", "cod_equipo", "equipo", "entorno", "frente", "indicador", "sentido",
+        "resultado", "meta", "cumplimiento_original", "cumplimiento_procesado",
+    ]
 
     return mediciones[columnas]
 
@@ -23,7 +26,7 @@ def calcular_meta_cumplida(mediciones):
     cumple = np.select(
         [mediciones["sentido"] == "mayor", mediciones["sentido"] == "menor"],
         [mediciones["resultado"] >= mediciones["meta"], mediciones["resultado"] <= mediciones["meta"]],
-        default=mediciones["cumplimiento"] >= 1,
+        default=mediciones["cumplimiento_procesado"] >= 1,
     )
 
     return mediciones.assign(meta_cumplida=cumple.astype(int))

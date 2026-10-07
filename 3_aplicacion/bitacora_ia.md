@@ -122,3 +122,11 @@ Herramienta: Claude Code (Claude Opus 5.5) como asistente de implementación. La
   - En Disponibilidad e Incidentes hay valores copiados.
   - Recalcular de forma general habría inventado valores.
 - **Pendiente de decisión humana:** si se corrige solo la escala de las encuestas.
+
+### 2026-10-07 · Actividad 2 · Cumplimiento original y procesado, y un archivo de calidad aparte
+- **Pedido humano:**
+  - **Encuestas:** recalcularlas, conservando el cumplimiento original y el procesado para que se vea la diferencia. Si falta Resultado, Meta o Cumplimiento, la fila se descarta en vez de recalcularse.
+  - **Archivos:** el archivo procesado lleva solo las cinco tablas normalizadas; calidad, trazabilidad y validaciones van en otro archivo. Se quita `fila_origen` de las mediciones.
+  - **Corrección humana:** la IA había agregado una condición para trazar solo los cumplimientos que cambiaban de valor, y el humano la hizo quitar. Resultado 1 con meta 1 o Resultado 0 con meta 0 (por ejemplo, pérdidas que siempre deben ser 0) son válidos, y no hay contra qué comparar.
+- **Propuesta de la IA:** `cumplimiento_procesado = Resultado / Meta` cuando el original es el mismo Resultado y la meta es positiva. La meta positiva evita dividir por 0 o por una meta negativa (Impactos). La trazabilidad usa `fila_excel` porque es el único vínculo con el archivo original.
+- **Validación contra datos:** el valor solo cambia en Percepción, Adopción y Talento + Agilidad. En los demás indicadores donde Cumplimiento = Resultado la meta es 1, así que el valor no cambia.

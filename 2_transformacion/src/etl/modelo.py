@@ -2,6 +2,8 @@ import pandas as pd
 
 from etl import reglas
 
+TABLAS = ["frentes", "indicadores", "entornos", "equipos", "mediciones"]
+
 
 def normalizar(datos, cat_indicadores, cat_entornos):
     frentes = construir_frentes(datos, cat_indicadores)
@@ -71,7 +73,10 @@ def construir_mediciones(datos, frentes, indicadores):
         cod_frente=datos["frente"].map(cod_frente),
         cod_indicador=datos["indicador"].map(simplificar).map(cod_indicador),
     )
-    columnas = ["corte", "cod_equipo", "cod_indicador", "cod_frente", "resultado", "meta", "cumplimiento", "fila_origen"]
+    columnas = [
+        "corte", "cod_equipo", "cod_indicador", "cod_frente",
+        "resultado", "meta", "cumplimiento_original", "cumplimiento_procesado",
+    ]
 
     return mediciones[columnas]
 

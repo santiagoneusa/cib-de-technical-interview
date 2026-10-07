@@ -51,7 +51,7 @@ def validar(kpis, tablas, traza):
 
 
 def registro(kpis, tablas, traza, cat_indicadores, cat_entornos):
-    filas = traza.groupby("regla")["fila_origen"].nunique().to_dict()
+    filas = traza.groupby("regla")["fila_excel"].nunique().to_dict()
     filas.update(_filas_fuera_de_catalogo(tablas, cat_indicadores, cat_entornos))
 
     tabla = pd.DataFrame(

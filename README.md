@@ -37,7 +37,8 @@ erDiagram
         cod_frente texto FK "FRE00"
         resultado decimal
         meta decimal
-        cumplimiento decimal
+        cumplimiento_original decimal "como llega en el archivo"
+        cumplimiento_procesado decimal "encuestas llevadas a Resultado / Meta"
     }
     EQUIPOS {
         cod_equipo texto PK "EQU00000 o CEX00000"

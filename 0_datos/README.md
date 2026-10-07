@@ -3,7 +3,7 @@
 | Carpeta | Contenido |
 |---|---|
 | `1_crudos/` | Archivos a procesar tal como se entregan, sin ningún tratamiento. `KPIS_historico.xlsx` **nunca se modifica** |
-| `2_procesados/` | `<archivo>_procesado.xlsx`: el modelo normalizado (mediciones, equipos, entornos, indicadores, frentes), registro de calidad y trazabilidad |
+| `2_procesados/` | `<archivo>_procesado.xlsx`: el modelo normalizado (frentes, indicadores, entornos, equipos, mediciones). `<archivo>_calidad.xlsx`: registro de calidad, trazabilidad y validaciones |
 | `3_score/` | `<archivo>_score.xlsx`: meta cumplida y score por equipo, frente, entorno y mes |
 
 Las carpetas 2 y 3 las genera el proceso de [transformación](../2_transformacion/README.md), que además escribe `ejecucion.log`.
