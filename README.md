@@ -50,16 +50,16 @@ INDICADORES (cod_indicador, nombre, cod_frente, unidad, sentido) → FRENTES (co
 ## 4. Hallazgos (actividad 3)
 
 Detalle en [`reporte.html`](3_reporte/reporte.html). *Comparación justa: cada resultado frente al de los equipos que miden el mismo indicador ese mes.*
-1. **Lo que se mide pesa 10 veces más que quién lo mide.**
-   - **Evidencia:** el indicador y el mes explican el 48% de las metas cumplidas; el equipo, el 5%.
+1. **Que una meta se cumpla depende más del indicador que del equipo.**
+   - **Evidencia:** de todo lo que varía entre metas cumplidas y no cumplidas, el 48% se explica por qué indicador es y en qué mes; solo el 5% por qué equipo lo reporta.
    - **Interpretación:** calibrar metas antes de comparar.
    - **Certeza:** alta.
-2. **Entorno: la comparación justa cambia a quién acompañar.**
-   - **Evidencia:** Entorno 8 cumple el 33% de sus metas (puesto 20), pero supera a sus pares (puesto 5).
+2. **La comparación justa cambia a quién acompañar.**
+   - **Evidencia:** Entorno 8 cumple el 33% de sus metas (puesto 20), pero al compararlo con equipos que miden lo mismo pasa al puesto 5.
    - **Interpretación:** acompañar según la comparación justa.
    - **Certeza:** media, porque hay entornos de 1 a 4 equipos.
-3. **En 2026 no bajó el desempeño: subió la meta.**
-   - **Evidencia:** en Disponibilidad el resultado se mantiene cerca de 99,7% y la meta pasa de 99,2% a 99,6%; los equipos que cumplen bajan de 98% a 57%.
+3. **En 2026 no bajó el desempeño: subió la vara.**
+   - **Evidencia:** en Disponibilidad el resultado sigue cerca de 99,7%, pero la meta subió de 99,2% a 99,6%; con el mismo resultado, los equipos que cumplen pasan de 98% a 57%.
    - **Interpretación:** registrar los cambios de meta.
    - **Certeza:** alta.
 
@@ -67,19 +67,21 @@ Detalle en [`reporte.html`](3_reporte/reporte.html). *Comparación justa: cada r
 
 ## 5. Solución técnica y decisiones tecnológicas (actividad 4)
 
-Es un proceso **semiautomatizado** en el stack del banco (Cloudera, Impala y Cloudera AI):
-- **Origen y carga incremental:** cada mes el negocio deja una plantilla de Excel con listas tomadas de los catálogos. Un job de Cloudera AI (Python y PySpark) carga solo ese corte y reescribe su partición en Impala.
-- **Almacenamiento y transformación:** tablas Impala por capa (crudos, modelo, calidad y score), y las reglas de `etl/` y `score/` programadas con cron.
+Es un proceso **semiautomatizado** en el stack del banco (Cloudera):
+1. **Recolección:** durante el mes el negocio registra los datos en una plantilla de Excel con listas tomadas de los catálogos.
+2. **Carga incremental:** al cierre, solo el corte del mes se sube a Cloudera Data Hub.
+3. **ETL y score:** un job de Cloudera AI ejecuta las reglas de `etl/` y `score/` sobre ese corte.
+4. **Tablero:** Streamlit o Power BI, alimentado directamente por las tablas en la nube.
 - **Errores, calidad y monitoreo:** si una validación falla, no se publica, se conserva la última versión buena, las filas rechazadas van a cuarentena y se avisa. Hay umbrales por corte y una tabla de ejecuciones.
 
-**Con 20 veces más volumen** (unas 300.000 filas), el motor sigue sirviendo. La captura pasaría de Excel a un formulario o a la fuente, los cruces se harían en SQL de Impala y el score se precalcularía.
+**Con 20 veces más volumen** (unas 300.000 filas), Excel sigue sirviendo para recolectar cada mes, pero almacenar y consultar periodos largos pasa a SQL, y la transformación a jobs de SQL.
 
 | Decisión | Herramienta | Para qué | Razón | Alternativa | Con mucho más volumen |
 |---|---|---|---|---|---|
-| Extracción/consulta | Excel + Python a Impala | Validar y cargar el corte | Flexible y gobernado | Power Query | Formulario o fuente directa |
-| Transformación | Python (`etl/`) en Cloudera AI | Limpiar, normalizar y trazar | Reglas auditables | SQL puro | Impala o Spark |
-| Análisis | Notebooks y jobs con cron | Calidad, score y hallazgos | Reproducible | Excel | Tablas precalculadas |
-| Visualización (si aplica) | HTML hoy; Streamlit después | Comparar equipos y entornos | Crece a controles y riesgos | Power BI | Agregados con caché |
+| Extracción/consulta | Excel + Python | Explorar los datos y hacer el diagnóstico | Flexible y ampliamente conocido | SQL | Excel para recolectar; SQL para almacenar y consultar |
+| Transformación | Scripts de Python (hoy locales) | Ejecutar el ETL de limpieza y el score | Stack conocido: al pasarlo a negocio no genera tanta deuda técnica | SQL | Jobs de SQL |
+| Análisis | Python con pandas | Encontrar hallazgos y calcular cifras | Mismo stack, reproducible | Excel o SQL | SQL en Hue |
+| Visualización | HTML | Mostrar los análisis y conclusiones | Se necesita un reporte estático, no interactivo | Streamlit o Power BI | HTML para lo estático; Power BI para lo dinámico |
 
 ## 6. Uso de inteligencia artificial
 
