@@ -112,7 +112,7 @@ footer code { font-size: 0.9em; }
   <section class="lamina" id="hallazgo-1">
     <div class="mensaje">
       <span class="numero"><b>Hallazgo 1</b><span class="etiqueta">Equipos</span></span>
-      <h2>Lo que se mide pesa {{veces}} veces más que quién lo mide</h2>
+      <h2>Que una meta se cumpla depende más del indicador que del equipo</h2>
       <div class="bloque"><span class="etiqueta">Interpretación</span><p>Un equipo puede verse mal solo porque le tocaron metas difíciles: hay indicadores que se cumplen el {{tasa_min}}% de las veces y otros el {{tasa_max}}%.</p></div>
       <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Calibrar las metas antes de comparar equipos.</p></div>
       <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>{{mediciones}} mediciones, al menos {{min_equipos}} equipos por indicador y mes.</p>
@@ -120,7 +120,7 @@ footer code { font-size: 0.9em; }
     <figure class="evidencia">
       <h3>¿Qué explica que una meta se cumpla o no?</h3>
       <div class="lienzo"><canvas id="grafica-1" role="img" aria-label="Porcentaje de las diferencias en metas cumplidas que explica cada factor"></canvas></div>
-      <figcaption><span class="etiqueta">Evidencia</span><span>Saber qué indicador y en qué mes explica el {{pct_indicador_mes}}% de las diferencias; saber qué equipo, solo el {{pct_equipo}}%.</span></figcaption>
+      <figcaption><span class="etiqueta">Evidencia</span><span>De todo lo que varía entre metas cumplidas y no cumplidas, el {{pct_indicador_mes}}% se explica por qué indicador es y en qué mes; solo el {{pct_equipo}}% por qué equipo lo reporta.</span></figcaption>
     </figure>
   </section>
 
@@ -142,7 +142,7 @@ footer code { font-size: 0.9em; }
   <section class="lamina" id="hallazgo-3">
     <div class="mensaje">
       <span class="numero"><b>Hallazgo 3</b><span class="etiqueta">Tendencia</span></span>
-      <h2>En 2026 no bajó el desempeño: subió la meta</h2>
+      <h2>En 2026 no bajó el desempeño: subió la vara</h2>
       <div class="bloque"><span class="etiqueta">Interpretación</span><p>Una caída en el tablero puede venir de una meta más exigente o de un indicador nuevo, no de los equipos. En {{frente_seguido}} la caída la trae {{indicadores_nuevos}}, nuevo en 2026.</p></div>
       <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Registrar cada cambio de meta y mostrarlo junto a la tendencia.</p></div>
       <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>en los datos; la razón del cambio de meta no está en el archivo.</p>

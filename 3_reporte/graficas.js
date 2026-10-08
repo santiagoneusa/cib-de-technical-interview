@@ -68,10 +68,15 @@ const cuadrantes = {
     ctx.save();
     ctx.font = `600 12px ${color("--cuerpo")}`;
     ctx.fillStyle = color("--texto");
+    ctx.strokeStyle = color("--fondo");
+    ctx.lineWidth = 4;
+    ctx.lineJoin = "round";
     grafica.data.datasets.forEach((serie, d) => {
       if (!serie.etiquetar) return;
       grafica.getDatasetMeta(d).data.forEach((punto, i) => {
-        ctx.fillText(serie.data[i].entorno, punto.x + punto.options.radius + 4, punto.y + 4);
+        const x = punto.x + punto.options.radius + 4;
+        ctx.strokeText(serie.data[i].entorno, x, punto.y + 4);
+        ctx.fillText(serie.data[i].entorno, x, punto.y + 4);
       });
     });
     ctx.restore();
@@ -113,7 +118,7 @@ function graficaFactores(id, variacion, tamanoEtiqueta = 15) {
       maintainAspectRatio: false,
       tamanoValor: tamanoEtiqueta + 7,
       layout: { padding: { right: 80 } },
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `Explica el ${Math.round(c.raw)}% de las diferencias` } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `Explica el ${Math.round(c.raw)}% de la variación en metas cumplidas` } } },
       scales: {
         x: { display: false, min: 0, max: Math.max(...variacion.map(f => f.pct)) },
         y: { grid: { display: false }, border: { display: false }, ticks: { color: color("--texto"), font: { size: tamanoEtiqueta, weight: 600 } } },
@@ -128,6 +133,7 @@ function graficaEntornos(id, entornos) {
   const serie = (lectura, etiquetar) => ({
     data: entornos.filas.filter(f => f.lectura === lectura).map(f => ({ x: f.cumplimiento, y: f.frente_a_pares, ...f })),
     backgroundColor: color(COLOR_LECTURA[lectura]),
+    order: etiquetar ? 0 : 1,
     pointRadius: ctx => radio(ctx.raw?.equipos ?? 1),
     pointHoverRadius: ctx => radio(ctx.raw?.equipos ?? 1) + 3,
     etiquetar,
@@ -160,7 +166,7 @@ function graficaEntornos(id, entornos) {
       },
       scales: {
         x: { min: 0, max: 80, title: { display: true, text: "% de metas cumplidas →", color: color("--texto"), font: { weight: 600 } }, ticks: { callback: v => `${v}%` }, grid: { display: false } },
-        y: { min: -15, max: 25, title: { display: true, text: "Comparación justa: puntos frente a sus pares →", color: color("--texto"), font: { weight: 600 } }, ticks: { callback: v => (v > 0 ? `+${v}` : v) }, grid: { color: color("--linea") } },
+        y: { min: -15, max: 25, title: { display: true, text: "Puntos frente a sus pares →", color: color("--texto"), font: { weight: 600 } }, ticks: { callback: v => (v > 0 ? `+${v}` : v) }, grid: { color: color("--linea") } },
       },
     },
     plugins: [cuadrantes],

@@ -111,7 +111,8 @@ p, ul { margin: 0; }
 .agrupa .pila { display: grid; gap: 0.5cqw; }
 
 /* Diapositiva 2 */
-.hallazgos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr) auto; gap: 1.6cqw 3cqw; min-height: 0; }
+.diapositiva:has(.hallazgos) { gap: 1.6cqw; }
+.hallazgos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr) auto; gap: 1.4cqw 3cqw; min-height: 0; }
 .hallazgo { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 0.6cqw; min-height: 0; }
 .respuesta { font-size: 1.4cqw; line-height: 1.35; color: var(--suave); }
 .respuesta b { color: var(--texto); }
@@ -119,11 +120,11 @@ p, ul { margin: 0; }
 .hallazgo h2 i { font-style: normal; color: var(--suave); font-weight: 600; }
 .lienzo { position: relative; min-height: 0; }
 .certeza { display: inline-block; font: 700 max(10px, 0.85cqw)/1 var(--cuerpo); text-transform: uppercase; letter-spacing: 0.06em; padding: 0.45cqw 0.8cqw; border-radius: 999px; background: var(--panel); margin-left: 0.6cqw; vertical-align: middle; }
-.tercero { grid-column: 1 / -1; display: flex; align-items: center; gap: 2.4cqw; background: var(--panel); border-radius: 12px; padding: 1.4cqw 2cqw; }
-.tercero b { font: 800 3.4cqw/1 var(--display); font-stretch: 78%; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tercero { grid-column: 1 / -1; display: flex; align-items: center; gap: 2.4cqw; background: var(--panel); border-radius: 12px; padding: 1cqw 2cqw; }
+.tercero b { font: 800 3cqw/1 var(--display); font-stretch: 78%; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .tercero b em { color: var(--naranja); font-style: normal; }
-.tercero p { font-size: 1.55cqw; line-height: 1.35; }
-.tercero strong { font-family: var(--display); font-size: 1.9cqw; display: block; }
+.tercero p { font-size: 1.45cqw; line-height: 1.3; }
+.tercero strong { font-family: var(--display); font-size: 1.8cqw; display: block; }
 
 /* Diapositiva 3 */
 .cierre { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 4cqw; min-height: 0; align-items: center; }
@@ -277,18 +278,18 @@ p, ul { margin: 0; }
       <h2 class="titulo">Comparar de forma justa <span>cambia a quién acompañar</span></h2>
       <div class="hallazgos">
         <div class="hallazgo">
-          <h2>¿Qué explica que una meta se cumpla o no?</h2>
-          <p class="respuesta"><b>Lo que se mide pesa {{veces}}× más que quién lo mide.</b><span class="certeza">Certeza alta</span></p>
+          <h2>¿Qué explica que una meta se cumpla o no?<span class="certeza">Certeza alta</span></h2>
+          <p class="respuesta"><b>Sobre todo, el indicador:</b> saber qué indicador es y en qué mes ayuda {{veces}} veces más a predecirlo que saber qué equipo lo reporta.</p>
           <div class="lienzo"><canvas id="grafica-1" role="img" aria-label="Qué explica que una meta se cumpla o no"></canvas></div>
         </div>
         <div class="hallazgo">
-          <h2>¿Cambia el ranking de entornos si los comparamos de forma justa?</h2>
-          <p class="respuesta"><b>Sí: {{ejemplo_entorno}} pasa del puesto {{ejemplo_puesto_antes}} al {{ejemplo_puesto_despues}}</b> frente a equipos que miden lo mismo.<span class="certeza">Certeza media</span></p>
+          <h2>¿Cambia el ranking de entornos si comparamos de forma justa?<span class="certeza">Certeza media</span></h2>
+          <p class="respuesta"><b>Sí:</b> al comparar cada equipo con los que miden lo mismo, {{ejemplo_entorno}} pasa del puesto {{ejemplo_puesto_antes}} al {{ejemplo_puesto_despues}}.</p>
           <div class="lienzo"><canvas id="grafica-2" role="img" aria-label="Mapa de entornos: metas cumplidas frente a la comparación justa"></canvas></div>
         </div>
         <div class="tercero">
           <b>{{cumplieron_antes}}% <em>→</em> {{cumplieron_despues}}%</b>
-          <p><strong>¿Bajó el desempeño en 2026? No: subió la meta.<span class="certeza">Certeza alta</span></strong>En {{seguido}} pasamos de un cumplimiento del {{cumplieron_antes}}% de los equipos en 2025 a uno del {{cumplieron_despues}}% en 2026, aunque el resultado se mantuvo cerca de {{resultado_despues}}%: la meta subió de {{meta_antes}}% a {{meta_despues}}%.</p>
+          <p><strong>¿Bajó el desempeño en 2026? No: subió la vara.<span class="certeza">Certeza alta</span></strong>En {{seguido}} el resultado sigue cerca de {{resultado_despues}}%, pero la meta subió de {{meta_antes}}% a {{meta_despues}}%: con el mismo resultado, ahora cumple el {{cumplieron_despues}}% de los equipos y no el {{cumplieron_antes}}%.</p>
         </div>
       </div>
       <div class="pie"><span>No se puede concluir si las metas están bien calibradas ni si acompañar mejora el cumplimiento.</span><span>2 / 3</span></div>
@@ -302,14 +303,14 @@ p, ul { margin: 0; }
         <div class="flujo">
           <span class="etiqueta">Proceso recurrente en el stack del banco</span>
           <ol>
-            <li><b>Excel</b><span>El negocio carga el mes con listas de los catálogos</span></li>
-            <li><b>Cloudera AI</b><span>Python y PySpark: carga incremental, reglas y validaciones</span></li>
-            <li><b>Impala</b><span>Crudos, modelo normalizado, calidad y score</span></li>
-            <li><b>Streamlit</b><span>Equipos, entornos y calidad en una sola aplicación</span></li>
+            <li><b>Excel</b><span>Recolección de datos durante el mes</span></li>
+            <li><b>Cloudera Data Hub</b><span>Se sube el corte del mes</span></li>
+            <li><b>Cloudera AI</b><span>ETL y cálculo del score</span></li>
+            <li><b>Tablero</b><span>Streamlit o Power BI, alimentado por las fuentes en la nube</span></li>
           </ol>
           <div class="nota">
             <p>Si una validación falla, no se publica y se avisa al responsable.</p>
-            <p>Con 20 veces más datos el motor sirve: lo que cambia es la captura.</p>
+            <p>Con mucho más volumen, Excel sigue sirviendo para recolectar; almacenar y consultar pasa a SQL.</p>
           </div>
         </div>
         <div class="ia">

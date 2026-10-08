@@ -112,7 +112,7 @@ footer code { font-size: 0.9em; }
   <section class="lamina" id="hallazgo-1">
     <div class="mensaje">
       <span class="numero"><b>Hallazgo 1</b><span class="etiqueta">Equipos</span></span>
-      <h2>Lo que se mide pesa 10 veces más que quién lo mide</h2>
+      <h2>Que una meta se cumpla depende más del indicador que del equipo</h2>
       <div class="bloque"><span class="etiqueta">Interpretación</span><p>Un equipo puede verse mal solo porque le tocaron metas difíciles: hay indicadores que se cumplen el 0% de las veces y otros el 86%.</p></div>
       <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Calibrar las metas antes de comparar equipos.</p></div>
       <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>11.466 mediciones, al menos 5 equipos por indicador y mes.</p>
@@ -120,7 +120,7 @@ footer code { font-size: 0.9em; }
     <figure class="evidencia">
       <h3>¿Qué explica que una meta se cumpla o no?</h3>
       <div class="lienzo"><canvas id="grafica-1" role="img" aria-label="Porcentaje de las diferencias en metas cumplidas que explica cada factor"></canvas></div>
-      <figcaption><span class="etiqueta">Evidencia</span><span>Saber qué indicador y en qué mes explica el 48% de las diferencias; saber qué equipo, solo el 5%.</span></figcaption>
+      <figcaption><span class="etiqueta">Evidencia</span><span>De todo lo que varía entre metas cumplidas y no cumplidas, el 48% se explica por qué indicador es y en qué mes; solo el 5% por qué equipo lo reporta.</span></figcaption>
     </figure>
   </section>
 
@@ -142,7 +142,7 @@ footer code { font-size: 0.9em; }
   <section class="lamina" id="hallazgo-3">
     <div class="mensaje">
       <span class="numero"><b>Hallazgo 3</b><span class="etiqueta">Tendencia</span></span>
-      <h2>En 2026 no bajó el desempeño: subió la meta</h2>
+      <h2>En 2026 no bajó el desempeño: subió la vara</h2>
       <div class="bloque"><span class="etiqueta">Interpretación</span><p>Una caída en el tablero puede venir de una meta más exigente o de un indicador nuevo, no de los equipos. En Excelencia operativa la caída la trae Perdida esperada por fraude, nuevo en 2026.</p></div>
       <div class="bloque accion"><span class="etiqueta">Qué hacer</span><p>Registrar cada cambio de meta y mostrarlo junto a la tendencia.</p></div>
       <p class="certeza"><span class="etiqueta">Certeza</span><b>Alta</b>en los datos; la razón del cambio de meta no está en el archivo.</p>
@@ -253,10 +253,15 @@ const cuadrantes = {
     ctx.save();
     ctx.font = `600 12px ${color("--cuerpo")}`;
     ctx.fillStyle = color("--texto");
+    ctx.strokeStyle = color("--fondo");
+    ctx.lineWidth = 4;
+    ctx.lineJoin = "round";
     grafica.data.datasets.forEach((serie, d) => {
       if (!serie.etiquetar) return;
       grafica.getDatasetMeta(d).data.forEach((punto, i) => {
-        ctx.fillText(serie.data[i].entorno, punto.x + punto.options.radius + 4, punto.y + 4);
+        const x = punto.x + punto.options.radius + 4;
+        ctx.strokeText(serie.data[i].entorno, x, punto.y + 4);
+        ctx.fillText(serie.data[i].entorno, x, punto.y + 4);
       });
     });
     ctx.restore();
@@ -298,7 +303,7 @@ function graficaFactores(id, variacion, tamanoEtiqueta = 15) {
       maintainAspectRatio: false,
       tamanoValor: tamanoEtiqueta + 7,
       layout: { padding: { right: 80 } },
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `Explica el ${Math.round(c.raw)}% de las diferencias` } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `Explica el ${Math.round(c.raw)}% de la variación en metas cumplidas` } } },
       scales: {
         x: { display: false, min: 0, max: Math.max(...variacion.map(f => f.pct)) },
         y: { grid: { display: false }, border: { display: false }, ticks: { color: color("--texto"), font: { size: tamanoEtiqueta, weight: 600 } } },
@@ -313,6 +318,7 @@ function graficaEntornos(id, entornos) {
   const serie = (lectura, etiquetar) => ({
     data: entornos.filas.filter(f => f.lectura === lectura).map(f => ({ x: f.cumplimiento, y: f.frente_a_pares, ...f })),
     backgroundColor: color(COLOR_LECTURA[lectura]),
+    order: etiquetar ? 0 : 1,
     pointRadius: ctx => radio(ctx.raw?.equipos ?? 1),
     pointHoverRadius: ctx => radio(ctx.raw?.equipos ?? 1) + 3,
     etiquetar,
@@ -345,7 +351,7 @@ function graficaEntornos(id, entornos) {
       },
       scales: {
         x: { min: 0, max: 80, title: { display: true, text: "% de metas cumplidas →", color: color("--texto"), font: { weight: 600 } }, ticks: { callback: v => `${v}%` }, grid: { display: false } },
-        y: { min: -15, max: 25, title: { display: true, text: "Comparación justa: puntos frente a sus pares →", color: color("--texto"), font: { weight: 600 } }, ticks: { callback: v => (v > 0 ? `+${v}` : v) }, grid: { color: color("--linea") } },
+        y: { min: -15, max: 25, title: { display: true, text: "Puntos frente a sus pares →", color: color("--texto"), font: { weight: 600 } }, ticks: { callback: v => (v > 0 ? `+${v}` : v) }, grid: { color: color("--linea") } },
       },
     },
     plugins: [cuadrantes],
