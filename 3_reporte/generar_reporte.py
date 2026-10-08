@@ -176,7 +176,6 @@ def resumir_base(mediciones):
         "peso_excluidas": str(acciones.get("excluida", 0)),
         "peso_agrupadas": str(acciones.get("agrupada", 0)),
         "filas_agrupadas": _miles(acciones.get("agrupada", 0)),
-        "filas_corregidas": _miles(acciones.get("corregida", 0) + acciones.get("completada", 0)),
     }
 
 

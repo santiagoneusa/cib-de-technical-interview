@@ -55,12 +55,11 @@ p, ul { margin: 0; }
 .pie { display: flex; justify-content: space-between; align-items: center; gap: 2cqw; color: var(--suave); font-size: max(11px, 1.05cqw); border-top: 1px solid var(--linea); padding-top: 1.2cqw; }
 
 /* Diapositiva 1 */
-.presentacion { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 4cqw; align-items: center; transition: grid-template-columns 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-.presentacion:has(.abierto) { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.45fr); }
+.presentacion { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 4cqw; align-items: center; }
 .persona { display: grid; gap: 1.4cqw; }
 .persona h1 { font-size: 6cqw; font-weight: 800; font-stretch: 78%; line-height: 0.95; }
-.persona .rol { font-size: 1.6cqw; font-weight: 700; }
-.persona p { font-size: 1.6cqw; line-height: 1.45; color: var(--suave); max-width: 38ch; }
+.perfil { margin: 0; padding-left: 1.3em; display: grid; gap: 0.7cqw; font-size: 1.55cqw; line-height: 1.35; color: var(--suave); }
+.perfil li::marker { color: var(--amarillo); }
 .habilidades { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.7cqw; }
 .habilidades li { font-size: max(11px, 1.15cqw); font-weight: 600; background: var(--panel); border-radius: 999px; padding: 0.5cqw 1.1cqw; }
 .fases { display: grid; gap: 1.2cqw; }
@@ -92,7 +91,7 @@ p, ul { margin: 0; }
 .caja small { font-size: 0.95em; color: var(--suave); }
 .caja.clave { border: 2px solid var(--texto); }
 .cadena { display: grid; align-items: center; gap: 0.4cqw; }
-.cadena-3 { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); }
+.cadena-3 { text-align: center; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); }
 .cadena-er { grid-template-columns: repeat(2, minmax(0, 1fr) auto) minmax(0, 1.25fr) repeat(2, auto minmax(0, 1fr)); text-align: center; }
 .cadena-er .caja { padding: 0.6cqw 0.3cqw; }
 .cadena-er .caja b { font-size: 1.25cqw; }
@@ -101,9 +100,8 @@ p, ul { margin: 0; }
 .relacion::after { background: var(--texto); height: 2px; }
 .activa .conector::after { animation: trazar 0.45s ease both; animation-delay: calc(0.3s + var(--i, 0) * 0.09s); }
 @keyframes trazar { from { transform: scaleX(0); } }
-.puerta { border-left: 3px solid var(--amarillo); padding-left: 0.8cqw; }
 .mosaico { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5cqw; }
-.mosaico .caja b { font-size: 2.2cqw; font-stretch: 78%; line-height: 1; }
+.mosaico .caja b { font-size: 2.6cqw; font-stretch: 78%; line-height: 1; }
 .barra { display: flex; height: 1.6cqw; border-radius: 6px; overflow: hidden; }
 .barra i { display: block; transform-origin: left; }
 .activa .barra i { animation: trazar 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: 0.35s; }
@@ -111,15 +109,6 @@ p, ul { margin: 0; }
 .leyenda span::before { content: ""; display: inline-block; width: 0.8cqw; height: 0.8cqw; border-radius: 2px; margin-right: 0.4cqw; background: var(--c, transparent); }
 .agrupa { display: grid; grid-template-columns: minmax(0, 0.9fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 0.4cqw; }
 .agrupa .pila { display: grid; gap: 0.5cqw; }
-.arbol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3cqw; }
-.arbol li { display: grid; grid-template-columns: 1.4cqw minmax(11cqw, auto) minmax(0, 1fr); column-gap: 0.6cqw; align-items: baseline; }
-.arbol li::before { content: "├"; font-family: ui-monospace, "Consolas", monospace; color: var(--suave); }
-.arbol li:last-child::before { content: "└"; }
-.arbol code { justify-self: start; }
-.arbol li > span { color: var(--suave); }
-.arbol .generado code { background: var(--amarillo); border-radius: 4px; padding: 0 0.3cqw; }
-.etiquetas { display: flex; flex-wrap: wrap; gap: 0.5cqw; }
-.etiquetas span { background: var(--fondo); border: 1px solid var(--linea); border-radius: 999px; padding: 0.3cqw 0.9cqw; }
 
 /* Diapositiva 2 */
 .hallazgos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr) auto; gap: 1.6cqw 3cqw; min-height: 0; }
@@ -161,7 +150,7 @@ p, ul { margin: 0; }
   .diapositiva { width: 100%; aspect-ratio: auto; padding: 22px 18px; gap: 18px; container-type: normal; }
   .titulo { font-size: 1.7rem; }
   .persona h1 { font-size: 2.6rem; }
-  .persona .rol, .persona p, .cabeza > span, .tercero p, .flujo li span, .flujo .nota, .ia li { font-size: 1rem; }
+  .perfil, .cabeza > span, .tercero p, .flujo li span, .flujo .nota, .ia li { font-size: 1rem; }
   .tercero b { font-size: 2rem; }
   .cabeza b { font-size: 1.1rem; }
   .cabeza { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto; padding: 12px 14px; }
@@ -173,8 +162,6 @@ p, ul { margin: 0; }
   .caja b, .cadena-er .caja b { font-size: 1rem; }
   .mosaico .caja b { font-size: 1.6rem; }
   .barra { height: 14px; }
-  .arbol li { grid-template-columns: 16px minmax(0, 1fr); }
-  .arbol li > span { grid-column: 2; }
   .subtitulo { font-size: 0.7rem; }
   .habilidades li { font-size: 0.85rem; padding: 4px 10px; }
   .hallazgo h2, .tercero strong, .ia h3, .flujo li b { font-size: 1.2rem; }
@@ -199,8 +186,12 @@ p, ul { margin: 0; }
       <div class="presentacion">
         <div class="persona">
           <h1>{{autor}}</h1>
-          <span class="rol">Candidato a Ingeniero de Datos N2</span>
-          <p>Machine Learning Engineer en Bancolombia: modelos de detección de fraude que procesan más de 10 millones de cuentas al día. Ingeniero de Sistemas de EAFIT y estudiante de la Maestría en Ciencia de Datos con énfasis en MLOps.</p>
+          <ul class="perfil">
+            <li>Ingeniero de Sistemas y estudiante de la Maestría en Ciencia de Datos, énfasis en MLOps.</li>
+            <li>Machine Learning Engineer en Bancolombia: modelos de detección de fraude.</li>
+            <li>Experiencia con algoritmos y procesos agénticos.</li>
+            <li>Experiencia como desarrollador de software.</li>
+          </ul>
           <ul class="habilidades" aria-label="Habilidades">
             <li>Python</li><li>SQL</li><li>MLOps</li><li>IA generativa</li>
           </ul>
@@ -211,55 +202,40 @@ p, ul { margin: 0; }
             <li class="fase"><div class="marco">
               <button type="button" class="cabeza" aria-expanded="false"><code>0_datos</code><b>Datos por capas</b><span>Crudos, procesados y score; el original nunca se modifica</span></button>
               <div class="detalle"><div><div class="contenido">
-                <div class="bloque aparece" style="--i:0">
-                  <span class="subtitulo">Arquitectura de datos: una capa se escribe solo si pasa las validaciones</span>
-                  <div class="cadena cadena-3">
-                    <div class="caja"><b class="mono">1_crudos/</b><span class="mono">KPIS_historico.xlsx</span><small>Original, de solo lectura</small></div>
-                    <span class="conector" style="--i:1">limpieza</span>
-                    <div class="caja"><b class="mono">2_procesados/</b><span class="mono">_procesado.xlsx</span><small>5 tablas del modelo</small><span class="mono">_calidad.xlsx</span><small>Registro, trazabilidad y validaciones</small></div>
-                    <span class="conector" style="--i:2">score</span>
-                    <div class="caja"><b class="mono">3_score/</b><span class="mono">_score.xlsx</span><small>Meta cumplida y resúmenes por indicador, equipo, frente y entorno</small></div>
-                  </div>
+                <div class="cadena cadena-3 aparece" style="--i:0">
+                  <div class="caja"><b class="mono">1_crudos</b></div>
+                  <span class="conector" style="--i:1"></span>
+                  <div class="caja"><b class="mono">2_procesados</b></div>
+                  <span class="conector" style="--i:2"></span>
+                  <div class="caja clave"><b class="mono">3_score</b></div>
                 </div>
-                <p class="puerta aparece" style="--i:3"><b>Compuerta:</b> 5 validaciones (llave única, formato, vacíos, llaves foráneas y conservación de filas). Si una falla, no se escribe ninguna capa y el error queda en <span class="mono">ejecucion.log</span>.</p>
-                <p class="aparece" style="--i:4">Un solo comando reconstruye todo: <span class="mono">uv run python 2_transformacion/src/main.py</span></p>
               </div></div></div>
             </div></li>
             <li class="fase"><div class="marco">
               <button type="button" class="cabeza" aria-expanded="false"><code>1_experimentacion</code><b>Exploración y calidad</b><span>{{pct_fuera_catalogo}}% de las mediciones usan indicadores fuera del catálogo</span></button>
               <div class="detalle"><div><div class="contenido">
                 <div class="bloque aparece" style="--i:0">
-                  <span class="subtitulo">Tres notebooks, una pregunta cada uno</span>
-                  <div class="cadena cadena-3">
-                    <div class="caja"><b>1.1 Exploración</b><small>Qué es una fila: mes × equipo × indicador</small></div>
-                    <span class="conector" style="--i:1"></span>
-                    <div class="caja"><b>1.2 Catálogos</b><small>Qué equipos, frentes e indicadores no cruzan</small></div>
-                    <span class="conector" style="--i:2"></span>
-                    <div class="caja"><b>1.3 Calidad</b><small>16 problemas con evidencia y tratamiento</small></div>
-                  </div>
-                </div>
-                <div class="bloque aparece" style="--i:3">
-                  <span class="subtitulo">Modelo de datos: 5 entidades</span>
+                  <span class="subtitulo">Modelo de datos</span>
                   <div class="cadena cadena-er">
                     <div class="caja"><b>Frentes</b></div>
-                    <span class="conector relacion" style="--i:4">1 : N</span>
-                    <div class="caja"><b>Indicadores</b><small>sentido, unidad</small></div>
-                    <span class="conector relacion" style="--i:5">1 : N</span>
-                    <div class="caja clave"><b>Mediciones</b><small>resultado, meta</small></div>
-                    <span class="conector relacion" style="--i:6">N : 1</span>
+                    <span class="conector relacion" style="--i:1">1 : N</span>
+                    <div class="caja"><b>Indicadores</b></div>
+                    <span class="conector relacion" style="--i:2">1 : N</span>
+                    <div class="caja clave"><b>Mediciones</b></div>
+                    <span class="conector relacion" style="--i:3">N : 1</span>
                     <div class="caja"><b>Equipos</b></div>
-                    <span class="conector relacion" style="--i:7">N : 1</span>
+                    <span class="conector relacion" style="--i:4">N : 1</span>
                     <div class="caja"><b>Entornos</b></div>
                   </div>
                 </div>
-                <div class="bloque aparece" style="--i:6">
-                  <span class="subtitulo">Problemas de calidad encontrados</span>
+                <div class="bloque aparece" style="--i:4">
+                  <span class="subtitulo">16 problemas de calidad</span>
                   <div class="mosaico">
-                    <div class="caja"><b>5</b><span>de catálogo</span><small>Indicadores sin definición</small></div>
-                    <div class="caja"><b>4</b><span>de faltantes</span><small>Equipo o cumplimiento vacío</small></div>
-                    <div class="caja"><b>3</b><span>de valores</span><small>Encuestas en otra escala</small></div>
-                    <div class="caja"><b>2</b><span>de duplicados</span><small>Filas repetidas o en conflicto</small></div>
-                    <div class="caja"><b>2</b><span>de formato</span><small>Códigos y frentes mal escritos</small></div>
+                    <div class="caja"><b>5</b><span>catálogo vs. dataset</span></div>
+                    <div class="caja"><b>4</b><span>faltantes</span></div>
+                    <div class="caja"><b>3</b><span>valores</span></div>
+                    <div class="caja"><b>2</b><span>duplicados</span></div>
+                    <div class="caja"><b>2</b><span>formato</span></div>
                   </div>
                 </div>
               </div></div></div>
@@ -267,81 +243,32 @@ p, ul { margin: 0; }
             <li class="fase"><div class="marco">
               <button type="button" class="cabeza" aria-expanded="false"><code>2_transformacion</code><b>Limpieza, modelo y score</b><span>{{filas_originales}} filas → {{mediciones}} mediciones; {{filas_salientes}} trazadas una a una</span></button>
               <div class="detalle"><div><div class="contenido">
-                <div class="bloque aparece" style="--i:0">
-                  <span class="subtitulo">Flujo del pipeline</span>
-                  <div class="cadena cadena-3">
-                    <div class="caja"><b>1. Limpieza</b><small>Códigos, vacíos, filas repetidas y conflictos</small></div>
-                    <span class="conector" style="--i:1"></span>
-                    <div class="caja"><b>2. Cumplimiento</b><small>Encuestas y valores copiados: Resultado / Meta</small></div>
-                    <span class="conector" style="--i:2"></span>
-                    <div class="caja clave"><b>3. Meta cumplida</b><small>1 si alcanza la meta según su sentido; 0 si no</small></div>
-                  </div>
+                <div class="cadena cadena-3 aparece" style="--i:0">
+                  <div class="caja"><b>1. Limpieza</b></div>
+                  <span class="conector" style="--i:1"></span>
+                  <div class="caja"><b>2. Cumplimiento</b><small>Resultado / Meta</small></div>
+                  <span class="conector" style="--i:2"></span>
+                  <div class="caja clave"><b>3. Meta cumplida</b><small>1 o 0</small></div>
                 </div>
                 <div class="bloque aparece" style="--i:3">
-                  <span class="subtitulo">{{filas_originales}} filas originales</span>
                   <div class="barra" role="img" aria-label="{{mediciones}} mediciones, {{filas_excluidas}} excluidas y {{filas_agrupadas}} agrupadas">
                     <i style="flex: {{peso_mediciones}}; background: var(--verde)"></i><i style="flex: {{peso_excluidas}}; background: var(--naranja)"></i><i style="flex: {{peso_agrupadas}}; background: var(--gris)"></i>
                   </div>
-                  <div class="leyenda"><span style="--c: var(--verde)">{{mediciones}} mediciones</span><span style="--c: var(--naranja)">{{filas_excluidas}} excluidas</span><span style="--c: var(--gris)">{{filas_agrupadas}} agrupadas</span><span>{{filas_corregidas}} correcciones trazadas</span></div>
+                  <div class="leyenda"><span style="--c: var(--verde)">{{mediciones}} mediciones</span><span style="--c: var(--naranja)">{{filas_excluidas}} excluidas</span><span style="--c: var(--gris)">{{filas_agrupadas}} agrupadas</span></div>
                 </div>
-                <div class="bloque aparece" style="--i:5">
-                  <span class="subtitulo">Cómo se agrupa</span>
-                  <div class="agrupa">
-                    <div class="caja clave"><b>Medición</b><small>0 o 1 por equipo, indicador y mes</small></div>
-                    <span class="conector" style="--i:6">promedio</span>
-                    <div class="caja"><b>Equipo · mes</b><small>Score: % de metas cumplidas; todas pesan igual</small></div>
-                    <span class="conector" style="--i:7">mediana</span>
-                    <div class="pila"><div class="caja"><b>Entorno</b><small>Mediana de sus equipos</small></div><div class="caja"><b>Frente</b><small>Mediana de los equipos del frente</small></div></div>
-                  </div>
-                  <p class="puerta"><b>Comparación justa:</b> a cada 0 o 1 se le resta la tasa de los equipos que miden el mismo indicador ese mes.</p>
+                <div class="agrupa aparece" style="--i:5">
+                  <div class="caja clave"><b>Medición</b><small>1 o 0</small></div>
+                  <span class="conector" style="--i:6">promedio</span>
+                  <div class="caja"><b>Equipo</b><small>Score del mes</small></div>
+                  <span class="conector" style="--i:7">mediana</span>
+                  <div class="pila"><div class="caja"><b>Entorno</b></div><div class="caja"><b>Frente</b></div></div>
                 </div>
-              </div></div></div>
-            </div></li>
-            <li class="fase"><div class="marco">
-              <button type="button" class="cabeza" aria-expanded="false"><code>3_reporte</code><b>Hallazgos y presentación</b><span>3 hallazgos para decidir dónde acompañar</span></button>
-              <div class="detalle"><div><div class="contenido">
-                <div class="bloque aparece" style="--i:0">
-                  <span class="subtitulo">Un script genera los adjuntos desde las capas de datos</span>
-                  <ul class="arbol">
-                    <li><code>generar_reporte.py</code><span>Lee 0_datos y calcula cada cifra del texto</span></li>
-                    <li><code>graficas.js</code><span>Gráficas compartidas (Chart.js)</span></li>
-                    <li><code>plantilla.html</code><span>Estructura del reporte</span></li>
-                    <li><code>plantilla_presentacion.html</code><span>Estructura de esta presentación</span></li>
-                    <li class="generado"><code>reporte.html</code><span>Hallazgos con evidencia, interpretación y certeza</span></li>
-                    <li class="generado"><code>presentacion.html</code><span>Estas 3 diapositivas</span></li>
-                  </ul>
-                </div>
-                <div class="cadena cadena-3 aparece" style="--i:3">
-                  <div class="caja"><b class="mono">_score.xlsx</b><small>Mediciones con meta cumplida</small></div>
-                  <span class="conector" style="--i:4">generar_reporte.py</span>
-                  <div class="caja"><b>Plantillas + graficas.js</b><small>Texto y gráficas con el mismo dato</small></div>
-                  <span class="conector" style="--i:5"></span>
-                  <div class="caja clave"><b>2 HTML</b><small>Se abren en cualquier navegador</small></div>
-                </div>
-                <p class="puerta aparece" style="--i:6">Si cambian los datos, se vuelve a correr el script y el texto nunca queda desactualizado frente a las gráficas.</p>
-              </div></div></div>
-            </div></li>
-            <li class="fase"><div class="marco">
-              <button type="button" class="cabeza" aria-expanded="false"><code>.github</code><b>Reglas para la IA</b><span>Instrucciones, skills y prompts para trabajar con el mismo estándar</span></button>
-              <div class="detalle"><div><div class="contenido">
-                <div class="bloque aparece" style="--i:0">
-                  <span class="subtitulo">Lo que lee el asistente antes de escribir código</span>
-                  <ul class="arbol">
-                    <li><code>copilot-instructions.md</code><span>Contexto y principios del proyecto</span></li>
-                    <li><code>instructions/</code><span>Reglas por tipo de archivo: Python, notebooks, datos y documentación</span></li>
-                    <li><code>skills/</code><span>Nueva regla de limpieza, probar hipótesis, estilo visual y bitácora de IA</span></li>
-                    <li><code>prompts/</code><span>Tareas repetibles: nueva regla, revisar salidas y registrar bitácora</span></li>
-                    <li><code>agents/</code><span>Revisor de la presentación</span></li>
-                  </ul>
-                </div>
-                <div class="etiquetas aparece" style="--i:3"><span><b>Siempre:</b> instrucciones</span><span><b>Bajo demanda:</b> skills y prompts</span><span><b>Rol:</b> agente revisor</span></div>
-                <p class="puerta aparece" style="--i:4">Funcionan con GitHub Copilot y Claude: quien siga el proyecto trabaja con el mismo estándar.</p>
               </div></div></div>
             </div></li>
           </ol>
         </div>
       </div>
-      <div class="pie"><span>{{equipos}} equipos · {{n_entornos}} entornos · {{periodo}}</span><span>1 / 3</span></div>
+      <div class="pie"><span></span><span>1 / 3</span></div>
     </article>
   </section>
 
